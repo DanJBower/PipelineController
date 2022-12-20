@@ -1,0 +1,14 @@
+{
+    "recommendations": [
+        "cschleiden.vscode-github-actions",
+        "davidanson.vscode-markdownlint",
+        "mhutchie.git-graph",
+        "shardulm94.trailing-spaces",
+        "shd101wyy.markdown-preview-enhanced",
+        "spmeesseman.vscode-taskexplorer",
+        "streetsidesoftware.code-spell-checker",
+        "visualstudioexptteam.vscodeintellicode",
+        "vscode-icons-team.vscode-icons",
+        "wayou.vscode-todo-highlight"
+    ]
+}

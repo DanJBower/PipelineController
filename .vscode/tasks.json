@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Restore .NET dependencies",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "tool",
+                "restore"
+            ]
+        },
+        {
+            "label": "Clean",
+            "command": "git",
+            "type": "process",
+            "args": [
+                "clean",
+                "-f",
+                "-d",
+                "-X"
+            ]
+        }
+    ]
+}
