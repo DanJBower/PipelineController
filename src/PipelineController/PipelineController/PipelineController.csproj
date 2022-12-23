@@ -51,4 +51,15 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="7.0.0" />
     </ItemGroup>
 
+    <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+        <Exec Command="npx tsc --build" />
+        <Exec Command="npx sass SCSS:wwwroot/SCSS" />
+    </Target>
+
+    <Target Name="PostClean" AfterTargets="Clean">
+        <Exec Command="rmdir /Q /S wwwroot\\dist" />
+        <Exec Command="rmdir /Q /S wwwroot\\TypeScript" />
+        <Exec Command="rmdir /Q /S wwwroot\\SCSS" />
+    </Target>
+
 </Project>
