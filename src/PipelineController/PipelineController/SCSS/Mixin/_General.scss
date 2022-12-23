@@ -1,0 +1,27 @@
+﻿@mixin transform($property) {
+    -webkit-transform: $property;
+    -ms-transform: $property;
+    transform: $property;
+}
+
+@mixin box-sizing($value) {
+    box-sizing: $value;
+    -webkit-box-sizing: $value;
+    -moz-box-sizing: $value;
+}
+
+@mixin user-select($property) {
+    -webkit-touch-callout: $property;
+    -webkit-user-select: $property;
+    -moz-user-select: $property;
+    -ms-user-select: $property;
+    user-select: $property;
+}
+
+@mixin user-drag($property) {
+    -webkit-user-drag: $property;
+    -moz-user-drag: $property;
+    -ms-user-drag: $property;
+    -o-user-drag: $property;
+    user-drag: $property;
+}

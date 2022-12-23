@@ -1,0 +1,18 @@
+@import "FontSetup";
+@import "Mixin/Flexbox";
+@import "Mixin/General";
+
+body {
+    margin: 0;
+    background: rgb(255, 253, 249);
+}
+
+*, *:before, *:after {
+    font-family: 'Roboto', sans-serif;
+    @include box-sizing(border-box);
+}
+
+.flex_container {
+    @include flexbox;
+    @include flex-direction(column);
+}

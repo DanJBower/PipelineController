@@ -1,0 +1,92 @@
+﻿@font-face {
+    font-family: 'Material Icons';
+    font-style: normal;
+    font-weight: 400;
+    src: url('/dist/Material Design Icons/MaterialIcons-Regular.eot'); /* For IE6-8 */
+    src: url('/dist/Material Design Icons/MaterialIcons-Regular.woff2') format('woff2'), url('/dist/Material Design Icons/MaterialIcons-Regular.woff') format('woff'), url('/dist/Material Design Icons/MaterialIcons-Regular.ttf') format('truetype');
+}
+
+@mixin font-feature-settings($value) {
+    -webkit-font-feature-settings: $value;
+    font-feature-settings: $value;
+}
+
+.material-icons {
+    font-family: 'Material Icons';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px; /* Preferred icon size */
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+    /* Support for all WebKit browsers. */
+    -webkit-font-smoothing: antialiased;
+    /* Support for Safari and Chrome. */
+    text-rendering: optimizeLegibility;
+    /* Support for Firefox. */
+    -moz-osx-font-smoothing: grayscale;
+    /* Support for IE. */
+    @include font-feature-settings('liga');
+}
+
+@mixin RobotoFont($fontWeight, $fontFile) {
+    @font-face {
+        font-family: Roboto;
+        font-weight: $fontWeight;
+        font-style: normal;
+        src: url('/Fonts/Roboto/Roboto-#{$fontFile}.ttf') format('truetype');
+    }
+
+    @font-face {
+        font-family: Roboto;
+        font-weight: $fontWeight;
+        font-style: italic;
+        src: url('/Fonts/Roboto/Roboto-#{$fontFile}Italic.ttf') format('truetype');
+    }
+}
+
+@include RobotoFont(100, Thin);
+@include RobotoFont(300, Light);
+
+@font-face {
+    font-family: Roboto;
+    font-weight: 400;
+    font-style: normal;
+    src: url('/Fonts/Roboto/Roboto-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: Roboto;
+    font-weight: 400;
+    font-style: italic;
+    src: url('/Fonts/Roboto/Roboto-Italic.ttf') format('truetype');
+}
+
+@include RobotoFont(500, Medium);
+@include RobotoFont(700, Bold);
+@include RobotoFont(900, Black);
+
+@mixin RobotoFontClass($fontWeight) {
+    .Roboto#{$fontWeight} {
+        font-family: Roboto, sans-serif;
+        font-weight: $fontWeight;
+        font-style: normal;
+    }
+
+    .Roboto#{$fontWeight}i {
+        font-family: Roboto, sans-serif;
+        font-weight: $fontWeight;
+        font-style: italic;
+    }
+}
+
+@include RobotoFontClass(100);
+@include RobotoFontClass(300);
+@include RobotoFontClass(400);
+@include RobotoFontClass(500);
+@include RobotoFontClass(700);
+@include RobotoFontClass(900);

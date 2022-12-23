@@ -3,6 +3,11 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Generated files from NPM and ts / scss compilation
+**/wwwroot/TypeScript
+**/wwwroot/SCSS
+**/wwwroot/dist
+
 # User-specific files
 *.rsuser
 *.suo

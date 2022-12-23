@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "noImplicitAny": false,
+        "noEmitOnError": true,
+        "removeComments": false,
+        "sourceMap": true,
+        "target": "es5",
+        "outDir": "wwwroot/TypeScript",
+        "skipLibCheck": true,
+        "strict": true,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "alwaysStrict": true,
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true,
+        "moduleResolution": "node",
+        "downlevelIteration": true,
+        "experimentalDecorators": true,
+        "importHelpers": true
+    },
+    "exclude": [
+        "node_modules",
+        "wwwroot"
+    ]
+}

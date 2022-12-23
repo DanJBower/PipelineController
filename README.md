@@ -40,6 +40,7 @@ Press buttons :)
 * Android - **TODO** Clarify exactly what is needed
 * [dotnet script](https://github.com/dotnet-script/dotnet-script) - Run the `Restore System Dependencies` VS Code task
 * [Stryker.NET](https://stryker-mutator.io/) - Run the `Restore System Dependencies` VS Code task
+* [Node.js](https://nodejs.org/en/) - `npm` and `node` commands need to be accessible on the path
 
 ## VS Code Tasks
 
