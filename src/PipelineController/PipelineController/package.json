@@ -4,7 +4,7 @@
     "author": "DanJBower",
     "dependencies": {
         "@fontsource/roboto": "^4.5.8",
-        "material-icons": "^1.13.1",
+        "material-symbols": "^0.4.2",
         "rippleui": "^1.3.1"
     },
     "devDependencies": {
