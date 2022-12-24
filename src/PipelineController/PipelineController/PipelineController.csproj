@@ -52,14 +52,16 @@
     </ItemGroup>
 
     <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+        <Exec Command="npm install" />
         <Exec Command="npx tsc --build" />
         <Exec Command="npx sass SCSS:wwwroot/SCSS" />
+        <Exec Command="xcopy node_modules\material-symbols\*.woff2 wwwroot\dist\material_symbols\ /y /f /v" />
     </Target>
 
     <Target Name="PostClean" AfterTargets="Clean">
-        <Exec Command="rmdir /Q /S wwwroot\\dist" />
-        <Exec Command="rmdir /Q /S wwwroot\\TypeScript" />
-        <Exec Command="rmdir /Q /S wwwroot\\SCSS" />
+        <Exec Command="rmdir /Q /S wwwroot\dist" />
+        <Exec Command="rmdir /Q /S wwwroot\TypeScript" />
+        <Exec Command="rmdir /Q /S wwwroot\SCSS" />
     </Target>
 
 </Project>
