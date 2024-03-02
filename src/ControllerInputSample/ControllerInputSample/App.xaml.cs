@@ -1,7 +1,8 @@
 ﻿#if WINDOWS
+using Microsoft.Maui.Platform;
+using Microsoft.UI.Windowing;
 using Windows.Graphics;
 #endif
-using Microsoft.Maui.Platform;
 
 namespace ControllerInputSample;
 
@@ -23,10 +24,13 @@ public partial class App
     protected override Window CreateWindow(IActivationState? activationState)
     {
         var window = base.CreateWindow(activationState);
-
+        AppWindow appWindow = null!;
 
         window.Created += (_, _) =>
         {
+            var nativeWindow = (MauiWinUIWindow)window.Handler!.PlatformView!;
+            appWindow = nativeWindow.GetAppWindow()!;
+
             if (Preferences.Default.ContainsKey(LastWidthPropertyKey) &&
                 Preferences.Default.ContainsKey(LastHeightPropertyKey))
             {
@@ -37,25 +41,10 @@ public partial class App
             if (Preferences.Default.ContainsKey(LastXPropertyKey) &&
                 Preferences.Default.ContainsKey(LastYPropertyKey))
             {
-                var lastX = Preferences.Default.Get(LastXPropertyKey, 0.0);
-                var lastY = Preferences.Default.Get(LastYPropertyKey, 0.0);
-                var dpi = DeviceDisplay.MainDisplayInfo.Density;
-                if (Math.Abs(DeviceDisplay.MainDisplayInfo.Density - 1) > 0.00001 &&
-                    (lastX < 0 || lastX > (DeviceDisplay.MainDisplayInfo.Width / dpi) ||
-                     lastY < 0 || lastY > (DeviceDisplay.MainDisplayInfo.Height / dpi)))
-                {
-                    var nativeWindow = (MauiWinUIWindow)window.Handler.PlatformView;
-                    var appWindow = nativeWindow.GetAppWindow();
-                    appWindow.Move(new PointInt32(
-                        (int)Math.Round(lastX),
-                        (int)Math.Round(lastY)
-                    ));
-                }
-                else
-                {
-                    window.X = lastX;
-                    window.Y = lastY;
-                }
+                appWindow.Move(new PointInt32(
+                    Preferences.Default.Get(LastXPropertyKey, 0),
+                    Preferences.Default.Get(LastYPropertyKey, 0)
+                ));
             }
         };
 
@@ -63,8 +52,8 @@ public partial class App
         {
             Preferences.Default.Set(LastWidthPropertyKey, window.Width);
             Preferences.Default.Set(LastHeightPropertyKey, window.Height);
-            Preferences.Default.Set(LastXPropertyKey, window.X);
-            Preferences.Default.Set(LastYPropertyKey, window.Y);
+            Preferences.Default.Set(LastXPropertyKey, appWindow.Position.X);
+            Preferences.Default.Set(LastYPropertyKey, appWindow.Position.Y);
         };
 
         return window;
