@@ -5,7 +5,7 @@
              x:Class="ControllerInputSample.MainPage"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
 
-    <BlazorWebView x:Name="BlazorWebView" HostPage="wwwroot/index.html">
+    <BlazorWebView HostPage="wwwroot/index.html">
         <BlazorWebView.RootComponents>
             <RootComponent Selector="#app" ComponentType="{x:Type local:Components.Routes}" />
         </BlazorWebView.RootComponents>
