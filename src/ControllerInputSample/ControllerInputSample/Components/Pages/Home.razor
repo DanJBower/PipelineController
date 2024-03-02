@@ -3,3 +3,40 @@
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+<br>
+X: @_x
+<br>
+Y: @_y
+<br>
+Width: @_width
+<br>
+Height: @_height
+<br>
+DPI: @_dpi
+
+@code
+{
+    private readonly Window _window = Application.Current.Windows.First();
+    private double _x, _y, _width, _height, _dpi;
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        var lastTime = DateTime.Now;
+
+        _window.SizeChanged += (_, _) =>
+        {
+            _x = _window.X;
+            _y = _window.Y;
+            _width = _window.Width;
+            _height = _window.Height;
+            _dpi = DeviceDisplay.MainDisplayInfo.Density;
+
+            if (TimeSpan.FromMilliseconds(5000) < (DateTime.Now - lastTime))
+            {
+                lastTime = DateTime.Now;
+                StateHasChanged();
+            }
+        };
+    }
+}
