@@ -1,12 +1,11 @@
-﻿namespace ControllerInputSample
-{
-    public partial class App : Application
-    {
-        public App()
-        {
-            InitializeComponent();
+﻿namespace ControllerInputSample;
 
-            MainPage = new MainPage();
-        }
+public partial class App
+{
+    public App()
+    {
+        InitializeComponent();
+
+        MainPage = new MainPage();
     }
 }

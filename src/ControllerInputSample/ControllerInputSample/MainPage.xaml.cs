@@ -1,10 +1,9 @@
-﻿namespace ControllerInputSample
+﻿namespace ControllerInputSample;
+
+public partial class MainPage
 {
-    public partial class MainPage : ContentPage
+    public MainPage()
     {
-        public MainPage()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
