@@ -20,23 +20,19 @@ public partial class App
     private const string LastHeightPropertyKey = "windows_last_window_height";
     private const string LastXPropertyKey = "windows_last_window_x";
     private const string LastYPropertyKey = "windows_last_window_y";
+    private const string LastWindowMaximisedPropertyKey = "windows_last_window_state";
 
     protected override Window CreateWindow(IActivationState? activationState)
     {
         var window = base.CreateWindow(activationState);
         AppWindow appWindow = null!;
+        OverlappedPresenter presenter = null!;
 
         window.Created += (_, _) =>
         {
             var nativeWindow = (MauiWinUIWindow)window.Handler!.PlatformView!;
             appWindow = nativeWindow.GetAppWindow()!;
-
-            if (Preferences.Default.ContainsKey(LastWidthPropertyKey) &&
-                Preferences.Default.ContainsKey(LastHeightPropertyKey))
-            {
-                window.Width = Preferences.Default.Get(LastWidthPropertyKey, -1.0);
-                window.Height = Preferences.Default.Get(LastHeightPropertyKey, -1.0);
-            }
+            presenter = (OverlappedPresenter)appWindow.Presenter;
 
             if (Preferences.Default.ContainsKey(LastXPropertyKey) &&
                 Preferences.Default.ContainsKey(LastYPropertyKey))
@@ -46,14 +42,32 @@ public partial class App
                     Preferences.Default.Get(LastYPropertyKey, 0)
                 ));
             }
+
+            if (Preferences.Default.ContainsKey(LastWidthPropertyKey) &&
+                Preferences.Default.ContainsKey(LastHeightPropertyKey))
+            {
+                window.Width = Preferences.Default.Get(LastWidthPropertyKey, -1.0);
+                window.Height = Preferences.Default.Get(LastHeightPropertyKey, -1.0);
+            }
+
+            if (Preferences.Default.Get(LastWindowMaximisedPropertyKey, false))
+            {
+                presenter.Maximize();
+            }
         };
 
         window.Destroying += (_, _) =>
         {
-            Preferences.Default.Set(LastWidthPropertyKey, window.Width);
-            Preferences.Default.Set(LastHeightPropertyKey, window.Height);
             Preferences.Default.Set(LastXPropertyKey, appWindow.Position.X);
             Preferences.Default.Set(LastYPropertyKey, appWindow.Position.Y);
+            var isMaximised = presenter.State == OverlappedPresenterState.Maximized;
+            Preferences.Default.Set(LastWindowMaximisedPropertyKey, isMaximised);
+
+            if (!isMaximised)
+            {
+                Preferences.Default.Set(LastWidthPropertyKey, window.Width);
+                Preferences.Default.Set(LastHeightPropertyKey, window.Height);
+            }
         };
 
         return window;
