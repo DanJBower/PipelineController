@@ -9,13 +9,31 @@
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="ControllerInputSample.styles.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
+
+    <style>
+        .loading_background {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading_forground {
+
+        }
+    </style>
 </head>
 
 <body>
 
     <div class="status-bar-safe-area"></div>
 
-    <div id="app">Loading...</div>
+    <div id="app">
+        <div class="loading_background">
+            <img src="dotnet_bot.svg">
+        </div>
+    </div>
 
     <div id="blazor-error-ui">
         An unhandled error has occurred.
