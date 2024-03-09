@@ -2,11 +2,10 @@
 
 public partial class App
 {
-    public App()
+    public App(Page mainPage)
     {
         InitializeComponent();
-
-        MainPage = new AppShell();
+        MainPage = mainPage;
     }
 
 #if WINDOWS
