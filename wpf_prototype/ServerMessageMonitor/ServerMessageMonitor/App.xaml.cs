@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace Monitor
+namespace ServerMessageMonitor
 {
     /// <summary>
     /// Interaction logic for App.xaml
