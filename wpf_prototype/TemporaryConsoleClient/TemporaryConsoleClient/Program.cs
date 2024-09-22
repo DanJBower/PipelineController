@@ -1,10 +1,8 @@
 ﻿using CommonClient;
 
-Console.WriteLine("Trying to find client");
-var (clientIp, clientPort) = await ClientBasics.FindClient();
+Console.WriteLine("Attempting to connect to client");
+using var client = await ClientBasics.ConnectToClient();
 
-Console.WriteLine($"Connecting to client - {clientIp}:{clientPort}");
-await ClientBasics.ConnectToClient(clientIp, clientPort);
-
+Console.WriteLine("Client connected");
 Console.WriteLine("Press Enter to exit");
 Console.ReadLine();

@@ -7,8 +7,9 @@ namespace CommonClient;
 
 public static class ClientBasics
 {
-    public static async Task ConnectToClient(string ip, int port)
+    public static async Task<IMqttClient> ConnectToClient()
     {
+        var (ip, port) = await FindClient();
         var factory = new MqttFactory();
         var mqttClient = factory.CreateMqttClient();
 
@@ -17,9 +18,10 @@ public static class ClientBasics
             .Build();
 
         await mqttClient.ConnectAsync(options);
+        return mqttClient;
     }
 
-    public static async Task<(string, int)> FindClient()
+    private static async Task<(string, int)> FindClient()
     {
         string ip;
         var port = 0;
@@ -27,13 +29,13 @@ public static class ClientBasics
         using var mdns = new MulticastService();
         using var serviceDiscovery = new ServiceDiscovery(mdns);
 
-        serviceDiscovery.ServiceInstanceDiscovered += (s, e) =>
+        serviceDiscovery.ServiceInstanceDiscovered += (_, e) =>
         {
             //Console.WriteLine($"service instance '{e.ServiceInstanceName}'");
             mdns.SendQuery(e.ServiceInstanceName, type: DnsType.SRV);
         };
 
-        mdns.AnswerReceived += (s, e) =>
+        mdns.AnswerReceived += (_, e) =>
         {
             var servers = e.Message.Answers.OfType<SRVRecord>();
             foreach (var server in servers)
