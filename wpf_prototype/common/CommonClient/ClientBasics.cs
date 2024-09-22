@@ -1,46 +1,59 @@
 ﻿using Makaretu.Dns;
+using MQTTnet;
+using MQTTnet.Client;
 using ServerInfo;
-using System.Diagnostics;
-using System.Net;
 
 namespace CommonClient;
 
 public static class ClientBasics
 {
-    private static readonly object TraceLock = new();
-    private static IPAddress _serverIp = IPAddress.None;
-
-    public static async Task ConnectToClient()
+    public static async Task ConnectToClient(string ip, int port)
     {
+        var factory = new MqttFactory();
+        var mqttClient = factory.CreateMqttClient();
 
+        var options = new MqttClientOptionsBuilder()
+            .WithTcpServer(ip, port)
+            .Build();
+
+        await mqttClient.ConnectAsync(options);
     }
 
-    private static async Task FindClient()
+    public static async Task<(string, int)> FindClient()
     {
-        using var serviceDiscovery = new ServiceDiscovery();
-        serviceDiscovery.ServiceInstanceDiscovered += ServiceDiscoveryOnServiceInstanceDiscovered;
+        string ip;
+        var port = 0;
+        var tcs = new TaskCompletionSource<(string Address, int Port)>();
+        using var mdns = new MulticastService();
+        using var serviceDiscovery = new ServiceDiscovery(mdns);
 
-        // Todo find out how to check if _serverIp is set and then unsubscribe event
-        // TODO I think there's a better way to send a specific query and do it async so can cancel after so long
-        // TODO There are exceptions being thrown, find out why
-        serviceDiscovery.QueryAllServices();
-    }
-
-    private static void ServiceDiscoveryOnServiceInstanceDiscovered(object? sender, ServiceInstanceDiscoveryEventArgs e)
-    {
-        lock (TraceLock)
+        serviceDiscovery.ServiceInstanceDiscovered += (s, e) =>
         {
-            Trace.WriteLine($"Discovered endpoint: {e.ServiceInstanceName} - {e.RemoteEndPoint.Address}:{e.RemoteEndPoint.Port}");
+            //Console.WriteLine($"service instance '{e.ServiceInstanceName}'");
+            mdns.SendQuery(e.ServiceInstanceName, type: DnsType.SRV);
+        };
 
-            if (!e.ServiceInstanceName.Equals(ServerConstants.Name)) return;
+        mdns.AnswerReceived += (s, e) =>
+        {
+            var servers = e.Message.Answers.OfType<SRVRecord>();
+            foreach (var server in servers)
+            {
+                //Console.WriteLine($"service instance host '{server.Target}' for '{server.Name} is available on port {server.Port}'");
+                port = server.Port;
+                mdns.SendQuery(server.Target, type: DnsType.A);
+            }
 
-            _serverIp = e.RemoteEndPoint.Address;
-        }
-    }
+            var address = e.Message.Answers.OfType<AddressRecord>().FirstOrDefault();
+            if (address is not null)
+            {
+                ip = address.Address.ToString();
+                tcs.SetResult((ip, port));
+            }
+        };
 
+        mdns.Start();
+        serviceDiscovery.QueryServiceInstances(ServerConstants.ServiceName);
 
-    public static async Task Test()
-    {
-        await FindClient();
+        return await tcs.Task;
     }
 }

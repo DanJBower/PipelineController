@@ -9,9 +9,12 @@ using var mqttServer = await StartServer();
 
 try
 {
-    using var serviceDiscovery = AdvertiseServer();
+    var (mdns, serviceDiscovery) = AdvertiseServer();
+    using var _1 = mdns;
+    using var _2 = serviceDiscovery;
     Console.WriteLine("Press Enter to exit");
     Console.ReadLine();
+    mdns.Stop();
 }
 finally
 {
@@ -77,12 +80,14 @@ static async Task MqttServerOnClientDisconnectedAsync(ClientDisconnectedEventArg
     await Task.CompletedTask;
 }
 
-static ServiceDiscovery AdvertiseServer()
+static (MulticastService, ServiceDiscovery) AdvertiseServer()
 {
+    var mdns = new MulticastService();
     var service = new ServiceProfile(ServerConstants.Name, ServerConstants.ServiceName, ServerConstants.Port);
-    var serviceDiscovery = new ServiceDiscovery();
+    var serviceDiscovery = new ServiceDiscovery(mdns);
     serviceDiscovery.Advertise(service);
-    return serviceDiscovery;
+    mdns.Start();
+    return (mdns, serviceDiscovery);
 }
 
 static void Log(string message = "")
