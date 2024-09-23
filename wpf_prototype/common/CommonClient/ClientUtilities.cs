@@ -1,6 +1,7 @@
 ﻿using Makaretu.Dns;
 using MQTTnet;
 using MQTTnet.Client;
+using MQTTnet.Formatter;
 using ServerInfo;
 
 namespace CommonClient;
@@ -20,6 +21,7 @@ public static class ClientUtilities
 
         var options = new MqttClientOptionsBuilder()
             .WithTcpServer(ip, port)
+            .WithProtocolVersion(MqttProtocolVersion.V500)
             .Build();
 
         await mqttClient.ConnectAsync(options);
