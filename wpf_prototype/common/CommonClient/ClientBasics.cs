@@ -23,7 +23,6 @@ public static class ClientBasics
 
     private static async Task<(string, int)> FindClient()
     {
-        string ip;
         var port = 0;
         var tcs = new TaskCompletionSource<(string Address, int Port)>();
         using var mdns = new MulticastService();
@@ -48,7 +47,7 @@ public static class ClientBasics
             var address = e.Message.Answers.OfType<AddressRecord>().FirstOrDefault();
             if (address is not null)
             {
-                ip = address.Address.ToString();
+                var ip = address.Address.ToString();
                 tcs.SetResult((ip, port));
             }
         };
