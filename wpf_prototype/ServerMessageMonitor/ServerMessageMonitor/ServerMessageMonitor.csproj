@@ -22,6 +22,12 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+        <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
+        <PackageReference Include="Scrutor" Version="4.2.2" />
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\..\common\CommonClient\CommonClient.csproj" />
         <ProjectReference Include="..\..\common\CommonWpf\CommonWpf.csproj" />
         <ProjectReference Include="..\..\common\ServerInfo\ServerInfo.csproj" />
