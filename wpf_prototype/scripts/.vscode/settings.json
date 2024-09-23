@@ -1,0 +1,17 @@
+{
+    "dotnet.server.useOmnisharp": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "files.insertFinalNewline": true,
+    "trailing-spaces.trimOnSave": true,
+    "terminal.integrated.scrollback": 10000000,
+    "explorer.compactFolders": false,
+    "editor.bracketPairColorization.enabled": true,
+    "diffviewer.drawFileList": false,
+    "diffviewer.outputFormat": "side-by-side",
+    "scm.defaultViewMode": "tree",
+    "files.autoSave": "onFocusChange"
+}
