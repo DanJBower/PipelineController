@@ -5,9 +5,14 @@ using ServerInfo;
 
 namespace CommonClient;
 
-public static class ClientBasics
+// TODO
+// * Make it so find client retries every second
+// * Pass cancelation token to connect to client so searching for client
+//   can be cancelled if wanted
+
+public static class ClientUtilities
 {
-    public static async Task<IMqttClient> ConnectToClient()
+    public static async Task<PrototypeClient> ConnectToClient()
     {
         var (ip, port) = await FindClient();
         var factory = new MqttFactory();
@@ -18,7 +23,7 @@ public static class ClientBasics
             .Build();
 
         await mqttClient.ConnectAsync(options);
-        return mqttClient;
+        return new(mqttClient);
     }
 
     private static async Task<(string, int)> FindClient()
