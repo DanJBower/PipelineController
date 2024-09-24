@@ -12,7 +12,7 @@ using var mqttServer = await StartServer();
 
 try
 {
-    await RegisterAliases();
+    await SetInitialValues();
     var (mdns, serviceDiscovery) = AdvertiseServer();
     using var _1 = mdns;
     using var _2 = serviceDiscovery;
@@ -100,7 +100,14 @@ static void Log(string message = "")
     Console.WriteLine($"{DateTime.Now:dd/MM/yyyy hh:mm:ss.fffffff}: {message}");
 }
 
-static async Task RegisterAliases()
+
+// This was originally called set topic aliases, but it
+// turns out topic aliases are client specific. The aliases
+// are still included in the received message, so as long
+// as both clients are using aliases, and using the same
+// aliases, it is possible to use aliases to check what the
+// topic is.
+static async Task SetInitialValues()
 {
     Console.WriteLine("Registering Topic Aliases");
     var defaultValues = new Dictionary<int, byte[]>
@@ -139,11 +146,11 @@ static async Task RegisterAliases()
 
     foreach (var (alias, topic) in Topics.AliasedTopics)
     {
-        await RegisterAlias(client, alias, topic, defaultValues[alias]);
+        await SetInitialValue(client, alias, topic, defaultValues[alias]);
     }
 }
 
-static async Task RegisterAlias(IMqttClient client, ushort alias, string topic, byte[] defaultValue)
+static async Task SetInitialValue(IMqttClient client, ushort alias, string topic, byte[] defaultValue)
 {
     var message = new MqttApplicationMessageBuilder()
         .WithTopic(topic)
