@@ -14,17 +14,8 @@ var subscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
 
 client.MqttClient.ApplicationMessageReceivedAsync += async e =>
 {
-    string message = $"{e.ApplicationMessage.Topic} - {ServerDataConverter.ExtractData(e.ApplicationMessage.PayloadSegment.Array)}";
-
-    var timeStampTickString = e.ApplicationMessage.UserProperties.FirstOrDefault(p => p.Name.Equals(AdditionalPropertyNames.TimeStamp))?.Value;
-
-    if (timeStampTickString is not null)
-    {
-        var timeStamp = new DateTime(long.Parse(timeStampTickString));
-        message += $" - {timeStamp:dd/MM/yyyy hh:mm:ss.fffffff}";
-    }
-
-    Console.WriteLine(message);
+    var (timestamp, data) = ServerDataConverter.ExtractData(e.ApplicationMessage.PayloadSegment.Array);
+    Console.WriteLine($"{timestamp:dd/MM/yyyy hh:mm:ss.fffffff} - {e.ApplicationMessage.Topic} - {data}");
 };
 
 await client.MqttClient.SubscribeAsync(subscribeOptions);

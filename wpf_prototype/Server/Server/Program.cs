@@ -148,7 +148,6 @@ static async Task RegisterAlias(IMqttClient client, ushort alias, string topic, 
     var message = new MqttApplicationMessageBuilder()
         .WithTopic(topic)
         .WithPayload(defaultValue)
-        .WithUserProperty("timestamp", $"{DateTime.Now.Ticks}")
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
         .WithRetainFlag()
         .WithTopicAlias(alias)
