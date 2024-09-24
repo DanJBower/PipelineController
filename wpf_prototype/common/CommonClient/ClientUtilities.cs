@@ -7,8 +7,8 @@ using ServerInfo;
 namespace CommonClient;
 
 // TODO
-// * Make it so find client retries every second
-// * Pass cancelation token to connect to client so searching for client
+// * Make it so find client retries every 2 seconds
+// * Pass cancellation token to connect to client so searching for client
 //   can be cancelled if wanted
 
 public static class ClientUtilities
@@ -37,7 +37,7 @@ public static class ClientUtilities
 
         serviceDiscovery.ServiceInstanceDiscovered += (_, e) =>
         {
-            //Console.WriteLine($"service instance '{e.ServiceInstanceName}'");
+            // ReSharper disable once AccessToDisposedClosure
             mdns.SendQuery(e.ServiceInstanceName, type: DnsType.SRV);
         };
 
@@ -46,9 +46,12 @@ public static class ClientUtilities
             var servers = e.Message.Answers.OfType<SRVRecord>();
             foreach (var server in servers)
             {
-                //Console.WriteLine($"service instance host '{server.Target}' for '{server.Name} is available on port {server.Port}'");
-                port = server.Port;
-                mdns.SendQuery(server.Target, type: DnsType.A);
+                if (server.Name.Labels[0].Equals(ServerConstants.Name))
+                {
+                    port = server.Port;
+                    // ReSharper disable once AccessToDisposedClosure
+                    mdns.SendQuery(server.Target, type: DnsType.A);
+                }
             }
 
             var address = e.Message.Answers.OfType<AddressRecord>().FirstOrDefault();

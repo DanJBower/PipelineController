@@ -3,13 +3,13 @@ using MQTTnet.Client;
 
 namespace CommonClient;
 
-public class PrototypeClient : IDisposable
+public class PrototypeClient : IAsyncDisposable
 {
-    private readonly IMqttClient _mqttClient;
+    public IMqttClient MqttClient { get; }
 
     public PrototypeClient(IMqttClient client)
     {
-        _mqttClient = client;
+        MqttClient = client;
     }
 
     public void SetController(ControllerState controllerState)
@@ -328,11 +328,6 @@ public class PrototypeClient : IDisposable
             return;
         }
 
-        lock (_stateLock)
-        {
-            State = new();
-        }
-
         // Put all the += here
 
         _subscribed = true;
@@ -354,15 +349,22 @@ public class PrototypeClient : IDisposable
     {
         if (disposing)
         {
-            _mqttClient.DisconnectAsync().RunSynchronously();
+            MqttClient.DisconnectAsync().RunSynchronously();
             DisableControllerChangeMonitoring();
-            _mqttClient.Dispose();
+            MqttClient.Dispose();
         }
     }
 
-    public void Dispose()
+    protected virtual async ValueTask DisposeAsyncCore()
     {
-        Dispose(true);
+        await MqttClient.DisconnectAsync().ConfigureAwait(false);
+        DisableControllerChangeMonitoring();
+        MqttClient.Dispose();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await DisposeAsyncCore();
         GC.SuppressFinalize(this);
     }
 
