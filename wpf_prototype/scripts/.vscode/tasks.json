@@ -20,6 +20,15 @@
                 "-d",
                 "-X"
             ]
+        },
+        {
+            "label": "Log All Messages",
+            "command": "dotnet",
+            "type": "process",
+            "args": [
+                "script",
+                "LogAllMessages.csx"
+            ]
         }
     ]
 }
