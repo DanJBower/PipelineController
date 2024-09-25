@@ -1,4 +1,5 @@
-﻿using Makaretu.Dns;
+﻿using Controller;
+using Makaretu.Dns;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Formatter;
@@ -134,6 +135,9 @@ static async Task SetInitialValues()
         {Topics.LeftTriggerTopicAlias, ServerDataConverter.ExtractBytes(0f)},
         {Topics.RightBumperTopicAlias, ServerDataConverter.ExtractBytes(false)},
         {Topics.RightTriggerTopicAlias, ServerDataConverter.ExtractBytes(0f)},
+        {Topics.LeftStickTopicAlias, ServerDataConverter.ExtractBytes((0f, 0f))},
+        {Topics.RightStickTopicAlias, ServerDataConverter.ExtractBytes((0f, 0f))},
+        {Topics.FullTopicAlias, ServerDataConverter.ExtractBytes(new ControllerState())},
     };
 
     var mqttFactory = new MqttFactory();
