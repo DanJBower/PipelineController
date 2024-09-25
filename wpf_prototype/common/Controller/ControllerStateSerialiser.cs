@@ -28,12 +28,11 @@ public static class ControllerStateSerialiser
     private const int LeftTriggerPosition = LeftBumperPosition + BoolSize;
     private const int RightBumperPosition = LeftTriggerPosition + FloatSize;
     private const int RightTriggerPosition = RightBumperPosition + BoolSize;
-    private const int EndPosition = RightTriggerPosition + FloatSize;
 
     public static ControllerState DeserialiseControllerState(ReadOnlySpan<byte> data)
     {
         return new ControllerState(
-            Start: BitConverter.ToBoolean(data[StartPosition..SelectPosition]),
+            Start: BitConverter.ToBoolean(data[..SelectPosition]),
             Select: BitConverter.ToBoolean(data[SelectPosition..HomePosition]),
             Home: BitConverter.ToBoolean(data[HomePosition..BigHomePosition]),
             BigHome: BitConverter.ToBoolean(data[BigHomePosition..XPosition]),
@@ -54,7 +53,7 @@ public static class ControllerStateSerialiser
             LeftBumper: BitConverter.ToBoolean(data[LeftBumperPosition..LeftTriggerPosition]),
             LeftTrigger: BitConverter.ToSingle(data[LeftTriggerPosition..RightBumperPosition]),
             RightBumper: BitConverter.ToBoolean(data[RightBumperPosition..RightTriggerPosition]),
-            RightTrigger: BitConverter.ToSingle(data[RightTriggerPosition..EndPosition])
+            RightTrigger: BitConverter.ToSingle(data[RightTriggerPosition..])
         );
     }
 
