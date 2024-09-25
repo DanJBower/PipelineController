@@ -1,6 +1,6 @@
 ﻿namespace Controller;
 
-public static class ControllerStateUtility
+public static class ControllerStateSerialiser
 {
     private const int FloatSize = sizeof(float);
     private const int BoolSize = sizeof(bool);

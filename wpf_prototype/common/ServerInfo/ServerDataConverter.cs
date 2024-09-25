@@ -49,7 +49,7 @@ public static class ServerDataConverter
         {FloatAlias, data => BitConverter.ToSingle(data)},
         {DoubleAlias, data => BitConverter.ToDouble(data)},
 
-        {ControllerStateAlias, data => ControllerStateUtility.DeserialiseControllerState(data)},
+        {ControllerStateAlias, data => ControllerStateSerialiser.DeserialiseControllerState(data)},
     };
 
     public static (DateTime, dynamic) ExtractData(byte[] data)
@@ -92,7 +92,7 @@ public static class ServerDataConverter
         {typeof(float), data => TagData(FloatAlias, BitConverter.GetBytes(data))},
         {typeof(double), data => TagData(DoubleAlias, BitConverter.GetBytes(data))},
 
-        {typeof(ControllerState), data => TagData(ControllerStateAlias, ControllerStateUtility.SerialiseControllerState(data))},
+        {typeof(ControllerState), data => TagData(ControllerStateAlias, ControllerStateSerialiser.SerialiseControllerState(data))},
     };
 
     private static byte[] TagData(byte typeAlias, byte[] data)
