@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using Controller;
+using System.Text;
 
 namespace ServerInfo;
 
@@ -24,6 +25,8 @@ public static class ServerDataConverter
     public const byte FloatAlias = 12;
     public const byte DoubleAlias = 13;
 
+    public const byte ControllerStateAlias = 14;
+
     private static readonly object None = new();
 
     private static readonly Dictionary<byte, Func<byte[], dynamic>> ByteToType = new()
@@ -45,6 +48,8 @@ public static class ServerDataConverter
         {HalfAlias, data => BitConverter.ToHalf(data)},
         {FloatAlias, data => BitConverter.ToSingle(data)},
         {DoubleAlias, data => BitConverter.ToDouble(data)},
+
+        {ControllerStateAlias, data => ControllerStateUtility.DeserialiseControllerState(data)},
     };
 
     public static (DateTime, dynamic) ExtractData(byte[] data)
@@ -86,6 +91,8 @@ public static class ServerDataConverter
         {typeof(Half), data => TagData(HalfAlias, BitConverter.GetBytes(data))},
         {typeof(float), data => TagData(FloatAlias, BitConverter.GetBytes(data))},
         {typeof(double), data => TagData(DoubleAlias, BitConverter.GetBytes(data))},
+
+        {typeof(ControllerState), data => TagData(ControllerStateAlias, ControllerStateUtility.SerialiseControllerState(data))},
     };
 
     private static byte[] TagData(byte typeAlias, byte[] data)

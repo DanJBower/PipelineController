@@ -16,4 +16,8 @@
         <Version Condition=" '$(pipelinePackageVersion)' == '' ">1.0.0</Version>
     </PropertyGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\Controller\Controller.csproj" />
+    </ItemGroup>
+
 </Project>
