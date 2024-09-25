@@ -17,55 +17,530 @@ public class PrototypeClient : IAsyncDisposable
 
         TriggerControllerEventActions = new()
         {
-            {Topics.StartTopicAlias, (timestamp, data) => StartUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.SelectTopicAlias, (timestamp, data) => SelectUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.HomeTopicAlias, (timestamp, data) => HomeUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.BigHomeTopicAlias, (timestamp, data) => BigHomeUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.XTopicAlias, (timestamp, data) => XUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.YTopicAlias, (timestamp, data) => YUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.ATopicAlias, (timestamp, data) => AUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.BTopicAlias, (timestamp, data) => BUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.UpTopicAlias, (timestamp, data) => UpUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.RightTopicAlias, (timestamp, data) => RightUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.DownTopicAlias, (timestamp, data) => DownUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.LeftTopicAlias, (timestamp, data) => LeftUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.LeftStickXTopicAlias, (timestamp, data) => LeftStickXUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.LeftStickYTopicAlias, (timestamp, data) => LeftStickYUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.LeftStickInTopicAlias, (timestamp, data) => LeftStickInUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.RightStickXTopicAlias, (timestamp, data) => RightStickXUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.RightStickYTopicAlias, (timestamp, data) => RightStickYUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.RightStickInTopicAlias, (timestamp, data) => RightStickInUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.LeftBumperTopicAlias, (timestamp, data) => LeftBumperUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.LeftTriggerTopicAlias, (timestamp, data) => LeftTriggerUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.RightBumperTopicAlias, (timestamp, data) => RightBumperUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
-            {Topics.RightTriggerTopicAlias, (timestamp, data) => RightTriggerUpdated?.Invoke(this, new() {NewValue = data, TimeStamp = timestamp})},
+            {Topics.StartTopicAlias, (timestamp, data) => OnStartUpdated(timestamp, data)},
+            {Topics.SelectTopicAlias, (timestamp, data) => OnSelectUpdated(timestamp, data)},
+            {Topics.HomeTopicAlias, (timestamp, data) => OnHomeUpdated(timestamp, data)},
+            {Topics.BigHomeTopicAlias, (timestamp, data) => OnBigHomeUpdated(timestamp, data)},
+            {Topics.XTopicAlias, (timestamp, data) => OnXUpdated(timestamp, data)},
+            {Topics.YTopicAlias, (timestamp, data) => OnYUpdated(timestamp, data)},
+            {Topics.ATopicAlias, (timestamp, data) => OnAUpdated(timestamp, data)},
+            {Topics.BTopicAlias, (timestamp, data) => OnBUpdated(timestamp, data)},
+            {Topics.UpTopicAlias, (timestamp, data) => OnUpUpdated(timestamp, data)},
+            {Topics.RightTopicAlias, (timestamp, data) => OnRightUpdated(timestamp, data)},
+            {Topics.DownTopicAlias, (timestamp, data) => OnDownUpdated(timestamp, data)},
+            {Topics.LeftTopicAlias, (timestamp, data) => OnLeftUpdated(timestamp, data)},
+            {Topics.LeftStickXTopicAlias, (timestamp, data) => OnLeftStickXUpdated(timestamp, data)},
+            {Topics.LeftStickYTopicAlias, (timestamp, data) => OnLeftStickYUpdated(timestamp, data)},
+            {Topics.LeftStickInTopicAlias, (timestamp, data) => OnLeftStickInUpdated(timestamp, data)},
+            {Topics.RightStickXTopicAlias, (timestamp, data) => OnRightStickXUpdated(timestamp, data)},
+            {Topics.RightStickYTopicAlias, (timestamp, data) => OnRightStickYUpdated(timestamp, data)},
+            {Topics.RightStickInTopicAlias, (timestamp, data) => OnRightStickInUpdated(timestamp, data)},
+            {Topics.LeftBumperTopicAlias, (timestamp, data) => OnLeftBumperUpdated(timestamp, data)},
+            {Topics.LeftTriggerTopicAlias, (timestamp, data) => OnLeftTriggerUpdated(timestamp, data)},
+            {Topics.RightBumperTopicAlias, (timestamp, data) => OnRightBumperUpdated(timestamp, data)},
+            {Topics.RightTriggerTopicAlias, (timestamp, data) => OnRightTriggerUpdated(timestamp, data)},
+            {Topics.FullTopicAlias, (timestamp, data) => OnFullControllerUpdated(timestamp, data)},
+            {Topics.LeftStickTopicAlias, (timestamp, data) => OnLeftStickUpdated(timestamp, data)},
+            {Topics.RightStickTopicAlias, (timestamp, data) => OnRightStickUpdated(timestamp, data)},
         };
     }
 
+    private void OnFullControllerUpdated(DateTime timestamp, ControllerState state)
+    {
+        var updated = false;
+        var startUpdated = false;
+        var selectUpdated = false;
+        var homeUpdated = false;
+        var bigHomeUpdated = false;
+        var xUpdated = false;
+        var yUpdated = false;
+        var aUpdated = false;
+        var bUpdated = false;
+        var upUpdated = false;
+        var rightUpdated = false;
+        var downUpdated = false;
+        var leftUpdated = false;
+        var leftStickXUpdated = false;
+        var leftStickYUpdated = false;
+        var leftStickInUpdated = false;
+        var rightStickXUpdated = false;
+        var rightStickYUpdated = false;
+        var rightStickInUpdated = false;
+        var leftBumperUpdated = false;
+        var leftTriggerUpdated = false;
+        var rightBumperUpdated = false;
+        var rightTriggerUpdated = false;
+
+        bool
+            start,
+            select,
+            home,
+            bigHome,
+            x,
+            y,
+            a,
+            b,
+            up,
+            right,
+            down,
+            left,
+            leftStickIn,
+            rightStickIn,
+            leftBumper,
+            rightBumper;
+
+        float
+            leftStickX,
+            leftStickY,
+            rightStickX,
+            rightStickY,
+            leftTrigger,
+            rightTrigger;
+
+        ControllerState newState;
+
+        lock (_stateLock)
+        {
+            (start, select, home, bigHome,
+                x, y, a, b,
+                up, right, down, left,
+                leftStickX, leftStickY, leftStickIn,
+                rightStickX, rightStickY, rightStickIn,
+                leftBumper, leftTrigger,
+                rightBumper, rightTrigger) = ControllerState;
+
+            if (timestamp > StartLastUpdated)
+            {
+                start = state.Start;
+                StartLastUpdated = timestamp;
+                updated = true;
+                startUpdated = true;
+            }
+
+            if (timestamp > SelectLastUpdated)
+            {
+                select = state.Select;
+                SelectLastUpdated = timestamp;
+                updated = true;
+                selectUpdated = true;
+            }
+
+            if (timestamp > HomeLastUpdated)
+            {
+                home = state.Home;
+                HomeLastUpdated = timestamp;
+                updated = true;
+                homeUpdated = true;
+            }
+
+            if (timestamp > BigHomeLastUpdated)
+            {
+                bigHome = state.BigHome;
+                BigHomeLastUpdated = timestamp;
+                updated = true;
+                bigHomeUpdated = true;
+            }
+
+            if (timestamp > XLastUpdated)
+            {
+                x = state.X;
+                XLastUpdated = timestamp;
+                updated = true;
+                xUpdated = true;
+            }
+
+            if (timestamp > YLastUpdated)
+            {
+                y = state.Y;
+                YLastUpdated = timestamp;
+                updated = true;
+                yUpdated = true;
+            }
+
+            if (timestamp > ALastUpdated)
+            {
+                a = state.A;
+                ALastUpdated = timestamp;
+                updated = true;
+                aUpdated = true;
+            }
+
+            if (timestamp > BLastUpdated)
+            {
+                b = state.B;
+                BLastUpdated = timestamp;
+                updated = true;
+                bUpdated = true;
+            }
+
+            if (timestamp > UpLastUpdated)
+            {
+                up = state.Up;
+                UpLastUpdated = timestamp;
+                updated = true;
+                upUpdated = true;
+            }
+
+            if (timestamp > RightLastUpdated)
+            {
+                right = state.Right;
+                RightLastUpdated = timestamp;
+                updated = true;
+                rightUpdated = true;
+            }
+
+            if (timestamp > DownLastUpdated)
+            {
+                down = state.Down;
+                DownLastUpdated = timestamp;
+                updated = true;
+                downUpdated = true;
+            }
+
+            if (timestamp > LeftLastUpdated)
+            {
+                left = state.Left;
+                LeftLastUpdated = timestamp;
+                updated = true;
+                leftUpdated = true;
+            }
+
+            if (timestamp > LeftStickXLastUpdated)
+            {
+                leftStickX = state.LeftStickX;
+                LeftStickXLastUpdated = timestamp;
+                updated = true;
+                leftStickXUpdated = true;
+            }
+
+            if (timestamp > LeftStickYLastUpdated)
+            {
+                leftStickY = state.LeftStickY;
+                LeftStickYLastUpdated = timestamp;
+                updated = true;
+                leftStickYUpdated = true;
+            }
+
+            if (timestamp > LeftStickInLastUpdated)
+            {
+                leftStickIn = state.LeftStickIn;
+                LeftStickInLastUpdated = timestamp;
+                updated = true;
+                leftStickInUpdated = true;
+            }
+
+            if (timestamp > RightStickXLastUpdated)
+            {
+                rightStickX = state.RightStickX;
+                RightStickXLastUpdated = timestamp;
+                updated = true;
+                rightStickXUpdated = true;
+            }
+
+            if (timestamp > RightStickYLastUpdated)
+            {
+                rightStickY = state.RightStickY;
+                RightStickYLastUpdated = timestamp;
+                updated = true;
+                rightStickYUpdated = true;
+            }
+
+            if (timestamp > RightStickInLastUpdated)
+            {
+                rightStickIn = state.RightStickIn;
+                RightStickInLastUpdated = timestamp;
+                updated = true;
+                rightStickInUpdated = true;
+            }
+
+            if (timestamp > LeftBumperLastUpdated)
+            {
+                leftBumper = state.LeftBumper;
+                LeftBumperLastUpdated = timestamp;
+                updated = true;
+                leftBumperUpdated = true;
+            }
+
+            if (timestamp > LeftTriggerLastUpdated)
+            {
+                leftTrigger = state.LeftTrigger;
+                LeftTriggerLastUpdated = timestamp;
+                updated = true;
+                leftTriggerUpdated = true;
+            }
+
+            if (timestamp > RightBumperLastUpdated)
+            {
+                rightBumper = state.RightBumper;
+                RightBumperLastUpdated = timestamp;
+                updated = true;
+                rightBumperUpdated = true;
+            }
+
+            if (timestamp > RightTriggerLastUpdated)
+            {
+                rightTrigger = state.RightTrigger;
+                RightTriggerLastUpdated = timestamp;
+                updated = true;
+                rightTriggerUpdated = true;
+            }
+
+            ControllerState = new(
+                Start: start,
+                Select: select,
+                Home: home,
+                BigHome: bigHome,
+                X: x,
+                Y: y,
+                A: a,
+                B: b,
+                Up: up,
+                Right: right,
+                Down: down,
+                Left: left,
+                LeftStickX: leftStickX,
+                LeftStickY: leftStickY,
+                LeftStickIn: leftStickIn,
+                RightStickX: rightStickX,
+                RightStickY: rightStickY,
+                RightStickIn: rightStickIn,
+                LeftBumper: leftBumper,
+                LeftTrigger: leftTrigger,
+                RightBumper: rightBumper,
+                RightTrigger: rightTrigger);
+            newState = ControllerState;
+
+            if (timestamp > ControllerStateLastUpdated)
+            {
+                ControllerStateLastUpdated = timestamp;
+            }
+        }
+
+        if (updated)
+        {
+            if (startUpdated)
+            {
+                StartUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = start,
+                });
+            }
+
+            if (selectUpdated)
+            {
+                SelectUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = select,
+                });
+            }
+
+            if (homeUpdated)
+            {
+                HomeUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = home,
+                });
+            }
+
+            if (bigHomeUpdated)
+            {
+                BigHomeUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = bigHome,
+                });
+            }
+
+            if (xUpdated)
+            {
+                XUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = x,
+                });
+            }
+
+            if (yUpdated)
+            {
+                YUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = y,
+                });
+            }
+
+            if (aUpdated)
+            {
+                AUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = a,
+                });
+            }
+
+            if (bUpdated)
+            {
+                BUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = b,
+                });
+            }
+
+            if (upUpdated)
+            {
+                UpUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = up,
+                });
+            }
+
+            if (rightUpdated)
+            {
+                RightUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = right,
+                });
+            }
+
+            if (downUpdated)
+            {
+                DownUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = down,
+                });
+            }
+
+            if (leftUpdated)
+            {
+                LeftUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = left,
+                });
+            }
+
+            if (leftStickXUpdated)
+            {
+                LeftStickXUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = leftStickX,
+                });
+            }
+
+            if (leftStickYUpdated)
+            {
+                LeftStickYUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = leftStickY,
+                });
+            }
+
+            if (leftStickInUpdated)
+            {
+                LeftStickInUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = leftStickIn,
+                });
+            }
+
+            if (rightStickXUpdated)
+            {
+                RightStickXUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = rightStickX,
+                });
+            }
+
+            if (rightStickYUpdated)
+            {
+                RightStickYUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = rightStickY,
+                });
+            }
+
+            if (rightStickInUpdated)
+            {
+                RightStickInUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = rightStickIn,
+                });
+            }
+
+            if (leftBumperUpdated)
+            {
+                LeftBumperUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = leftBumper,
+                });
+            }
+
+            if (leftTriggerUpdated)
+            {
+                LeftTriggerUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = leftTrigger,
+                });
+            }
+
+            if (rightBumperUpdated)
+            {
+                RightBumperUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = rightBumper,
+                });
+            }
+
+            if (rightTriggerUpdated)
+            {
+                RightTriggerUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = rightTrigger,
+                });
+            }
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timestamp,
+                NewValue = newState,
+            });
+        }
+    }
+
+    private static readonly MqttApplicationMessageBuilder InitialFullMessageBuilder = new MqttApplicationMessageBuilder()
+        .WithTopic(Topics.FullTopic)
+        .WithTopicAlias(Topics.FullTopicAlias)
+        .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+        .WithRetainFlag();
+
+    private static readonly MqttApplicationMessageBuilder AliasedFullMessageBuilder = new MqttApplicationMessageBuilder()
+        .WithTopicAlias(Topics.FullTopicAlias)
+        .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+        .WithRetainFlag();
+
+    private MqttApplicationMessageBuilder _fullMessageBuilder = InitialFullMessageBuilder;
+
     public async Task SetController(ControllerState controllerState)
     {
-        await SetStart(controllerState.Start);
-        await SetSelect(controllerState.Select);
-        await SetHome(controllerState.Home);
-        await SetBigHome(controllerState.BigHome);
-        await SetX(controllerState.X);
-        await SetY(controllerState.Y);
-        await SetA(controllerState.A);
-        await SetB(controllerState.B);
-        await SetUp(controllerState.Up);
-        await SetRight(controllerState.Right);
-        await SetDown(controllerState.Down);
-        await SetLeft(controllerState.Left);
-        await SetLeftStickX(controllerState.LeftStickX);
-        await SetLeftStickY(controllerState.LeftStickY);
-        await SetLeftStickIn(controllerState.LeftStickIn);
-        await SetRightStickX(controllerState.RightStickX);
-        await SetRightStickY(controllerState.RightStickY);
-        await SetRightStickIn(controllerState.RightStickIn);
-        await SetLeftBumper(controllerState.LeftBumper);
-        await SetLeftTrigger(controllerState.LeftTrigger);
-        await SetRightBumper(controllerState.RightBumper);
-        await SetRightTrigger(controllerState.RightTrigger);
+        await SendMessage(_fullMessageBuilder, controllerState);
+        _fullMessageBuilder = AliasedFullMessageBuilder;
     }
 
     public async Task SetController(
@@ -203,16 +678,190 @@ public class PrototypeClient : IAsyncDisposable
         }
     }
 
-    public async Task SetLeftStick(float x, float y)
+    private static readonly MqttApplicationMessageBuilder InitialLeftStickMessageBuilder = new MqttApplicationMessageBuilder()
+        .WithTopic(Topics.LeftStickTopic)
+        .WithTopicAlias(Topics.LeftStickTopicAlias)
+        .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+        .WithRetainFlag();
+
+    private static readonly MqttApplicationMessageBuilder AliasedLeftStickMessageBuilder = new MqttApplicationMessageBuilder()
+        .WithTopicAlias(Topics.LeftStickTopicAlias)
+        .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+        .WithRetainFlag();
+
+    private MqttApplicationMessageBuilder _leftStickMessageBuilder = InitialLeftStickMessageBuilder;
+
+    public async Task SetLeftStick((float x, float y) leftStick)
     {
-        await SetLeftStickX(x);
-        await SetLeftStickY(y);
+        await SendMessage(_leftStickMessageBuilder, leftStick);
+        _leftStickMessageBuilder = AliasedLeftStickMessageBuilder;
     }
 
-    public async Task SetRightStick(float x, float y)
+    private void OnLeftStickUpdated(DateTime timestamp, ControllerState state)
     {
-        await SetRightStickX(x);
-        await SetRightStickY(y);
+        var updated = false;
+        var xUpdated = false;
+        var yUpdated = false;
+
+        float
+            x,
+            y;
+
+        ControllerState newState;
+
+        lock (_stateLock)
+        {
+            x = ControllerState.LeftStickX;
+            y = ControllerState.LeftStickY;
+
+            if (timestamp > LeftStickXLastUpdated)
+            {
+                x = state.LeftStickX;
+                LeftStickXLastUpdated = timestamp;
+                updated = true;
+                xUpdated = true;
+            }
+
+            if (timestamp > LeftStickYLastUpdated)
+            {
+                y = state.LeftStickY;
+                LeftStickYLastUpdated = timestamp;
+                updated = true;
+                yUpdated = true;
+            }
+
+            ControllerState = ControllerState with
+            {
+                LeftStickX = x,
+                LeftStickY = y,
+            };
+            newState = ControllerState;
+
+            if (timestamp > ControllerStateLastUpdated)
+            {
+                ControllerStateLastUpdated = timestamp;
+            }
+        }
+
+        if (updated)
+        {
+            if (xUpdated)
+            {
+                LeftStickXUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = x,
+                });
+            }
+
+            if (yUpdated)
+            {
+                LeftStickYUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = y,
+                });
+            }
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timestamp,
+                NewValue = newState,
+            });
+        }
+    }
+
+    private static readonly MqttApplicationMessageBuilder InitialRightStickMessageBuilder = new MqttApplicationMessageBuilder()
+        .WithTopic(Topics.RightStickTopic)
+        .WithTopicAlias(Topics.RightStickTopicAlias)
+        .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+        .WithRetainFlag();
+
+    private static readonly MqttApplicationMessageBuilder AliasedRightStickMessageBuilder = new MqttApplicationMessageBuilder()
+        .WithTopicAlias(Topics.RightStickTopicAlias)
+        .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+        .WithRetainFlag();
+
+    private MqttApplicationMessageBuilder _rightStickMessageBuilder = InitialRightStickMessageBuilder;
+
+    public async Task SetRightStick((float x, float y) rightStick)
+    {
+        await SendMessage(_rightStickMessageBuilder, rightStick);
+        _rightStickMessageBuilder = AliasedRightStickMessageBuilder;
+    }
+
+    private void OnRightStickUpdated(DateTime timestamp, ControllerState state)
+    {
+        var updated = false;
+        var xUpdated = false;
+        var yUpdated = false;
+
+        float
+            x,
+            y;
+
+        ControllerState newState;
+
+        lock (_stateLock)
+        {
+            x = ControllerState.RightStickX;
+            y = ControllerState.RightStickY;
+
+            if (timestamp > RightStickXLastUpdated)
+            {
+                x = state.RightStickX;
+                RightStickXLastUpdated = timestamp;
+                updated = true;
+                xUpdated = true;
+            }
+
+            if (timestamp > RightStickYLastUpdated)
+            {
+                y = state.RightStickY;
+                RightStickYLastUpdated = timestamp;
+                updated = true;
+                yUpdated = true;
+            }
+
+            ControllerState = ControllerState with
+            {
+                RightStickX = x,
+                RightStickY = y,
+            };
+            newState = ControllerState;
+
+            if (timestamp > ControllerStateLastUpdated)
+            {
+                ControllerStateLastUpdated = timestamp;
+            }
+        }
+
+        if (updated)
+        {
+            if (xUpdated)
+            {
+                RightStickXUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = x,
+                });
+            }
+
+            if (yUpdated)
+            {
+                RightStickYUpdated?.Invoke(this, new()
+                {
+                    TimeStamp = timestamp,
+                    NewValue = y,
+                });
+            }
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timestamp,
+                NewValue = newState,
+            });
+        }
     }
 
     public DateTime ControllerStateLastUpdated { get; private set; }
@@ -251,26 +900,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime StartLastUpdated { get; private set; }
 
-    private void OnStartUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnStartUpdated(DateTime timeStamp, bool start)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > StartLastUpdated)
+            if (timeStamp > StartLastUpdated)
             {
-                ControllerState = ControllerState with { Start = newValue.NewValue };
-                StartLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { Start = start };
+                state = ControllerState;
+                StartLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            StartUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = start,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -297,26 +962,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime SelectLastUpdated { get; private set; }
 
-    private void OnSelectUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnSelectUpdated(DateTime timeStamp, bool select)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > SelectLastUpdated)
+            if (timeStamp > SelectLastUpdated)
             {
-                ControllerState = ControllerState with { Select = newValue.NewValue };
-                SelectLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { Select = select };
+                state = ControllerState;
+                SelectLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            SelectUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = select,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -343,26 +1024,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime HomeLastUpdated { get; private set; }
 
-    private void OnHomeUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnHomeUpdated(DateTime timeStamp, bool home)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > HomeLastUpdated)
+            if (timeStamp > HomeLastUpdated)
             {
-                ControllerState = ControllerState with { Home = newValue.NewValue };
-                HomeLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { Home = home };
+                state = ControllerState;
+                HomeLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            HomeUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = home,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -389,26 +1086,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime BigHomeLastUpdated { get; private set; }
 
-    private void OnBigHomeUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnBigHomeUpdated(DateTime timeStamp, bool bigHome)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > BigHomeLastUpdated)
+            if (timeStamp > BigHomeLastUpdated)
             {
-                ControllerState = ControllerState with { BigHome = newValue.NewValue };
-                BigHomeLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { BigHome = bigHome };
+                state = ControllerState;
+                BigHomeLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            BigHomeUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = bigHome,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -435,26 +1148,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime XLastUpdated { get; private set; }
 
-    private void OnXUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnXUpdated(DateTime timeStamp, bool x)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > XLastUpdated)
+            if (timeStamp > XLastUpdated)
             {
-                ControllerState = ControllerState with { X = newValue.NewValue };
-                XLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { X = x };
+                state = ControllerState;
+                XLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            XUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = x,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -481,26 +1210,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime YLastUpdated { get; private set; }
 
-    private void OnYUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnYUpdated(DateTime timeStamp, bool y)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > YLastUpdated)
+            if (timeStamp > YLastUpdated)
             {
-                ControllerState = ControllerState with { Y = newValue.NewValue };
-                YLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { Y = y };
+                state = ControllerState;
+                YLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            YUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = y,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -527,26 +1272,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime ALastUpdated { get; private set; }
 
-    private void OnAUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnAUpdated(DateTime timeStamp, bool a)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > ALastUpdated)
+            if (timeStamp > ALastUpdated)
             {
-                ControllerState = ControllerState with { A = newValue.NewValue };
-                ALastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { A = a };
+                state = ControllerState;
+                ALastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            AUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = a,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -573,26 +1334,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime BLastUpdated { get; private set; }
 
-    private void OnBUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnBUpdated(DateTime timeStamp, bool b)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > BLastUpdated)
+            if (timeStamp > BLastUpdated)
             {
-                ControllerState = ControllerState with { B = newValue.NewValue };
-                BLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { B = b };
+                state = ControllerState;
+                BLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            BUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = b,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -619,26 +1396,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime UpLastUpdated { get; private set; }
 
-    private void OnUpUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnUpUpdated(DateTime timeStamp, bool up)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > UpLastUpdated)
+            if (timeStamp > UpLastUpdated)
             {
-                ControllerState = ControllerState with { Up = newValue.NewValue };
-                UpLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { Up = up };
+                state = ControllerState;
+                UpLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            UpUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = up,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -665,26 +1458,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime RightLastUpdated { get; private set; }
 
-    private void OnRightUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnRightUpdated(DateTime timeStamp, bool right)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > RightLastUpdated)
+            if (timeStamp > RightLastUpdated)
             {
-                ControllerState = ControllerState with { Right = newValue.NewValue };
-                RightLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { Right = right };
+                state = ControllerState;
+                RightLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            RightUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = right,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -711,26 +1520,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime DownLastUpdated { get; private set; }
 
-    private void OnDownUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnDownUpdated(DateTime timeStamp, bool down)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > DownLastUpdated)
+            if (timeStamp > DownLastUpdated)
             {
-                ControllerState = ControllerState with { Down = newValue.NewValue };
-                DownLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { Down = down };
+                state = ControllerState;
+                DownLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            DownUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = down,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -757,26 +1582,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime LeftLastUpdated { get; private set; }
 
-    private void OnLeftUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnLeftUpdated(DateTime timeStamp, bool left)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > LeftLastUpdated)
+            if (timeStamp > LeftLastUpdated)
             {
-                ControllerState = ControllerState with { Left = newValue.NewValue };
-                LeftLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { Left = left };
+                state = ControllerState;
+                LeftLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            LeftUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = left,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -803,26 +1644,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime LeftStickXLastUpdated { get; private set; }
 
-    private void OnLeftStickXUpdated(object? sender, ValueUpdatedEventArgs<float> newValue)
+    private void OnLeftStickXUpdated(DateTime timeStamp, float leftStickX)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > LeftStickXLastUpdated)
+            if (timeStamp > LeftStickXLastUpdated)
             {
-                ControllerState = ControllerState with { LeftStickX = newValue.NewValue };
-                LeftStickXLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { LeftStickX = leftStickX };
+                state = ControllerState;
+                LeftStickXLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            LeftStickXUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = leftStickX,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -849,26 +1706,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime LeftStickYLastUpdated { get; private set; }
 
-    private void OnLeftStickYUpdated(object? sender, ValueUpdatedEventArgs<float> newValue)
+    private void OnLeftStickYUpdated(DateTime timeStamp, float leftStickY)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > LeftStickYLastUpdated)
+            if (timeStamp > LeftStickYLastUpdated)
             {
-                ControllerState = ControllerState with { LeftStickY = newValue.NewValue };
-                LeftStickYLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { LeftStickY = leftStickY };
+                state = ControllerState;
+                LeftStickYLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            LeftStickYUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = leftStickY,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -895,26 +1768,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime LeftStickInLastUpdated { get; private set; }
 
-    private void OnLeftStickInUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnLeftStickInUpdated(DateTime timeStamp, bool leftStickIn)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > LeftStickInLastUpdated)
+            if (timeStamp > LeftStickInLastUpdated)
             {
-                ControllerState = ControllerState with { LeftStickIn = newValue.NewValue };
-                LeftStickInLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { LeftStickIn = leftStickIn };
+                state = ControllerState;
+                LeftStickInLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            LeftStickInUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = leftStickIn,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -941,26 +1830,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime RightStickXLastUpdated { get; private set; }
 
-    private void OnRightStickXUpdated(object? sender, ValueUpdatedEventArgs<float> newValue)
+    private void OnRightStickXUpdated(DateTime timeStamp, float rightStickX)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > RightStickXLastUpdated)
+            if (timeStamp > RightStickXLastUpdated)
             {
-                ControllerState = ControllerState with { RightStickX = newValue.NewValue };
-                RightStickXLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { RightStickX = rightStickX };
+                state = ControllerState;
+                RightStickXLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            RightStickXUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = rightStickX,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -987,26 +1892,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime RightStickYLastUpdated { get; private set; }
 
-    private void OnRightStickYUpdated(object? sender, ValueUpdatedEventArgs<float> newValue)
+    private void OnRightStickYUpdated(DateTime timeStamp, float rightStickY)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > RightStickYLastUpdated)
+            if (timeStamp > RightStickYLastUpdated)
             {
-                ControllerState = ControllerState with { RightStickY = newValue.NewValue };
-                RightStickYLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { RightStickY = rightStickY };
+                state = ControllerState;
+                RightStickYLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            RightStickYUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = rightStickY,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -1033,26 +1954,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime RightStickInLastUpdated { get; private set; }
 
-    private void OnRightStickInUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnRightStickInUpdated(DateTime timeStamp, bool rightStickIn)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > RightStickInLastUpdated)
+            if (timeStamp > RightStickInLastUpdated)
             {
-                ControllerState = ControllerState with { RightStickIn = newValue.NewValue };
-                RightStickInLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { RightStickIn = rightStickIn };
+                state = ControllerState;
+                RightStickInLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            RightStickInUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = rightStickIn,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -1079,26 +2016,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime LeftBumperLastUpdated { get; private set; }
 
-    private void OnLeftBumperUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnLeftBumperUpdated(DateTime timeStamp, bool leftBumper)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > LeftBumperLastUpdated)
+            if (timeStamp > LeftBumperLastUpdated)
             {
-                ControllerState = ControllerState with { LeftBumper = newValue.NewValue };
-                LeftBumperLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { LeftBumper = leftBumper };
+                state = ControllerState;
+                LeftBumperLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            LeftBumperUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = leftBumper,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -1125,26 +2078,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime LeftTriggerLastUpdated { get; private set; }
 
-    private void OnLeftTriggerUpdated(object? sender, ValueUpdatedEventArgs<float> newValue)
+    private void OnLeftTriggerUpdated(DateTime timeStamp, float leftTrigger)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > LeftTriggerLastUpdated)
+            if (timeStamp > LeftTriggerLastUpdated)
             {
-                ControllerState = ControllerState with { LeftTrigger = newValue.NewValue };
-                LeftTriggerLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { LeftTrigger = leftTrigger };
+                state = ControllerState;
+                LeftTriggerLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            LeftTriggerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = leftTrigger,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -1171,26 +2140,42 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime RightBumperLastUpdated { get; private set; }
 
-    private void OnRightBumperUpdated(object? sender, ValueUpdatedEventArgs<bool> newValue)
+    private void OnRightBumperUpdated(DateTime timeStamp, bool rightBumper)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > RightBumperLastUpdated)
+            if (timeStamp > RightBumperLastUpdated)
             {
-                ControllerState = ControllerState with { RightBumper = newValue.NewValue };
-                RightBumperLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { RightBumper = rightBumper };
+                state = ControllerState;
+                RightBumperLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
+        }
+
+        if (updated)
+        {
+            RightBumperUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = rightBumper,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
         }
     }
 
@@ -1217,29 +2202,44 @@ public class PrototypeClient : IAsyncDisposable
 
     public DateTime RightTriggerLastUpdated { get; private set; }
 
-    private void OnRightTriggerUpdated(object? sender, ValueUpdatedEventArgs<float> newValue)
+    private void OnRightTriggerUpdated(DateTime timeStamp, float rightTrigger)
     {
+        var updated = false;
+        ControllerState state = new();
+        DateTime controllerUpdateTime = default;
+
         lock (_stateLock)
         {
-            if (newValue.TimeStamp > RightTriggerLastUpdated)
+            if (timeStamp > RightTriggerLastUpdated)
             {
-                ControllerState = ControllerState with { RightTrigger = newValue.NewValue };
-                RightTriggerLastUpdated = newValue.TimeStamp;
+                controllerUpdateTime = ControllerStateLastUpdated;
+                ControllerState = ControllerState with { RightTrigger = rightTrigger };
+                state = ControllerState;
+                RightTriggerLastUpdated = timeStamp;
+                updated = true;
 
-                ControllerUpdated?.Invoke(sender, new()
+                if (timeStamp > controllerUpdateTime)
                 {
-                    NewValue = ControllerState,
-                    TimeStamp = newValue.TimeStamp,
-                });
-
-                if (newValue.TimeStamp > ControllerStateLastUpdated)
-                {
-                    ControllerStateLastUpdated = newValue.TimeStamp;
+                    controllerUpdateTime = timeStamp;
                 }
             }
         }
-    }
 
+        if (updated)
+        {
+            RightTriggerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = rightTrigger,
+            });
+
+            ControllerUpdated?.Invoke(this, new()
+            {
+                TimeStamp = controllerUpdateTime,
+                NewValue = state,
+            });
+        }
+    }
 
     private readonly object _stateLock = new();
 
@@ -1254,11 +2254,7 @@ public class PrototypeClient : IAsyncDisposable
         if (e.ApplicationMessage.TopicAlias > 0)
         {
             var (timestamp, data) = ServerDataConverter.ExtractData(e.ApplicationMessage.PayloadSegment.Array);
-
-            if (TriggerControllerEventActions.TryGetValue(e.ApplicationMessage.TopicAlias, out var updateAction))
-            {
-                updateAction(timestamp, data);
-            }
+            TriggerControllerEventActions[e.ApplicationMessage.TopicAlias](timestamp, data);
         }
     }
 
@@ -1270,28 +2266,6 @@ public class PrototypeClient : IAsyncDisposable
         }
 
         MqttClient.ApplicationMessageReceivedAsync += MessageReceived;
-        StartUpdated += OnStartUpdated;
-        SelectUpdated += OnSelectUpdated;
-        HomeUpdated += OnHomeUpdated;
-        BigHomeUpdated += OnBigHomeUpdated;
-        XUpdated += OnXUpdated;
-        YUpdated += OnYUpdated;
-        AUpdated += OnAUpdated;
-        BUpdated += OnBUpdated;
-        UpUpdated += OnUpUpdated;
-        RightUpdated += OnRightUpdated;
-        DownUpdated += OnDownUpdated;
-        LeftUpdated += OnLeftUpdated;
-        LeftStickXUpdated += OnLeftStickXUpdated;
-        LeftStickYUpdated += OnLeftStickYUpdated;
-        LeftStickInUpdated += OnLeftStickInUpdated;
-        RightStickXUpdated += OnRightStickXUpdated;
-        RightStickYUpdated += OnRightStickYUpdated;
-        RightStickInUpdated += OnRightStickInUpdated;
-        LeftBumperUpdated += OnLeftBumperUpdated;
-        LeftTriggerUpdated += OnLeftTriggerUpdated;
-        RightBumperUpdated += OnRightBumperUpdated;
-        RightTriggerUpdated += OnRightTriggerUpdated;
 
         foreach (var (_, topic) in Topics.AliasedTopics)
         {
@@ -1313,28 +2287,6 @@ public class PrototypeClient : IAsyncDisposable
         }
 
         MqttClient.ApplicationMessageReceivedAsync -= MessageReceived;
-        StartUpdated -= OnStartUpdated;
-        SelectUpdated -= OnSelectUpdated;
-        HomeUpdated -= OnHomeUpdated;
-        BigHomeUpdated -= OnBigHomeUpdated;
-        XUpdated -= OnXUpdated;
-        YUpdated -= OnYUpdated;
-        AUpdated -= OnAUpdated;
-        BUpdated -= OnBUpdated;
-        UpUpdated -= OnUpUpdated;
-        RightUpdated -= OnRightUpdated;
-        DownUpdated -= OnDownUpdated;
-        LeftUpdated -= OnLeftUpdated;
-        LeftStickXUpdated -= OnLeftStickXUpdated;
-        LeftStickYUpdated -= OnLeftStickYUpdated;
-        LeftStickInUpdated -= OnLeftStickInUpdated;
-        RightStickXUpdated -= OnRightStickXUpdated;
-        RightStickYUpdated -= OnRightStickYUpdated;
-        RightStickInUpdated -= OnRightStickInUpdated;
-        LeftBumperUpdated -= OnLeftBumperUpdated;
-        LeftTriggerUpdated -= OnLeftTriggerUpdated;
-        RightBumperUpdated -= OnRightBumperUpdated;
-        RightTriggerUpdated -= OnRightTriggerUpdated;
 
         foreach (var (_, topic) in Topics.AliasedTopics)
         {

@@ -18,7 +18,7 @@
         <AssemblyVersion Condition=" '$(pipelineAssemblyVersion)' == '' ">1.0.0.0</AssemblyVersion>
         <FileVersion Condition=" '$(pipelineAssemblyVersion)' == '' ">1.0.0.0</FileVersion>
         <Version Condition=" '$(pipelinePackageVersion)' == '' ">1.0.0</Version>
-        <AssemblyName>LogAllMessages</AssemblyName>
+        <AssemblyName>LogAllEvents</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

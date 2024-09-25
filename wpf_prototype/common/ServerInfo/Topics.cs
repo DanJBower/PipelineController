@@ -89,31 +89,44 @@ public static class Topics
     public const string RightTriggerTopic = "controller/RightTrigger";
     public const ushort RightTriggerTopicAlias = 22;
 
-    public static readonly Dictionary<ushort, string> AliasedTopics = [];
 
-    static Topics()
+    public const string FullTopic = "controller/Full";
+    public const ushort FullTopicAlias = 23;
+
+
+    public const string LeftStickTopic = "controller/LeftStick";
+    public const ushort LeftStickTopicAlias = 24;
+
+
+    public const string RightStickTopic = "controller/RightStick";
+    public const ushort RightStickTopicAlias = 25;
+
+    public static readonly Dictionary<ushort, string> AliasedTopics = new()
     {
-        AliasedTopics.Add(StartTopicAlias, StartTopic);
-        AliasedTopics.Add(SelectTopicAlias, SelectTopic);
-        AliasedTopics.Add(HomeTopicAlias, HomeTopic);
-        AliasedTopics.Add(BigHomeTopicAlias, BigHomeTopic);
-        AliasedTopics.Add(XTopicAlias, XTopic);
-        AliasedTopics.Add(YTopicAlias, YTopic);
-        AliasedTopics.Add(ATopicAlias, ATopic);
-        AliasedTopics.Add(BTopicAlias, BTopic);
-        AliasedTopics.Add(UpTopicAlias, UpTopic);
-        AliasedTopics.Add(RightTopicAlias, RightTopic);
-        AliasedTopics.Add(DownTopicAlias, DownTopic);
-        AliasedTopics.Add(LeftTopicAlias, LeftTopic);
-        AliasedTopics.Add(LeftStickXTopicAlias, LeftStickXTopic);
-        AliasedTopics.Add(LeftStickYTopicAlias, LeftStickYTopic);
-        AliasedTopics.Add(LeftStickInTopicAlias, LeftStickInTopic);
-        AliasedTopics.Add(RightStickXTopicAlias, RightStickXTopic);
-        AliasedTopics.Add(RightStickYTopicAlias, RightStickYTopic);
-        AliasedTopics.Add(RightStickInTopicAlias, RightStickInTopic);
-        AliasedTopics.Add(LeftBumperTopicAlias, LeftBumperTopic);
-        AliasedTopics.Add(LeftTriggerTopicAlias, LeftTriggerTopic);
-        AliasedTopics.Add(RightBumperTopicAlias, RightBumperTopic);
-        AliasedTopics.Add(RightTriggerTopicAlias, RightTriggerTopic);
-    }
+        {StartTopicAlias, StartTopic},
+        {SelectTopicAlias, SelectTopic},
+        {HomeTopicAlias, HomeTopic},
+        {BigHomeTopicAlias, BigHomeTopic},
+        {XTopicAlias, XTopic},
+        {YTopicAlias, YTopic},
+        {ATopicAlias, ATopic},
+        {BTopicAlias, BTopic},
+        {UpTopicAlias, UpTopic},
+        {RightTopicAlias, RightTopic},
+        {DownTopicAlias, DownTopic},
+        {LeftTopicAlias, LeftTopic},
+        {LeftStickXTopicAlias, LeftStickXTopic},
+        {LeftStickYTopicAlias, LeftStickYTopic},
+        {LeftStickInTopicAlias, LeftStickInTopic},
+        {RightStickXTopicAlias, RightStickXTopic},
+        {RightStickYTopicAlias, RightStickYTopic},
+        {RightStickInTopicAlias, RightStickInTopic},
+        {LeftBumperTopicAlias, LeftBumperTopic},
+        {LeftTriggerTopicAlias, LeftTriggerTopic},
+        {RightBumperTopicAlias, RightBumperTopic},
+        {RightTriggerTopicAlias, RightTriggerTopic},
+        {FullTopicAlias, FullTopic},
+        {LeftStickTopicAlias, LeftStickTopic},
+        {RightStickTopicAlias, RightStickTopic},
+    };
 }

@@ -26,8 +26,7 @@ public static class ServerDataConverter
     public const byte DoubleAlias = 13;
 
     public const byte ControllerStateAlias = 14;
-
-    private static readonly object None = new();
+    public const byte JoystickStateAlias = 15;
 
     private static readonly Dictionary<byte, Func<byte[], dynamic>> ByteToType = new()
     {
@@ -50,9 +49,10 @@ public static class ServerDataConverter
         {DoubleAlias, data => BitConverter.ToDouble(data)},
 
         {ControllerStateAlias, data => ControllerStateSerialiser.DeserialiseControllerState(data)},
+        {JoystickStateAlias, data => JoystickSerialiser.DeserialiseJoystickState(data)},
     };
 
-    public static (DateTime, dynamic) ExtractData(byte[] data)
+    public static (DateTime, dynamic?) ExtractData(byte[] data)
     {
         var dataType = data[0];
         var timestamp = new DateTime(BitConverter.ToInt64(data.AsSpan()[1..9]));
@@ -69,7 +69,7 @@ public static class ServerDataConverter
             throw new ArgumentException("Could not infer type of data");
         }
 
-        return (timestamp, None);
+        return (timestamp, null);
     }
 
     private static readonly Dictionary<Type, Func<dynamic, byte[]>> TypeToByte = new()
@@ -93,6 +93,7 @@ public static class ServerDataConverter
         {typeof(double), data => TagData(DoubleAlias, BitConverter.GetBytes(data))},
 
         {typeof(ControllerState), data => TagData(ControllerStateAlias, ControllerStateSerialiser.SerialiseControllerState(data))},
+        {typeof((float x, float y)), data => TagData(JoystickStateAlias, JoystickSerialiser.SerialiseJoystickState(data))},
     };
 
     private static byte[] TagData(byte typeAlias, byte[] data)
