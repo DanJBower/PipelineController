@@ -5,5 +5,5 @@
     <SolidColorBrush x:Key="XActiveBrush" Color="#40ccd0" />
     <SolidColorBrush x:Key="YActiveBrush" Color="#ecdb33" />
     <SolidColorBrush x:Key="ButtonActiveBrush" Color="#b24e01" />
-    <SolidColorBrush x:Key="ButtonNotActiveBrush" Color="#1E1E1E" />
+    <SolidColorBrush x:Key="ButtonNotActiveBrush" Color="#282828" />
 </ResourceDictionary>

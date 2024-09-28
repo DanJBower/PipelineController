@@ -9,18 +9,234 @@
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=viewModels:ControllerViewModel, IsDesignTimeCreatable=True}"
              d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Border Padding="10">
+        <Grid IsSharedSizeScope="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-        <Grid Grid.Row="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
+            <Label Grid.Column="0"
+                   Grid.Row="0"
+                   Content="Joysticks"
+                   FontSize="20" />
+
+            <Label Grid.Column="1"
+                   Grid.Row="0"
+                   Content="Bumper/Triggers"
+                   FontSize="20" />
+
+            <Label Grid.Column="0"
+                   Grid.Row="2"
+                   Content="D-Pad"
+                   FontSize="20" />
+
+            <Grid Grid.Column="0"
+                  Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <DockPanel Grid.Column="0"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="Up"
+                               TextWrapping="Wrap"
+                               FontSize="30"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="1"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="Right"
+                               TextWrapping="Wrap"
+                               FontSize="30"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="2"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="Down"
+                               TextWrapping="Wrap"
+                               FontSize="30"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="3"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="Left"
+                               TextWrapping="Wrap"
+                               FontSize="30"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+            </Grid>
+
+
+            <Label Grid.Column="1"
+                   Grid.Row="2"
+                   Content="Action Buttons"
+                   FontSize="20" />
+
+            <Grid Grid.Column="1"
+                  Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <DockPanel Grid.Column="0"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="A"
+                               TextWrapping="Wrap"
+                               FontSize="30"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Foreground="White"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="1"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="B"
+                               TextWrapping="Wrap"
+                               FontSize="30"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Foreground="White"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="2"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="X"
+                               TextWrapping="Wrap"
+                               FontSize="30"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Foreground="White"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="3"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="Y"
+                               TextWrapping="Wrap"
+                               FontSize="30"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               Foreground="White"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+            </Grid>
+
+
+            <Label Grid.Column="0"
+                   Grid.Row="4"
+                   Content="Menu Buttons"
+                   FontSize="20" />
+
+            <Grid Grid.Column="0"
+                  Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <DockPanel Grid.Column="0"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="Start"
+                               FontSize="30"
+                               TextWrapping="Wrap"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="1"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="Select"
+                               FontSize="30"
+                               TextWrapping="Wrap"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="2"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="Touch Pad"
+                               FontSize="30"
+                               TextWrapping="Wrap"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="3"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="Home"
+                               FontSize="30"
+                               TextWrapping="Wrap"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+            </Grid>
         </Grid>
-
-        <Grid Grid.Row="1">
-
-        </Grid>
-    </Grid>
+    </Border>
 </UserControl>
