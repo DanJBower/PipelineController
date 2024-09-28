@@ -3,6 +3,7 @@ using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Formatter;
 using ServerInfo;
+using Timer = System.Timers.Timer;
 
 namespace CommonClient;
 
@@ -13,9 +14,10 @@ namespace CommonClient;
 
 public static class ClientUtilities
 {
-    public static async Task<PrototypeClient> ConnectToClient()
+    public static async Task<PrototypeClient> ConnectToClient(CancellationToken cancellationToken = default)
     {
-        var (ip, port) = await FindClient();
+        cancellationToken.ThrowIfCancellationRequested();
+        var (ip, port) = await FindClient(cancellationToken);
         var factory = new MqttFactory();
         var mqttClient = factory.CreateMqttClient();
 
@@ -24,12 +26,13 @@ public static class ClientUtilities
             .WithProtocolVersion(MqttProtocolVersion.V500)
             .Build();
 
-        await mqttClient.ConnectAsync(options);
+        await mqttClient.ConnectAsync(options, cancellationToken);
         return new(mqttClient);
     }
 
-    private static async Task<(string, int)> FindClient()
+    private static async Task<(string, int)> FindClient(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         var port = 0;
         var tcs = new TaskCompletionSource<(string Address, int Port)>();
         using var mdns = new MulticastService();
@@ -63,8 +66,20 @@ public static class ClientUtilities
         };
 
         mdns.Start();
+
+        using Timer timer = new();
+        timer.Elapsed += (_, _) =>
+        {
+            serviceDiscovery.QueryServiceInstances(ServerConstants.ServiceName);
+        };
+        timer.Interval = 1000;
+        timer.Enabled = true;
+
         serviceDiscovery.QueryServiceInstances(ServerConstants.ServiceName);
 
-        return await tcs.Task;
+        await using (cancellationToken.Register(() => { tcs.TrySetCanceled(); }))
+        {
+            return await tcs.Task;
+        }
     }
 }

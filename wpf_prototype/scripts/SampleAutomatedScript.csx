@@ -14,7 +14,7 @@ using ServerInfo;
     await using var client = await ClientUtilities.ConnectToClient();
     bool nextBVal = true;
 
-    Timer timer = new();
+    using Timer timer = new();
     timer.Elapsed += async (_, _) =>
     {
         WriteLine($"Setting B to {nextBVal}");

@@ -4,94 +4,104 @@ using Controller;
 // Used for monitoring all events happening in the client
 
 Console.WriteLine("Attempting to connect to client");
-await using var client = await ClientUtilities.ConnectToClient();
+using var cancellationTokenSource = new CancellationTokenSource();
+cancellationTokenSource.CancelAfter(20000);
 
-SubscribeToEvent<bool>(client, nameof(client.StartUpdated));
-SubscribeToEvent<bool>(client, nameof(client.SelectUpdated));
-SubscribeToEvent<bool>(client, nameof(client.HomeUpdated));
-SubscribeToEvent<bool>(client, nameof(client.BigHomeUpdated));
-SubscribeToEvent<bool>(client, nameof(client.XUpdated));
-SubscribeToEvent<bool>(client, nameof(client.YUpdated));
-SubscribeToEvent<bool>(client, nameof(client.AUpdated));
-SubscribeToEvent<bool>(client, nameof(client.BUpdated));
-SubscribeToEvent<bool>(client, nameof(client.UpUpdated));
-SubscribeToEvent<bool>(client, nameof(client.RightUpdated));
-SubscribeToEvent<bool>(client, nameof(client.DownUpdated));
-SubscribeToEvent<bool>(client, nameof(client.LeftUpdated));
-SubscribeToEvent<float>(client, nameof(client.LeftStickXUpdated));
-SubscribeToEvent<float>(client, nameof(client.LeftStickYUpdated));
-SubscribeToEvent<bool>(client, nameof(client.LeftStickInUpdated));
-SubscribeToEvent<float>(client, nameof(client.RightStickXUpdated));
-SubscribeToEvent<float>(client, nameof(client.RightStickYUpdated));
-SubscribeToEvent<bool>(client, nameof(client.RightStickInUpdated));
-SubscribeToEvent<bool>(client, nameof(client.LeftBumperUpdated));
-SubscribeToEvent<float>(client, nameof(client.LeftTriggerUpdated));
-SubscribeToEvent<bool>(client, nameof(client.RightBumperUpdated));
-SubscribeToEvent<float>(client, nameof(client.RightTriggerUpdated));
-SubscribeToEvent<ControllerState>(client, nameof(client.ControllerUpdated));
-SubscribeToEvent<bool>(client, nameof(client.DebugLightUpdated));
-await client.EnableControllerChangeMonitoring();
+try
+{
+    await using var client = await ClientUtilities.ConnectToClient(cancellationTokenSource.Token);
 
-Console.WriteLine("Client connected");
+    SubscribeToEvent<bool>(client, nameof(client.StartUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.SelectUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.HomeUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.BigHomeUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.XUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.YUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.AUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.BUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.UpUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.RightUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.DownUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.LeftUpdated));
+    SubscribeToEvent<float>(client, nameof(client.LeftStickXUpdated));
+    SubscribeToEvent<float>(client, nameof(client.LeftStickYUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.LeftStickInUpdated));
+    SubscribeToEvent<float>(client, nameof(client.RightStickXUpdated));
+    SubscribeToEvent<float>(client, nameof(client.RightStickYUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.RightStickInUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.LeftBumperUpdated));
+    SubscribeToEvent<float>(client, nameof(client.LeftTriggerUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.RightBumperUpdated));
+    SubscribeToEvent<float>(client, nameof(client.RightTriggerUpdated));
+    SubscribeToEvent<ControllerState>(client, nameof(client.ControllerUpdated));
+    SubscribeToEvent<bool>(client, nameof(client.DebugLightUpdated));
+    await client.EnableControllerChangeMonitoring();
 
-await SendBool(client, client.SetDebugLight, true);
-await SendBool(client, client.SetStart, true);
-await SendBool(client, client.SetSelect, true);
-await SendBool(client, client.SetHome, true);
-await SendBool(client, client.SetBigHome, true);
-await SendBool(client, client.SetX, true);
-await SendBool(client, client.SetY, true);
-await SendBool(client, client.SetA, true);
-await SendBool(client, client.SetB, true);
-await SendBool(client, client.SetDebugLight, false);
-await SendBool(client, client.SetUp, true);
-await SendBool(client, client.SetRight, true);
-await SendBool(client, client.SetDown, true);
-await SendBool(client, client.SetLeft, true);
-await SendFloat(client, client.SetLeftStickX, 10);
-await SendFloat(client, client.SetLeftStickY, 35);
-await SendBool(client, client.SetLeftStickIn, true);
-await SendFloat(client, client.SetRightStickX, 256);
-await SendFloat(client, client.SetRightStickY, 346);
-await SendBool(client, client.SetRightStickIn, true);
-await SendBool(client, client.SetLeftBumper, true);
-await SendFloat(client, client.SetLeftTrigger, 273);
-await SendBool(client, client.SetRightBumper, true);
-await SendFloat(client, client.SetRightTrigger, 378);
-await SendBool(client, client.SetDebugLight, true);
+    Console.WriteLine("Client connected");
+
+    await SendBool(client, client.SetDebugLight, true);
+    await SendBool(client, client.SetStart, true);
+    await SendBool(client, client.SetSelect, true);
+    await SendBool(client, client.SetHome, true);
+    await SendBool(client, client.SetBigHome, true);
+    await SendBool(client, client.SetX, true);
+    await SendBool(client, client.SetY, true);
+    await SendBool(client, client.SetA, true);
+    await SendBool(client, client.SetB, true);
+    await SendBool(client, client.SetDebugLight, false);
+    await SendBool(client, client.SetUp, true);
+    await SendBool(client, client.SetRight, true);
+    await SendBool(client, client.SetDown, true);
+    await SendBool(client, client.SetLeft, true);
+    await SendFloat(client, client.SetLeftStickX, 10);
+    await SendFloat(client, client.SetLeftStickY, 35);
+    await SendBool(client, client.SetLeftStickIn, true);
+    await SendFloat(client, client.SetRightStickX, 256);
+    await SendFloat(client, client.SetRightStickY, 346);
+    await SendBool(client, client.SetRightStickIn, true);
+    await SendBool(client, client.SetLeftBumper, true);
+    await SendFloat(client, client.SetLeftTrigger, 273);
+    await SendBool(client, client.SetRightBumper, true);
+    await SendFloat(client, client.SetRightTrigger, 378);
+    await SendBool(client, client.SetDebugLight, true);
 
 
-await Task.Delay(1000);
-await client.SetLeftStick((15, 4));
+    await Task.Delay(1000);
+    await client.SetLeftStick((15, 4));
 
-await Task.Delay(1000);
-await client.SetRightStick((234, 74));
+    await Task.Delay(1000);
+    await client.SetRightStick((234, 74));
 
-await Task.Delay(1000);
-await client.SetController(new(
-    Start: false,
-    Select: false,
-    Home: false,
-    BigHome: false,
-    X: false,
-    Y: false,
-    A: false,
-    B: false,
-    Up: false,
-    Right: false,
-    Down: false,
-    Left: false,
-    LeftStickX: 0,
-    LeftStickY: 0,
-    LeftStickIn: false,
-    RightStickX: 0,
-    RightStickY: 0,
-    RightStickIn: false,
-    LeftBumper: false,
-    LeftTrigger: 0,
-    RightBumper: false,
-    RightTrigger: 0
-));
+    await Task.Delay(1000);
+    await client.SetController(new(
+        Start: false,
+        Select: false,
+        Home: false,
+        BigHome: false,
+        X: false,
+        Y: false,
+        A: false,
+        B: false,
+        Up: false,
+        Right: false,
+        Down: false,
+        Left: false,
+        LeftStickX: 0,
+        LeftStickY: 0,
+        LeftStickIn: false,
+        RightStickX: 0,
+        RightStickY: 0,
+        RightStickIn: false,
+        LeftBumper: false,
+        LeftTrigger: 0,
+        RightBumper: false,
+        RightTrigger: 0
+    ));
+}
+catch (OperationCanceledException)
+{
+    Console.Error.WriteLine("Could not connect to client after 20s");
+}
 
 Console.WriteLine("Press Enter to exit");
 Console.ReadLine();
