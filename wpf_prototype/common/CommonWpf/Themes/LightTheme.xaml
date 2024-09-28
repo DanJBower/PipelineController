@@ -1,0 +1,9 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <SolidColorBrush x:Key="AActiveBrush" Color="#3cdb4e" />
+    <SolidColorBrush x:Key="BActiveBrush" Color="#d04242" />
+    <SolidColorBrush x:Key="XActiveBrush" Color="#40ccd0" />
+    <SolidColorBrush x:Key="YActiveBrush" Color="#ecdb33" />
+    <SolidColorBrush x:Key="ButtonActiveBrush" Color="#b24e01" />
+    <SolidColorBrush x:Key="ButtonNotActiveBrush" Color="#1E1E1E" />
+</ResourceDictionary>

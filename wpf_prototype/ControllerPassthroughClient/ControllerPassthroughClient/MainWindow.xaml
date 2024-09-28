@@ -3,10 +3,22 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ControllerPassthroughClient"
+        xmlns:commonViews="clr-namespace:CommonWpf.Views;assembly=CommonWpf"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow"
+        Height="450"
+        Width="800"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}">
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Button Content="Toggle Theme"
+                Grid.Row="0"
+                Click="ToggleTheme"/>
+        <commonViews:ControllerView Grid.Row="1"/>
     </Grid>
 </Window>
