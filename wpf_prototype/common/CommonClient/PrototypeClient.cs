@@ -1,4 +1,4 @@
-using Controller;
+﻿using Controller;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Protocol;
@@ -698,7 +698,7 @@ public class PrototypeClient : IAsyncDisposable
         _leftStickMessageBuilder = AliasedLeftStickMessageBuilder;
     }
 
-    private void OnLeftStickUpdated(DateTime timestamp, ControllerState state)
+    private void OnLeftStickUpdated(DateTime timestamp, (float x, float y) leftStick)
     {
         var updated = false;
         var xUpdated = false;
@@ -717,7 +717,7 @@ public class PrototypeClient : IAsyncDisposable
 
             if (timestamp > LeftStickXLastUpdated)
             {
-                x = state.LeftStickX;
+                x = leftStick.x;
                 LeftStickXLastUpdated = timestamp;
                 updated = true;
                 xUpdated = true;
@@ -725,7 +725,7 @@ public class PrototypeClient : IAsyncDisposable
 
             if (timestamp > LeftStickYLastUpdated)
             {
-                y = state.LeftStickY;
+                y = leftStick.y;
                 LeftStickYLastUpdated = timestamp;
                 updated = true;
                 yUpdated = true;
@@ -791,7 +791,7 @@ public class PrototypeClient : IAsyncDisposable
         _rightStickMessageBuilder = AliasedRightStickMessageBuilder;
     }
 
-    private void OnRightStickUpdated(DateTime timestamp, ControllerState state)
+    private void OnRightStickUpdated(DateTime timestamp, (float x, float y) rightStick)
     {
         var updated = false;
         var xUpdated = false;
@@ -810,7 +810,7 @@ public class PrototypeClient : IAsyncDisposable
 
             if (timestamp > RightStickXLastUpdated)
             {
-                x = state.RightStickX;
+                x = rightStick.x;
                 RightStickXLastUpdated = timestamp;
                 updated = true;
                 xUpdated = true;
@@ -818,7 +818,7 @@ public class PrototypeClient : IAsyncDisposable
 
             if (timestamp > RightStickYLastUpdated)
             {
-                y = state.RightStickY;
+                y = rightStick.y;
                 RightStickYLastUpdated = timestamp;
                 updated = true;
                 yUpdated = true;
