@@ -1,10 +1,8 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-
-namespace CommonWpf.ViewModels;
+﻿namespace CommonWpf.ViewModels;
 
 public partial class ControllerViewModel : ViewModel
 {
-    [ObservableProperty]
+    /*[ObservableProperty]
     private bool _start;
 
     [ObservableProperty]
@@ -68,5 +66,7 @@ public partial class ControllerViewModel : ViewModel
     private bool _rightBumper;
 
     [ObservableProperty]
-    private float _rightTrigger;
+    private float _rightTrigger;*/
+
+
 }

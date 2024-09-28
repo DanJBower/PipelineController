@@ -32,7 +32,7 @@
 
             <Label Grid.Column="1"
                    Grid.Row="0"
-                   Content="Bumper/Triggers"
+                   Content="Triggers"
                    FontSize="20" />
 
             <Label Grid.Column="0"
@@ -229,6 +229,73 @@
                            Background="{DynamicResource ButtonNotActiveBrush}"
                            Margin="5">
                     <TextBlock Text="Home"
+                               FontSize="30"
+                               TextWrapping="Wrap"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+            </Grid>
+
+            <Label Grid.Column="1"
+                   Grid.Row="4"
+                   Content="Bumpers / Joystick In"
+                   FontSize="20" />
+
+            <Grid Grid.Column="1"
+                  Grid.Row="5">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <DockPanel Grid.Column="0"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="LB"
+                               FontSize="30"
+                               TextWrapping="Wrap"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="1"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="RB"
+                               FontSize="30"
+                               TextWrapping="Wrap"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="2"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="L3"
+                               FontSize="30"
+                               TextWrapping="Wrap"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               TextAlignment="Center"
+                               VerticalAlignment="Center" />
+                </DockPanel>
+
+                <DockPanel Grid.Column="3"
+                           Grid.Row="0"
+                           Background="{DynamicResource ButtonNotActiveBrush}"
+                           Margin="5">
+                    <TextBlock Text="R3"
                                FontSize="30"
                                TextWrapping="Wrap"
                                Foreground="White"
