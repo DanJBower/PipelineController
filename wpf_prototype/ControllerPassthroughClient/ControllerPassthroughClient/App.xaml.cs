@@ -1,14 +1,5 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿namespace ControllerPassthroughClient;
 
-namespace ControllerPassthroughClient
+public partial class App
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
-    {
-    }
-
 }
