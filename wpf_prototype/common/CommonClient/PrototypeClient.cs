@@ -1,4 +1,4 @@
-﻿using Controller;
+using Controller;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Protocol;
@@ -42,6 +42,7 @@ public class PrototypeClient : IAsyncDisposable
             {Topics.FullTopicAlias, (timestamp, data) => OnFullControllerUpdated(timestamp, data)},
             {Topics.LeftStickTopicAlias, (timestamp, data) => OnLeftStickUpdated(timestamp, data)},
             {Topics.RightStickTopicAlias, (timestamp, data) => OnRightStickUpdated(timestamp, data)},
+            {Topics.DebugLightTopicAlias, (timestamp, data) => OnDebugLightUpdated(timestamp, data)},
         };
     }
 
@@ -2237,6 +2238,55 @@ public class PrototypeClient : IAsyncDisposable
             {
                 TimeStamp = controllerUpdateTime,
                 NewValue = state,
+            });
+        }
+    }
+
+    private static readonly MqttApplicationMessageBuilder InitialDebugLightMessageBuilder = new MqttApplicationMessageBuilder()
+        .WithTopic(Topics.DebugLightTopic)
+        .WithTopicAlias(Topics.DebugLightTopicAlias)
+        .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+        .WithRetainFlag();
+
+    private static readonly MqttApplicationMessageBuilder AliasedDebugLightMessageBuilder = new MqttApplicationMessageBuilder()
+        .WithTopicAlias(Topics.DebugLightTopicAlias)
+        .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
+        .WithRetainFlag();
+
+    private MqttApplicationMessageBuilder _debugLightMessageBuilder = InitialDebugLightMessageBuilder;
+
+    public async Task SetDebugLight(bool debugLight)
+    {
+        await SendMessage(_debugLightMessageBuilder, debugLight);
+        _debugLightMessageBuilder = AliasedDebugLightMessageBuilder;
+    }
+
+    public event EventHandler<ValueUpdatedEventArgs<bool>>? DebugLightUpdated;
+
+    public bool DebugLight { get; private set; }
+
+    public DateTime DebugLightLastUpdated { get; private set; }
+
+    private void OnDebugLightUpdated(DateTime timeStamp, bool debugLight)
+    {
+        var updated = false;
+
+        lock (_stateLock)
+        {
+            if (timeStamp > DebugLightLastUpdated)
+            {
+                DebugLight = debugLight;
+                DebugLightLastUpdated = timeStamp;
+                updated = true;
+            }
+        }
+
+        if (updated)
+        {
+            DebugLightUpdated?.Invoke(this, new()
+            {
+                TimeStamp = timeStamp,
+                NewValue = debugLight,
             });
         }
     }

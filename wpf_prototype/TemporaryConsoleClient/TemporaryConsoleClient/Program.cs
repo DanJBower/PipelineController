@@ -29,10 +29,12 @@ SubscribeToEvent<float>(client, nameof(client.LeftTriggerUpdated));
 SubscribeToEvent<bool>(client, nameof(client.RightBumperUpdated));
 SubscribeToEvent<float>(client, nameof(client.RightTriggerUpdated));
 SubscribeToEvent<ControllerState>(client, nameof(client.ControllerUpdated));
+SubscribeToEvent<bool>(client, nameof(client.DebugLightUpdated));
 await client.EnableControllerChangeMonitoring();
 
 Console.WriteLine("Client connected");
 
+await SendBool(client, client.SetDebugLight, true);
 await SendBool(client, client.SetStart, true);
 await SendBool(client, client.SetSelect, true);
 await SendBool(client, client.SetHome, true);
@@ -41,6 +43,7 @@ await SendBool(client, client.SetX, true);
 await SendBool(client, client.SetY, true);
 await SendBool(client, client.SetA, true);
 await SendBool(client, client.SetB, true);
+await SendBool(client, client.SetDebugLight, false);
 await SendBool(client, client.SetUp, true);
 await SendBool(client, client.SetRight, true);
 await SendBool(client, client.SetDown, true);
@@ -55,6 +58,7 @@ await SendBool(client, client.SetLeftBumper, true);
 await SendFloat(client, client.SetLeftTrigger, 273);
 await SendBool(client, client.SetRightBumper, true);
 await SendFloat(client, client.SetRightTrigger, 378);
+await SendBool(client, client.SetDebugLight, true);
 
 
 await Task.Delay(1000);

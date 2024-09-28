@@ -138,6 +138,7 @@ static async Task SetInitialValues()
         {Topics.LeftStickTopicAlias, ServerDataConverter.ExtractBytes((0f, 0f))},
         {Topics.RightStickTopicAlias, ServerDataConverter.ExtractBytes((0f, 0f))},
         {Topics.FullTopicAlias, ServerDataConverter.ExtractBytes(new ControllerState())},
+        {Topics.DebugLightTopicAlias, ServerDataConverter.ExtractBytes(false)},
     };
 
     var mqttFactory = new MqttFactory();
@@ -160,7 +161,7 @@ static async Task SetInitialValue(IMqttClient client, ushort alias, string topic
         .WithTopic(topic)
         .WithPayload(defaultValue)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag(ServerConstants.RetainLastGoodMessages)
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages || alias == Topics.DebugLightTopicAlias)
         .WithTopicAlias(alias)
         .Build();
 

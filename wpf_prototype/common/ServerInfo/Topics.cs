@@ -101,6 +101,10 @@ public static class Topics
     public const string RightStickTopic = "controller/RightStick";
     public const ushort RightStickTopicAlias = 25;
 
+
+    public const string DebugLightTopic = "debug_light";
+    public const ushort DebugLightTopicAlias = 26;
+
     public static readonly Dictionary<ushort, string> AliasedTopics = new()
     {
         {StartTopicAlias, StartTopic},
@@ -128,5 +132,6 @@ public static class Topics
         {FullTopicAlias, FullTopic},
         {LeftStickTopicAlias, LeftStickTopic},
         {RightStickTopicAlias, RightStickTopic},
+        {DebugLightTopicAlias, DebugLightTopic},
     };
 }
