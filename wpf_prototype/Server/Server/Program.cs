@@ -160,7 +160,7 @@ static async Task SetInitialValue(IMqttClient client, ushort alias, string topic
         .WithTopic(topic)
         .WithPayload(defaultValue)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag()
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages)
         .WithTopicAlias(alias)
         .Build();
 

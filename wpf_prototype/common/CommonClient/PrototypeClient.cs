@@ -528,12 +528,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.FullTopic)
         .WithTopicAlias(Topics.FullTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedFullMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.FullTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _fullMessageBuilder = InitialFullMessageBuilder;
 
@@ -682,12 +682,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.LeftStickTopic)
         .WithTopicAlias(Topics.LeftStickTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedLeftStickMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.LeftStickTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _leftStickMessageBuilder = InitialLeftStickMessageBuilder;
 
@@ -775,12 +775,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.RightStickTopic)
         .WithTopicAlias(Topics.RightStickTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedRightStickMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.RightStickTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _rightStickMessageBuilder = InitialRightStickMessageBuilder;
 
@@ -881,12 +881,12 @@ public class PrototypeClient : IAsyncDisposable
     .WithTopic(Topics.StartTopic)
     .WithTopicAlias(Topics.StartTopicAlias)
     .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-    .WithRetainFlag();
+    .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedStartMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.StartTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _startMessageBuilder = InitialStartMessageBuilder;
 
@@ -943,12 +943,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.SelectTopic)
         .WithTopicAlias(Topics.SelectTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedSelectMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.SelectTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _selectMessageBuilder = InitialSelectMessageBuilder;
 
@@ -1005,12 +1005,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.HomeTopic)
         .WithTopicAlias(Topics.HomeTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedHomeMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.HomeTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _homeMessageBuilder = InitialHomeMessageBuilder;
 
@@ -1067,12 +1067,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.BigHomeTopic)
         .WithTopicAlias(Topics.BigHomeTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedBigHomeMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.BigHomeTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _bigHomeMessageBuilder = InitialBigHomeMessageBuilder;
 
@@ -1129,12 +1129,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.XTopic)
         .WithTopicAlias(Topics.XTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedXMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.XTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _xMessageBuilder = InitialXMessageBuilder;
 
@@ -1191,12 +1191,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.YTopic)
         .WithTopicAlias(Topics.YTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedYMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.YTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _yMessageBuilder = InitialYMessageBuilder;
 
@@ -1253,12 +1253,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.ATopic)
         .WithTopicAlias(Topics.ATopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedAMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.ATopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _aMessageBuilder = InitialAMessageBuilder;
 
@@ -1315,12 +1315,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.BTopic)
         .WithTopicAlias(Topics.BTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedBMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.BTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _bMessageBuilder = InitialBMessageBuilder;
 
@@ -1377,12 +1377,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.UpTopic)
         .WithTopicAlias(Topics.UpTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedUpMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.UpTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _upMessageBuilder = InitialUpMessageBuilder;
 
@@ -1439,12 +1439,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.RightTopic)
         .WithTopicAlias(Topics.RightTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedRightMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.RightTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _rightMessageBuilder = InitialRightMessageBuilder;
 
@@ -1501,12 +1501,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.DownTopic)
         .WithTopicAlias(Topics.DownTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedDownMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.DownTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _downMessageBuilder = InitialDownMessageBuilder;
 
@@ -1563,12 +1563,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.LeftTopic)
         .WithTopicAlias(Topics.LeftTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedLeftMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.LeftTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _leftMessageBuilder = InitialLeftMessageBuilder;
 
@@ -1625,12 +1625,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.LeftStickXTopic)
         .WithTopicAlias(Topics.LeftStickXTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedLeftStickXMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.LeftStickXTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _leftStickXMessageBuilder = InitialLeftStickXMessageBuilder;
 
@@ -1687,12 +1687,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.LeftStickYTopic)
         .WithTopicAlias(Topics.LeftStickYTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedLeftStickYMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.LeftStickYTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _leftStickYMessageBuilder = InitialLeftStickYMessageBuilder;
 
@@ -1749,12 +1749,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.LeftStickInTopic)
         .WithTopicAlias(Topics.LeftStickInTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedLeftStickInMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.LeftStickInTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _leftStickInMessageBuilder = InitialLeftStickInMessageBuilder;
 
@@ -1811,12 +1811,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.RightStickXTopic)
         .WithTopicAlias(Topics.RightStickXTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedRightStickXMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.RightStickXTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _rightStickXMessageBuilder = InitialRightStickXMessageBuilder;
 
@@ -1873,12 +1873,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.RightStickYTopic)
         .WithTopicAlias(Topics.RightStickYTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedRightStickYMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.RightStickYTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _rightStickYMessageBuilder = InitialRightStickYMessageBuilder;
 
@@ -1935,12 +1935,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.RightStickInTopic)
         .WithTopicAlias(Topics.RightStickInTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedRightStickInMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.RightStickInTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _rightStickInMessageBuilder = InitialRightStickInMessageBuilder;
 
@@ -1997,12 +1997,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.LeftBumperTopic)
         .WithTopicAlias(Topics.LeftBumperTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedLeftBumperMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.LeftBumperTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _leftBumperMessageBuilder = InitialLeftBumperMessageBuilder;
 
@@ -2059,12 +2059,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.LeftTriggerTopic)
         .WithTopicAlias(Topics.LeftTriggerTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedLeftTriggerMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.LeftTriggerTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _leftTriggerMessageBuilder = InitialLeftTriggerMessageBuilder;
 
@@ -2121,12 +2121,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.RightBumperTopic)
         .WithTopicAlias(Topics.RightBumperTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedRightBumperMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.RightBumperTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _rightBumperMessageBuilder = InitialRightBumperMessageBuilder;
 
@@ -2183,12 +2183,12 @@ public class PrototypeClient : IAsyncDisposable
         .WithTopic(Topics.RightTriggerTopic)
         .WithTopicAlias(Topics.RightTriggerTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private static readonly MqttApplicationMessageBuilder AliasedRightTriggerMessageBuilder = new MqttApplicationMessageBuilder()
         .WithTopicAlias(Topics.RightTriggerTopicAlias)
         .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.AtLeastOnce)
-        .WithRetainFlag();
+        .WithRetainFlag(ServerConstants.RetainLastGoodMessages);
 
     private MqttApplicationMessageBuilder _rightTriggerMessageBuilder = InitialRightTriggerMessageBuilder;
 
