@@ -1,8 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommonWpf.ViewModels.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CommonWpf.ViewModels;
 
-public partial class TriggerViewModel : ViewModel
+public partial class TriggerViewModel : ViewModel, ITriggerViewModel
 {
     [ObservableProperty]
     private string _title;

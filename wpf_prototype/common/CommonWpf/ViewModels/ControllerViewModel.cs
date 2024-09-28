@@ -1,6 +1,8 @@
-﻿namespace CommonWpf.ViewModels;
+﻿using CommonWpf.ViewModels.Interfaces;
 
-public partial class ControllerViewModel : ViewModel
+namespace CommonWpf.ViewModels;
+
+public partial class ControllerViewModel : ViewModel, IControllerViewModel
 {
     /*[ObservableProperty]
     private bool _start;

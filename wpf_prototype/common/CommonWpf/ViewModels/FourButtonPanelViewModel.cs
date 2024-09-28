@@ -1,9 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommonWpf.ViewModels.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Windows.Media;
 
 namespace CommonWpf.ViewModels;
 
-public partial class FourButtonPanelViewModel : ViewModel
+public partial class FourButtonPanelViewModel : ViewModel, IFourButtonPanelViewModel
 {
     [ObservableProperty]
     private string _groupTitle;

@@ -1,8 +1,9 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommonWpf.ViewModels.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
 
 namespace CommonWpf.ViewModels;
 
-public partial class JoystickViewModel : ViewModel
+public partial class JoystickViewModel : ViewModel, IJoystickViewModel
 {
     [ObservableProperty]
     private string _title;
