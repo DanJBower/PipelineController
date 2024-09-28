@@ -1,8 +1,8 @@
 ﻿namespace CommonWpf.Views;
 
-public partial class FourButtonPanel
+public partial class TriggerView
 {
-    public FourButtonPanel()
+    public TriggerView()
     {
         InitializeComponent();
     }
