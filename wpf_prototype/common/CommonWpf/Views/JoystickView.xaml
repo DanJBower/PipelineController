@@ -25,24 +25,20 @@
             <Viewbox Grid.Column="0"
                      Grid.Row="0"
                      Stretch="Uniform">
-                <Canvas Width="110"
-                        Height="110">
-                    <Rectangle Width="110"
-                               Height="110"
-                               Fill="Red" />
-
+                <Canvas Width="126"
+                        Height="126">
                     <Ellipse Fill="AliceBlue"
                              Width="100"
                              Height="100"
-                             Canvas.Left="5"
-                             Canvas.Top="5" />
+                             Canvas.Left="13"
+                             Canvas.Top="13" />
 
                     <!-- Canvas.Left and Canvas.Top can have value 0 - 100 and centre stays in canvas -->
                     <!-- 50 is the centre point -->
                     <Ellipse Fill="DarkBlue"
-                             Width="10"
-                             Height="10"
-                             Canvas.Left="0"
+                             Width="26"
+                             Height="26"
+                             Canvas.Left="50"
                              Canvas.Top="50" />
                 </Canvas>
             </Viewbox>

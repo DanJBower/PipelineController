@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:views="clr-namespace:CommonWpf.Views"
              xmlns:mockViewModels="clr-namespace:CommonWpf.ViewModels.Mocks"
+             xmlns:components="clr-namespace:CommonWpf.Components"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800"
@@ -33,9 +34,12 @@
                    Content="Triggers"
                    FontSize="20" />
 
-            <views:FourButtonPanel Grid.Column="0"
-                                   Grid.Row="1"
-                                   DataContext="{Binding }" />
+            <components:FourButtonPanel Grid.Column="0"
+                                        Grid.Row="1"
+                                        GroupTitle="Test"
+                                        ButtonOneTitle="X"
+                                        ButtonOnePressed="True"
+                                        ButtonOnePressedColor="Red" />
         </Grid>
     </Border>
 </UserControl>
