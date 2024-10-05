@@ -4,7 +4,7 @@ using System.Windows.Media;
 
 namespace CommonWpf.Components;
 
-public class FourButtonPanel : UserControl
+public partial class FourButtonPanel : UserControl
 {
     static FourButtonPanel()
     {

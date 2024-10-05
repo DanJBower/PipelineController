@@ -2,11 +2,11 @@
 
 public interface IJoystickViewModel
 {
-    public string Title { get; }
+    string Title { get; }
 
-    public float XPosition { get; }
+    float XPosition { get; }
 
-    public float YPosition { get; }
+    float YPosition { get; }
 
-    public bool PressedIn { get; }
+    bool Pressed { get; }
 }

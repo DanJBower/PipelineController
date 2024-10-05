@@ -2,7 +2,7 @@
 
 public interface ITriggerViewModel
 {
-    public string Title { get; }
+    string Title { get; }
 
-    public float TriggerValue { get; }
+    float TriggerValue { get; }
 }

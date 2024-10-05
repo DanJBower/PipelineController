@@ -2,21 +2,21 @@
 
 public interface IFourButtonPanelViewModel
 {
-    public string GroupTitle { get; }
+    string GroupTitle { get; }
 
-    public string ButtonOneTitle { get; }
+    string ButtonOneTitle { get; }
 
-    public bool ButtonOnePressed { get; }
+    bool ButtonOnePressed { get; }
 
-    public string ButtonTwoTitle { get; }
+    string ButtonTwoTitle { get; }
 
-    public bool ButtonTwoPressed { get; }
+    bool ButtonTwoPressed { get; }
 
-    public string ButtonThreeTitle { get; }
+    string ButtonThreeTitle { get; }
 
-    public bool ButtonThreePressed { get; }
+    bool ButtonThreePressed { get; }
 
-    public string ButtonFourTitle { get; }
+    string ButtonFourTitle { get; }
 
-    public bool ButtonFourPressed { get; }
+    bool ButtonFourPressed { get; }
 }

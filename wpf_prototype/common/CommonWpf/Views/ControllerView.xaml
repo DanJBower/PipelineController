@@ -95,7 +95,7 @@
                                         Grid.Row="2"
                                         GroupTitle="Menu Buttons"
                                         ButtonOneTitle="Start"
-                                        ButtonOnePressed="True"
+                                        ButtonOnePressed="{Binding StartPressed}"
                                         ButtonOnePressedColor="{DynamicResource ButtonActiveBrush}"
                                         ButtonTwoTitle="Select"
                                         ButtonTwoPressed="True"

@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonClient", "..\common\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Controller", "..\common\Controller\Controller.csproj", "{584CB00F-FCAF-4759-B646-E1AD1ADE6195}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSourceGenerators", "..\common\SimpleSourceGenerators\SimpleSourceGenerators.csproj", "{396AB70A-4E31-40EE-8496-206DBB1CFBD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{584CB00F-FCAF-4759-B646-E1AD1ADE6195}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{584CB00F-FCAF-4759-B646-E1AD1ADE6195}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{584CB00F-FCAF-4759-B646-E1AD1ADE6195}.Release|Any CPU.Build.0 = Release|Any CPU
+		{396AB70A-4E31-40EE-8496-206DBB1CFBD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{396AB70A-4E31-40EE-8496-206DBB1CFBD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{396AB70A-4E31-40EE-8496-206DBB1CFBD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{396AB70A-4E31-40EE-8496-206DBB1CFBD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

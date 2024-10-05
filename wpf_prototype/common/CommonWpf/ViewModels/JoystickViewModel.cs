@@ -15,5 +15,5 @@ public partial class JoystickViewModel : ViewModel, IJoystickViewModel
     private float _yPosition;
 
     [ObservableProperty]
-    private bool _pressedIn;
+    private bool _pressed;
 }

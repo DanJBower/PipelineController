@@ -2,4 +2,5 @@
 
 public interface IControllerViewModel
 {
+    bool StartPressed { get; }
 }

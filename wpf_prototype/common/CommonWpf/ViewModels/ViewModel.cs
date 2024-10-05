@@ -2,4 +2,4 @@
 
 namespace CommonWpf.ViewModels;
 
-public abstract class ViewModel : ObservableObject;
+public abstract class ViewModel : ObservableValidator;

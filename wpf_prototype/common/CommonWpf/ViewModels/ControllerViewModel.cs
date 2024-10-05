@@ -1,13 +1,36 @@
 ﻿using CommonWpf.ViewModels.Interfaces;
+using CommunityToolkit.Mvvm.ComponentModel;
+using System.Diagnostics;
+using System.Windows;
+using Timer = System.Timers.Timer;
 
 namespace CommonWpf.ViewModels;
 
 public partial class ControllerViewModel : ViewModel, IControllerViewModel
 {
-    /*[ObservableProperty]
-    private bool _start;
+    public ControllerViewModel()
+    {
+        Timer timer = new();
+        timer.Elapsed += (sender, args) =>
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                StartPressed = !StartPressed;
+            });
+        };
+        timer.Interval = 1000;
+        timer.Enabled = true;
+    }
 
     [ObservableProperty]
+    private bool _startPressed;
+
+    partial void OnStartPressedChanged(bool oldValue, bool newValue)
+    {
+        Debug.WriteLine($"{nameof(StartPressed)}: {oldValue} -> {newValue}");
+    }
+
+    /*[ObservableProperty]
     private bool _select;
 
     [ObservableProperty]
