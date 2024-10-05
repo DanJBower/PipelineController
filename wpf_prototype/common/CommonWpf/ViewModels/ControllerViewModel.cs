@@ -2,21 +2,24 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Threading;
 using Timer = System.Timers.Timer;
 
 namespace CommonWpf.ViewModels;
 
 public partial class ControllerViewModel : ViewModel, IControllerViewModel
 {
+    private readonly Dispatcher _uiDispatcher = Application.Current.Dispatcher;
+
     public ControllerViewModel()
     {
         Timer timer = new();
-        timer.Elapsed += (sender, args) =>
+        timer.Elapsed += (_, _) =>
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            _uiDispatcher.Invoke(() =>
             {
                 StartPressed = !StartPressed;
-            });
+            }, DispatcherPriority.Send);
         };
         timer.Interval = 1000;
         timer.Enabled = true;
