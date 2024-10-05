@@ -1,7 +1,6 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:components="clr-namespace:CommonWpf.Components"
-                    xmlns:converters="clr-namespace:CommonWpf.Converters"
                     xmlns:ui="http://schemas.modernwpf.com/2019">
     <Style TargetType="{x:Type components:FourButtonPanel}">
         <Setter Property="Padding" Value="5" />

@@ -32,9 +32,12 @@
         <ProjectReference Include="..\..\common\CommonClient\CommonClient.csproj" />
         <ProjectReference Include="..\..\common\CommonWpf\CommonWpf.csproj" />
         <ProjectReference Include="..\..\common\ServerInfo\ServerInfo.csproj" />
-        <ProjectReference Include="..\SimpleSourceGenerators\SimpleSourceGenerators.csproj"
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\common\SimpleSourceGenerators\SimpleSourceGenerators.csproj"
                           OutputItemType="Analyzer"
-                          ReferenceOutputAssembly="false" />
+                          ReferenceOutputAssembly="true" />
     </ItemGroup>
 
 </Project>
