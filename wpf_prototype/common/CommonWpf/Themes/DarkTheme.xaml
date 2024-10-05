@@ -1,5 +1,6 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Decent colour picker https://hslpicker.com/ -->
     <SolidColorBrush x:Key="AActiveBrush" Color="#1c7326" />
     <SolidColorBrush x:Key="BActiveBrush" Color="#722222" />
     <SolidColorBrush x:Key="XActiveBrush" Color="#277f83" />
