@@ -14,18 +14,22 @@ public class AutoDependencyPropertyGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        var classDeclarations = context.SyntaxProvider.ForAttributeWithMetadataName(
+        var syntaxContexts = context.SyntaxProvider.ForAttributeWithMetadataName(
             fullyQualifiedMetadataName: typeof(AutoDependencyPropertyAttribute<>).FullName!,
             predicate: (node, _) => node is ClassDeclarationSyntax,
-            transform: (syntaxContext, _) => syntaxContext.TargetNode as ClassDeclarationSyntax)
-            .Where(static declaration => declaration is not null);
+            transform: (syntaxContext, _) => syntaxContext)
+            .Where(attributeSyntax => attributeSyntax.TargetNode is ClassDeclarationSyntax);
+
+        var groupedAttributeSyntaxes = syntaxContexts.Collect()
 
         // Note to future reader, without calling register line nothing happens. No idea why.
         // Spent ages debugging it with seemingly nothing happening.
         // Even broke out all the predicate and transform lines into a separate function and nothing
-        context.RegisterSourceOutput(classDeclarations, (sourceProductionContext, classDeclarationSyntax) =>
+        context.RegisterSourceOutput(syntaxContexts, (sourceProductionContext, attributeSyntax) =>
         {
+            var classDeclarationSyntax = (ClassDeclarationSyntax)attributeSyntax.TargetNode;
 
+            bool c = false;
         });
     }
 }

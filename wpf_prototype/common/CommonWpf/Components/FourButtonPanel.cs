@@ -1,9 +1,11 @@
-﻿using System.Windows;
+﻿using SimpleSourceGenerators;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace CommonWpf.Components;
 
+[AutoDependencyProperty<string>(Name = "GroupTitle", DefaultValue = "")]
 public partial class FourButtonPanel : UserControl
 {
     static FourButtonPanel()
