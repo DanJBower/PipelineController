@@ -8,14 +8,16 @@
              xmlns:ui="http://schemas.modernwpf.com/2019"
              mc:Ignorable="d"
              d:DesignHeight="150"
-             d:DesignWidth="250"
+             d:DesignWidth="300"
              d:DataContext="{d:DesignInstance Type=mockViewModels:MockJoystickViewModel, IsDesignTimeCreatable=True}"
-             d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}">
+             d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+             d:FontFamily="{DynamicResource ContentControlThemeFontFamily}"
+             FontSize="24">
     <Border BorderThickness="5">
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="3*" />
-                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <Grid.RowDefinitions>
@@ -35,11 +37,28 @@
 
                     <!-- Canvas.Left and Canvas.Top can have value 0 - 100 and centre stays in canvas -->
                     <!-- 50 is the centre point -->
+                    <!-- Width/Height is 26/50 -->
                     <Ellipse Fill="DarkBlue"
-                             Width="26"
-                             Height="26"
-                             Canvas.Left="50"
-                             Canvas.Top="50" />
+                             Width="0.52"
+                             Height="0.52">
+                        <Ellipse.RenderTransform>
+                            <TransformGroup>
+                                <!-- Centre the ellipse -->
+                                <TranslateTransform X="1" Y="1" />
+
+                                <!-- Invert the direction of Y. -->
+                                <!-- 1.26 is used as it's 1 for the centre point + 13/50 for the offset -->
+                                <ScaleTransform ScaleY="-1" CenterY="1.26" />
+
+                                <!-- Adjust position with binding. Expected values are -1 to 1 -->
+                                <TranslateTransform X="{Binding XPosition}"
+                                                    Y="{Binding YPosition}"/>
+
+                                <!-- Scale to expected size -->
+                                <ScaleTransform ScaleX="50" ScaleY="50" />
+                            </TransformGroup>
+                        </Ellipse.RenderTransform>
+                    </Ellipse>
                 </Canvas>
             </Viewbox>
 
@@ -58,17 +77,21 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    <Label Grid.Column="0"
-                           Grid.Row="0"
-                           Content="{Binding Title}"/>
+                    <TextBlock Grid.Column="0"
+                               Grid.Row="0"
+                               Text="{Binding Title}" />
 
-                    <Label Grid.Column="0"
-                           Grid.Row="1"
-                           Content="X:"/>
+                    <TextBlock Grid.Column="0"
+                               Grid.Row="1">
+                        <Run Text="X:" />
+                        <Run Text="{Binding XPosition, StringFormat={}{0: 0.00;-0.00;0.00}, Mode=OneWay}" />
+                    </TextBlock>
 
-                    <Label Grid.Column="0"
-                           Grid.Row="2"
-                           Content="Y:"/>
+                    <TextBlock Grid.Column="0"
+                               Grid.Row="2">
+                        <Run Text="Y:" />
+                        <Run Text="{Binding YPosition, StringFormat={}{0: 0.00;-0.00;0.00}, Mode=OneWay}" />
+                    </TextBlock>
                 </Grid>
             </Border>
         </Grid>

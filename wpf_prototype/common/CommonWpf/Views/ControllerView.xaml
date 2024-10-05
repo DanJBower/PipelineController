@@ -5,11 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mockViewModels="clr-namespace:CommonWpf.ViewModels.Mocks"
              xmlns:components="clr-namespace:CommonWpf.Components"
+             xmlns:views="clr-namespace:CommonWpf.Views"
              mc:Ignorable="d"
              d:DesignHeight="480"
              d:DesignWidth="1024"
              d:DataContext="{d:DesignInstance Type=mockViewModels:MockControllerViewModel, IsDesignTimeCreatable=True}"
-             d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}">
+             d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+             d:FontFamily="{DynamicResource ContentControlThemeFontFamily}"
+             d:FontSize="{DynamicResource ControlContentThemeFontSize}">
     <Border Padding="10">
         <Grid IsSharedSizeScope="True">
             <Grid.ColumnDefinitions>
@@ -23,10 +26,33 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Label Grid.Column="0"
-                   Grid.Row="0"
-                   Content="Joysticks"
-                   FontSize="20" />
+            <Grid Grid.Column="0"
+                  Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Column="0"
+                       Grid.Row="0"
+                       Grid.ColumnSpan="5"
+                       Content="Joysticks"
+                       FontSize="20" />
+
+                <views:JoystickView Grid.Column="1"
+                                    Grid.Row="1" />
+
+                <views:JoystickView Grid.Column="3"
+                                    Grid.Row="1" />
+            </Grid>
 
             <Label Grid.Column="1"
                    Grid.Row="0"

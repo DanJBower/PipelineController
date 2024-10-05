@@ -6,11 +6,13 @@
         xmlns:commonViews="clr-namespace:CommonWpf.Views;assembly=CommonWpf"
         mc:Ignorable="d"
         Title="MainWindow"
-        Height="450"
-        Width="800"
+        Height="540"
+        Width="1024"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
-        d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}">
+        d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+        FontFamily="{DynamicResource ContentControlThemeFontFamily}"
+        FontSize="{DynamicResource ControlContentThemeFontSize}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

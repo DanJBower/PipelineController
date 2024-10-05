@@ -10,7 +10,9 @@
              d:DesignHeight="150"
              d:DesignWidth="500"
              d:DataContext="{d:DesignInstance Type=mockViewModels:MockTriggerViewModel, IsDesignTimeCreatable=True}"
-             d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}">
+             d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+             d:FontFamily="{DynamicResource ContentControlThemeFontFamily}"
+             d:FontSize="{DynamicResource ControlContentThemeFontSize}">
     <Grid>
 
     </Grid>

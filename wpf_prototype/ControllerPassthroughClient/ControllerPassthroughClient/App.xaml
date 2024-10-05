@@ -24,6 +24,7 @@
                 </ui:ThemeResources>
                 <ui:XamlControlsResources />
             </ResourceDictionary.MergedDictionaries>
+            <FontFamily x:Key="ContentControlThemeFontFamily">Consolas</FontFamily>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

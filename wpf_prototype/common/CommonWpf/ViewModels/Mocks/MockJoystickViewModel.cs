@@ -18,7 +18,7 @@ public class MockJoystickViewModel : IJoystickViewModel
     }
 
     public string Title { get; } = "Left Stick";
-    public float XPosition { get; } = 0.7f;
-    public float YPosition { get; } = -0.8f;
+    public float XPosition { get; } = 0.0f;
+    public float YPosition { get; } = 0.0f;
     public bool PressedIn { get; } = false;
 }
