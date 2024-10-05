@@ -37,7 +37,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\common\SimpleSourceGenerators\SimpleSourceGenerators.csproj"
                           OutputItemType="Analyzer"
-                          ReferenceOutputAssembly="true" />
+                          ReferenceOutputAssembly="false" />
     </ItemGroup>
 
 </Project>

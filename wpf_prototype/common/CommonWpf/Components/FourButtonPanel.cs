@@ -1,4 +1,4 @@
-﻿using SimpleSourceGenerators;
+﻿using CommonWpf.Attributes;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
