@@ -12,7 +12,7 @@
              d:DataContext="{d:DesignInstance Type=mockViewModels:MockJoystickViewModel, IsDesignTimeCreatable=True}"
              d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
              d:FontFamily="{DynamicResource ContentControlThemeFontFamily}"
-             FontSize="24">
+             d:FontSize="{DynamicResource ControlContentThemeFontSize}">
     <Border BorderThickness="5">
         <Grid>
             <Grid.ColumnDefinitions>
