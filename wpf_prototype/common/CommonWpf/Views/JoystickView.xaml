@@ -35,6 +35,8 @@
                              Canvas.Left="13"
                              Canvas.Top="13" />
 
+                    <!-- TODO Work out why this is offset when being run. Could just be uninitialised view model-->
+
                     <!-- Canvas.Left and Canvas.Top can have value 0 - 100 and centre stays in canvas -->
                     <!-- 50 is the centre point -->
                     <!-- Width/Height is 26/50 -->
