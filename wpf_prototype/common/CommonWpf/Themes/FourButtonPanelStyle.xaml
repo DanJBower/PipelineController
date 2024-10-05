@@ -4,14 +4,13 @@
                     xmlns:converters="clr-namespace:CommonWpf.Converters"
                     xmlns:ui="http://schemas.modernwpf.com/2019">
     <Style TargetType="{x:Type components:FourButtonPanel}">
-        <Style.Resources>
-            <Thickness x:Key="FourButtonPanelDefaultPadding">5</Thickness>
-        </Style.Resources>
-        <Setter Property="Padding" Value="{StaticResource FourButtonPanelDefaultPadding}" />
+        <Setter Property="Padding" Value="5" />
+        <Setter Property="Margin" Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type components:FourButtonPanel}">
-                    <Border BorderThickness="{TemplateBinding Padding}">
+                    <Border BorderThickness="{TemplateBinding Padding}"
+                            Margin="{TemplateBinding Margin}">
                         <Grid Background="{TemplateBinding Background}">
                             <Grid.Resources>
                                 <ui:BindingProxy x:Key="ButtonNotActiveBrushProxy" Value="{DynamicResource ButtonNotActiveBrush}" />
@@ -43,57 +42,81 @@
                                 <DockPanel x:Name="ButtonOnePanel"
                                            Grid.Column="0"
                                            Grid.Row="0"
-                                           Margin="5 5 5 5"
+                                           Margin="5"
                                            Background="{DynamicResource ButtonNotActiveBrush}">
-                                    <TextBlock Text="{TemplateBinding ButtonOneTitle}"
-                                               FontSize="30"
-                                               TextWrapping="Wrap"
-                                               Foreground="White"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               TextAlignment="Center" />
+                                    <Viewbox StretchDirection="DownOnly"
+                                             Stretch="Uniform"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             Margin="8">
+                                        <TextBlock Text="{TemplateBinding ButtonOneTitle}"
+                                                   FontSize="30"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="White"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   TextAlignment="Center" />
+                                    </Viewbox>
                                 </DockPanel>
 
                                 <DockPanel x:Name="ButtonTwoPanel"
                                            Grid.Column="1"
                                            Grid.Row="0"
-                                           Margin="5 5 5 5"
+                                           Margin="5"
                                            Background="{DynamicResource ButtonNotActiveBrush}">
-                                    <TextBlock Text="{TemplateBinding ButtonTwoTitle}"
-                                               FontSize="30"
-                                               TextWrapping="Wrap"
-                                               Foreground="White"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               TextAlignment="Center" />
+                                    <Viewbox StretchDirection="DownOnly"
+                                             Stretch="Uniform"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             Margin="8">
+                                        <TextBlock Text="{TemplateBinding ButtonTwoTitle}"
+                                                   FontSize="30"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="White"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   TextAlignment="Center" />
+                                    </Viewbox>
                                 </DockPanel>
 
                                 <DockPanel x:Name="ButtonThreePanel"
                                            Grid.Column="2"
                                            Grid.Row="0"
-                                           Margin="5 5 5 5"
+                                           Margin="5"
                                            Background="{DynamicResource ButtonNotActiveBrush}">
-                                    <TextBlock Text="{TemplateBinding ButtonThreeTitle}"
-                                               FontSize="30"
-                                               TextWrapping="Wrap"
-                                               Foreground="White"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               TextAlignment="Center" />
+                                    <Viewbox StretchDirection="DownOnly"
+                                             Stretch="Uniform"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             Margin="8">
+                                        <TextBlock Text="{TemplateBinding ButtonThreeTitle}"
+                                                   FontSize="30"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="White"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   TextAlignment="Center" />
+                                    </Viewbox>
                                 </DockPanel>
 
                                 <DockPanel x:Name="ButtonFourPanel"
                                            Grid.Column="3"
                                            Grid.Row="0"
-                                           Margin="5 5 5 5"
+                                           Margin="5"
                                            Background="{DynamicResource ButtonNotActiveBrush}">
-                                    <TextBlock Text="{TemplateBinding ButtonFourTitle}"
-                                               FontSize="30"
-                                               TextWrapping="Wrap"
-                                               Foreground="White"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               TextAlignment="Center" />
+                                    <Viewbox StretchDirection="DownOnly"
+                                             Stretch="Uniform"
+                                             HorizontalAlignment="Center"
+                                             VerticalAlignment="Center"
+                                             Margin="8">
+                                        <TextBlock Text="{TemplateBinding ButtonFourTitle}"
+                                                   FontSize="30"
+                                                   TextWrapping="Wrap"
+                                                   Foreground="White"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   TextAlignment="Center" />
+                                    </Viewbox>
                                 </DockPanel>
                             </Grid>
                         </Grid>

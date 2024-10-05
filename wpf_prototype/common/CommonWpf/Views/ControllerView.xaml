@@ -100,7 +100,7 @@
                                         ButtonTwoTitle="Select"
                                         ButtonTwoPressed="True"
                                         ButtonTwoPressedColor="{DynamicResource ButtonActiveBrush}"
-                                        ButtonThreeTitle="Touch Pad"
+                                        ButtonThreeTitle="Touch&#x0a;Pad"
                                         ButtonThreePressed="True"
                                         ButtonThreePressedColor="{DynamicResource ButtonActiveBrush}"
                                         ButtonFourTitle="Home"
