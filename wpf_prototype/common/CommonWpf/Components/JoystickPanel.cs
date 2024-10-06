@@ -5,9 +5,9 @@ using System.Windows.Controls;
 namespace CommonWpf.Components;
 
 [AutoDependencyProperty<string>(Name = "Title", DefaultValue = "")]
-[AutoDependencyProperty<float>(Name = "X")]
-/*[AutoDependencyProperty<float>(Name = "Y")]
-[AutoDependencyProperty<bool>(Name = "Pressed")]*/
+[AutoDependencyProperty<float>(Name = "X", DefaultValue = 0)]
+[AutoDependencyProperty<float>(Name = "Y", DefaultValue = 0)]
+[AutoDependencyProperty<bool>(Name = "Pressed", DefaultValue = false)]
 public partial class JoystickPanel : UserControl
 {
     static JoystickPanel()
