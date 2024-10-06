@@ -1,5 +1,4 @@
 ﻿using CommonWpf.Attributes;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -24,10 +23,5 @@ public partial class FourButtonPanel : UserControl
     static FourButtonPanel()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(FourButtonPanel), new FrameworkPropertyMetadata(typeof(FourButtonPanel)));
-    }
-
-    partial void TestGen(bool value)
-    {
-        Debug.WriteLine($"{nameof(FourButtonPanel)}: {value}");
     }
 }

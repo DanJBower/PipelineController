@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonClient", "..\common\C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Controller", "..\common\Controller\Controller.csproj", "{584CB00F-FCAF-4759-B646-E1AD1ADE6195}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleSourceGenerators", "..\common\SimpleSourceGenerators\SimpleSourceGenerators.csproj", "{396AB70A-4E31-40EE-8496-206DBB1CFBD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimpleSourceGenerators", "..\common\SimpleSourceGenerators\SimpleSourceGenerators.csproj", "{396AB70A-4E31-40EE-8496-206DBB1CFBD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
