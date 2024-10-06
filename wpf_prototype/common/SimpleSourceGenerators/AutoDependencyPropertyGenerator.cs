@@ -66,27 +66,6 @@ partial class {classDeclarationSyntax.Identifier.Text}
                     defaultValue = "";
                 }
 
-                /*var includeOnChanging = !namedParameters.TryGetValue("IncludeOnChanging", out var includeOnChangingInfo) ||
-                                        includeOnChangingInfo.Value is true;
-                var includeOnChanged = !namedParameters.TryGetValue("IncludeOnChanged", out var includeOnChangedInfo) ||
-                                       includeOnChangedInfo.Value is true;
-
-                var supportINotifyPropertyChanging = namedParameters.TryGetValue("SupportINotifyPropertyChanging", out var supportINotifyPropertyChangingInfo) &&
-                                                     supportINotifyPropertyChangingInfo.Value is true;
-                var supportINotifyPropertyChanged = namedParameters.TryGetValue("SupportINotifyPropertyChanged", out var supportINotifyPropertyChangedInfo) &&
-                                                    supportINotifyPropertyChangedInfo.Value is true;
-
-                var onChangedNameOverride =
-                    (namedParameters.TryGetValue("OnChangedNameOverride", out var onChangedNameOverrideInfo) &&
-                     !string.IsNullOrWhiteSpace(onChangedNameOverrideInfo.Value as string))
-                        ? (string)onChangedNameOverrideInfo.Value!
-                        : "";
-                var onChangingNameOverride =
-                    (namedParameters.TryGetValue("OnChangingNameOverride", out var onChangingNameOverrideInfo) &&
-                     !string.IsNullOrWhiteSpace(onChangingNameOverrideInfo.Value as string))
-                        ? (string)onChangingNameOverrideInfo.Value!
-                        : "";*/
-
                 partialClass.AppendLine($@"    public {type} {dependencyPropertyFieldName}
     {{
         get => ({type})GetValue({dependencyPropertyName});
