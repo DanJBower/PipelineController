@@ -13,7 +13,7 @@ namespace SimpleSourceGenerators;
 //   ^ Doesn't have to be .NET 8, it's just this project is
 // No longer need to restart visual studio for every change
 
-[Generator]
+[Generator(LanguageNames.CSharp)]
 public class AutoDependencyPropertyGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
@@ -29,6 +29,11 @@ public class AutoDependencyPropertyGenerator : IIncrementalGenerator
         // Even broke out all the predicate and transform lines into a separate function and nothing
         context.RegisterSourceOutput(syntaxContexts, (sourceProductionContext, attributeSyntax) =>
         {
+            var generatedBy =
+                $"[global::System.CodeDom.Compiler.GeneratedCode(\"{typeof(AutoDependencyPropertyGenerator).FullName}\"," +
+                $" \"{typeof(AutoDependencyPropertyGenerator).Assembly.GetName().Version}\")]";
+            var excludeFromCoverage = "[global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]";
+
             var classDeclarationSyntax = (ClassDeclarationSyntax)attributeSyntax.TargetNode;
             var fileName = $"{classDeclarationSyntax.GetFullyQualifiedName()}.g.cs";
 
@@ -37,6 +42,7 @@ public class AutoDependencyPropertyGenerator : IIncrementalGenerator
 #nullable enable
 namespace {classDeclarationSyntax.GetNamespace()};
 
+/// <inheritdoc/>
 partial class {classDeclarationSyntax.Identifier.Text}
 {{
 ");
@@ -66,12 +72,15 @@ partial class {classDeclarationSyntax.Identifier.Text}
                     defaultValue = "";
                 }
 
-                partialClass.AppendLine($@"    public {type} {dependencyPropertyFieldName}
+                partialClass.AppendLine($@"    {generatedBy}
+    {excludeFromCoverage}
+    public {type} {dependencyPropertyFieldName}
     {{
         get => ({type})GetValue({dependencyPropertyName});
         set => SetValue({dependencyPropertyName}, value);
     }}
 
+    {generatedBy}
     public static readonly System.Windows.DependencyProperty {dependencyPropertyName}
         = System.Windows.DependencyProperty.Register(
             nameof({dependencyPropertyFieldName}),
