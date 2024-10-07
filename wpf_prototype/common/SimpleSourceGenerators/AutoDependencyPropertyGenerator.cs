@@ -86,7 +86,7 @@ partial class {classDeclarationSyntax.Identifier.Text}
         = System.Windows.DependencyProperty.Register(
             nameof({dependencyPropertyFieldName}),
             typeof({type}),
-            typeof(FourButtonPanel){defaultValue}
+            typeof({classDeclarationSyntax.Identifier.Text}){defaultValue}
         );
 ");
             }
