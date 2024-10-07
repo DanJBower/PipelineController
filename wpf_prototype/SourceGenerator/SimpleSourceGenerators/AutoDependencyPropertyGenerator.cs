@@ -2,7 +2,6 @@
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
-using System.Linq;
 using System.Text;
 
 namespace SimpleSourceGenerators;
@@ -19,7 +18,7 @@ public class AutoDependencyPropertyGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var syntaxContexts = context.SyntaxProvider.ForAttributeWithMetadataName(
-            fullyQualifiedMetadataName: "CommonWpf.Attributes.AutoDependencyPropertyAttribute`1",
+            fullyQualifiedMetadataName: typeof(AutoDependencyPropertyAttribute<>).FullName!,
             predicate: (node, _) => node is ClassDeclarationSyntax,
             transform: (syntaxContext, _) => syntaxContext)
             .Where(attributeSyntax => attributeSyntax.TargetNode is ClassDeclarationSyntax);
