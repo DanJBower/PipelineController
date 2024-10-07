@@ -43,7 +43,7 @@ public class AutoDependencyPropertyGenerator : IIncrementalGenerator
 namespace {classDeclarationSyntax.GetNamespace()};
 
 /// <inheritdoc/>
-// {generatedBy} // Don't actually include as per best practice?
+// {generatedBy} // Don't actually include as per best practice? :)
 partial class {classDeclarationSyntax.Identifier.Text}
 {{
 ");
