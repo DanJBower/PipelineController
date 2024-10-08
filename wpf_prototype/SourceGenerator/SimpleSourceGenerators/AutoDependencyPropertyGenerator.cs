@@ -51,18 +51,18 @@ partial class {classDeclarationSyntax.Identifier.Text}
             {
                 var namedParameters = attributeData.GetAttributeNamedParameters();
 
-                var dependencyPropertyFieldName = namedParameters["Name"].Value;
+                var dependencyPropertyFieldName = namedParameters[nameof(AutoDependencyPropertyAttribute<int>.Name)].Value;
                 var dependencyPropertyName = $"{dependencyPropertyFieldName}Property";
 
                 var type = attributeData.AttributeClass!.TypeArguments.First().ToDisplayString();
                 string defaultValue;
 
-                if (namedParameters.TryGetValue("DefaultValue", out var defaultValueInfo))
+                if (namedParameters.TryGetValue(nameof(AutoDependencyPropertyAttribute<int>.DefaultValue), out var defaultValueInfo))
                 {
                     defaultValue = $@",
             new System.Windows.PropertyMetadata({defaultValueInfo.ToCSharpString()})";
                 }
-                else if (namedParameters.TryGetValue("DefaultValueLiteral", out var defaultValueLiteralInfo))
+                else if (namedParameters.TryGetValue(nameof(AutoDependencyPropertyAttribute<int>.DefaultValueLiteral), out var defaultValueLiteralInfo))
                 {
                     defaultValue = $@",
             new System.Windows.PropertyMetadata({defaultValueLiteralInfo.Value})";
