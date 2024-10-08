@@ -1,5 +1,5 @@
-﻿using CommonWpf.Attributes;
-using ModernWpf;
+﻿using ModernWpf;
+using SimpleSourceGenerators;
 using System.Diagnostics;
 using System.Windows;
 
