@@ -19,10 +19,10 @@ public partial class SampleControl : UserControl
     [global::System.CodeDom.Compiler.GeneratedCode("SimpleSourceGenerators.AutoDependencyPropertyGenerator", "1.0.0.0")]
     public static readonly System.Windows.DependencyProperty TemplatePropProperty
         = System.Windows.DependencyProperty.Register(
-            nameof(TemplateProp),
-            typeof(string),
-            typeof(SampleControl),
-            new FrameworkPropertyMetadata(
+            name: nameof(TemplateProp),
+            propertyType: typeof(string),
+            ownerType: typeof(SampleControl),
+            typeMetadata: new FrameworkPropertyMetadata(
                 defaultValue: "Hi",
                 propertyChangedCallback: OnTemplatePropChanged,
                 coerceValueCallback: CoerceTemplateProp
@@ -43,11 +43,16 @@ public partial class SampleControl : UserControl
 
     private static void OnTemplatePropChanged(DependencyObject sender, DependencyPropertyChangedEventArgs changeArgs)
     {
-        OnTemplatePropChanged((SampleControl?)sender, changeArgs);
+        OnTemplatePropChanged((SampleControl?)sender,
+            changeArgs.Property,
+            changeArgs.OldValue,
+            changeArgs.NewValue);
     }
 
     static partial void OnTemplatePropChanged(SampleControl? sender,
-        DependencyPropertyChangedEventArgs changeArgs);
+        DependencyProperty? templatePropProperty,
+        object? oldTemplatePropValue,
+        object? newTemplatePropValue);
 
     private static object? CoerceTemplateProp(DependencyObject sender, object? value)
     {
