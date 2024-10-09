@@ -12,6 +12,10 @@ namespace SimpleSourceGenerators;
 //   ^ Doesn't have to be .NET 8, it's just this project is
 // No longer need to restart visual studio for every change
 
+// TODO: Look into using proper rosyln syntax to generate code rather than static strings.
+// Will make things like the logic for FrameworkPropertyMetadata easier
+// See other online sample for this like https://github.com/CommunityToolkit/dotnet/blob/main/src/CommunityToolkit.Mvvm.SourceGenerators/ComponentModel/ObservablePropertyGenerator.Execute.cs
+
 [Generator(LanguageNames.CSharp)]
 public class AutoDependencyPropertyGenerator : IIncrementalGenerator
 {
@@ -99,11 +103,10 @@ partial class {classDeclarationSyntax.Identifier.Text}
                     includeFrameworkPropertyMetadata = true;
                 }
 
-                var frameworkPropertyMetadata = "";
+                var frameworkPropertyMetadata = "null";
                 if (includeFrameworkPropertyMetadata)
                 {
-                    StringBuilder frameworkPropertyMetadataBuilder = new(@",
-            new System.Windows.FrameworkPropertyMetadata(
+                    StringBuilder frameworkPropertyMetadataBuilder = new(@"new System.Windows.FrameworkPropertyMetadata(
                 ");
 
                     if (defaultSet)
@@ -139,7 +142,8 @@ partial class {classDeclarationSyntax.Identifier.Text}
         = System.Windows.DependencyProperty.Register(
             nameof({dependencyPropertyFieldName}),
             typeof({type}),
-            typeof({classDeclarationSyntax.Identifier.Text}){frameworkPropertyMetadata}
+            typeof({classDeclarationSyntax.Identifier.Text}),
+            {frameworkPropertyMetadata}
         );
 {validateValueCallback}{propertyChangedCallback}{coerceValueCallback}");
             }

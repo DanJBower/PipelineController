@@ -1,11 +1,12 @@
 ﻿using SimpleSourceGenerators;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace DebugSimpleSourceGenerators;
 
 [AutoDependencyProperty<string>(Name = "TestProp", DefaultValue = "Hi")]
-[AutoDependencyProperty<string>(Name = "TestPropTwo", DefaultValueLiteral = "\"Test\"")]
+[AutoDependencyProperty<string>(Name = "TestPropTwo", DefaultValueLiteral = "\"Test\"", DefaultUpdateSourceTrigger = UpdateSourceTrigger.Default, MetadataOptionFlags = FrameworkPropertyMetadataOptions.None)]
 public partial class SampleControl : UserControl
 {
     [global::System.CodeDom.Compiler.GeneratedCode("SimpleSourceGenerators.AutoDependencyPropertyGenerator", "1.0.0.0")]
@@ -24,8 +25,11 @@ public partial class SampleControl : UserControl
             ownerType: typeof(SampleControl),
             typeMetadata: new FrameworkPropertyMetadata(
                 defaultValue: "Hi",
+                flags: FrameworkPropertyMetadataOptions.None,
                 propertyChangedCallback: OnTemplatePropChanged,
-                coerceValueCallback: CoerceTemplateProp
+                coerceValueCallback: CoerceTemplateProp,
+                isAnimationProhibited: false,
+                defaultUpdateSourceTrigger: UpdateSourceTrigger.Default
             ),
             validateValueCallback: IsValidTemplateProp
         );
