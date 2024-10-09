@@ -30,6 +30,8 @@ public partial class SampleControl : UserControl
             validateValueCallback: IsValidTemplateProp
         );
 
+    [global::System.CodeDom.Compiler.GeneratedCode("SimpleSourceGenerators.AutoDependencyPropertyGenerator", "1.0.0.0")]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     public static bool IsValidTemplateProp(object? newTemplateProp)
     {
         var newTemplatePropValid = true;
@@ -39,8 +41,11 @@ public partial class SampleControl : UserControl
         return newTemplatePropValid;
     }
 
+    [global::System.CodeDom.Compiler.GeneratedCode("SimpleSourceGenerators.AutoDependencyPropertyGenerator", "1.0.0.0")]
     static partial void IsValidTemplateProp(string? newTemplateProp, ref bool newTemplatePropValid);
 
+    [global::System.CodeDom.Compiler.GeneratedCode("SimpleSourceGenerators.AutoDependencyPropertyGenerator", "1.0.0.0")]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     private static void OnTemplatePropChanged(DependencyObject sender, DependencyPropertyChangedEventArgs changeArgs)
     {
         OnTemplatePropChanged((SampleControl?)sender,
@@ -49,11 +54,14 @@ public partial class SampleControl : UserControl
             changeArgs.NewValue);
     }
 
+    [global::System.CodeDom.Compiler.GeneratedCode("SimpleSourceGenerators.AutoDependencyPropertyGenerator", "1.0.0.0")]
     static partial void OnTemplatePropChanged(SampleControl? sender,
         DependencyProperty? templatePropProperty,
         object? oldTemplatePropValue,
         object? newTemplatePropValue);
 
+    [global::System.CodeDom.Compiler.GeneratedCode("SimpleSourceGenerators.AutoDependencyPropertyGenerator", "1.0.0.0")]
+    [global::System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
     private static object? CoerceTemplateProp(DependencyObject sender, object? value)
     {
         var newTemplateProp = (string?)value;
@@ -61,5 +69,6 @@ public partial class SampleControl : UserControl
         return newTemplateProp;
     }
 
+    [global::System.CodeDom.Compiler.GeneratedCode("SimpleSourceGenerators.AutoDependencyPropertyGenerator", "1.0.0.0")]
     static partial void CoerceTemplateProp(SampleControl? sender, ref string? newTemplateProp);
 }
