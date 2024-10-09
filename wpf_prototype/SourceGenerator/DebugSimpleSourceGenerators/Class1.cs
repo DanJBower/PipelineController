@@ -49,12 +49,12 @@ public partial class SampleControl : UserControl
     static partial void OnTemplatePropChanged(SampleControl? sender,
         DependencyPropertyChangedEventArgs changeArgs);
 
-    private static object? CoerceTemplateProp(DependencyObject dependencyObject, object? value)
+    private static object? CoerceTemplateProp(DependencyObject sender, object? value)
     {
         var newTemplateProp = (string?)value;
-        CoerceTemplateProp((SampleControl?)dependencyObject, ref newTemplateProp);
+        CoerceTemplateProp((SampleControl?)sender, ref newTemplateProp);
         return newTemplateProp;
     }
 
-    static partial void CoerceTemplateProp(SampleControl? dependencyObject, ref string? newTemplateProp);
+    static partial void CoerceTemplateProp(SampleControl? sender, ref string? newTemplateProp);
 }
