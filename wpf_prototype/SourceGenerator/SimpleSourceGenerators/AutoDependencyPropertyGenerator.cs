@@ -55,21 +55,75 @@ partial class {classDeclarationSyntax.Identifier.Text}
                 var dependencyPropertyName = $"{dependencyPropertyFieldName}Property";
 
                 var type = attributeData.AttributeClass!.TypeArguments.First().ToDisplayString();
-                string defaultValue;
+                var includeFrameworkPropertyMetadata = false;
+                var defaultSet = false;
+                string defaultValue = "";
 
                 if (namedParameters.TryGetValue(nameof(AutoDependencyPropertyAttribute<int>.DefaultValue), out var defaultValueInfo))
                 {
-                    defaultValue = $@",
-            new System.Windows.PropertyMetadata({defaultValueInfo.ToCSharpString()})";
+                    defaultValue = defaultValueInfo.ToCSharpString();
+                    defaultSet = true;
+                    includeFrameworkPropertyMetadata = true;
                 }
                 else if (namedParameters.TryGetValue(nameof(AutoDependencyPropertyAttribute<int>.DefaultValueLiteral), out var defaultValueLiteralInfo))
                 {
-                    defaultValue = $@",
-            new System.Windows.PropertyMetadata({defaultValueLiteralInfo.Value})";
+                    defaultValue = $"{defaultValueLiteralInfo.Value}";
+                    defaultSet = true;
+                    includeFrameworkPropertyMetadata = true;
                 }
-                else
+
+                var validateValueCallback = "";
+                if (namedParameters.TryGetValue(nameof(AutoDependencyPropertyAttribute<int>.IncludeValidateValueCallback), out var includeValidateValueCallbackInfo) &&
+                    includeValidateValueCallbackInfo.Value is true)
                 {
-                    defaultValue = "";
+                    validateValueCallback = "";
+                }
+
+                var propertyChangedCallbackSet = false;
+                var propertyChangedCallback = "";
+                if (namedParameters.TryGetValue(nameof(AutoDependencyPropertyAttribute<int>.IncludePropertyChangedCallback), out var includePropertyChangedCallbackInfo) &&
+                    includePropertyChangedCallbackInfo.Value is true)
+                {
+                    propertyChangedCallback = "";
+                    propertyChangedCallbackSet = true;
+                    includeFrameworkPropertyMetadata = true;
+                }
+
+                var coerceValueCallbackSet = false;
+                var coerceValueCallback = "";
+                if (namedParameters.TryGetValue(nameof(AutoDependencyPropertyAttribute<int>.IncludeCoerceValueCallback), out var includeCoerceValueCallbackInfo) &&
+                    includeCoerceValueCallbackInfo.Value is true)
+                {
+                    coerceValueCallback = "";
+                    coerceValueCallbackSet = true;
+                    includeFrameworkPropertyMetadata = true;
+                }
+
+                var frameworkPropertyMetadata = "";
+                if (includeFrameworkPropertyMetadata)
+                {
+                    StringBuilder frameworkPropertyMetadataBuilder = new(@",
+            new System.Windows.FrameworkPropertyMetadata(
+                ");
+
+                    if (defaultSet)
+                    {
+                        frameworkPropertyMetadataBuilder.Append($"                defaultValue: {defaultValue}");
+                    }
+
+                    if (propertyChangedCallbackSet)
+                    {
+                        frameworkPropertyMetadataBuilder.Append($"                defaultValue: {defaultValue}");
+                    }
+
+                    if (coerceValueCallbackSet)
+                    {
+                        frameworkPropertyMetadataBuilder.Append($"                defaultValue: {defaultValue}");
+                    }
+
+                    frameworkPropertyMetadataBuilder.Append(@"
+            )");
+                    frameworkPropertyMetadata = $"{frameworkPropertyMetadataBuilder}";
                 }
 
                 partialClass.AppendLine($@"    {generatedBy}
@@ -85,9 +139,9 @@ partial class {classDeclarationSyntax.Identifier.Text}
         = System.Windows.DependencyProperty.Register(
             nameof({dependencyPropertyFieldName}),
             typeof({type}),
-            typeof({classDeclarationSyntax.Identifier.Text}){defaultValue}
+            typeof({classDeclarationSyntax.Identifier.Text}){frameworkPropertyMetadata}
         );
-");
+{validateValueCallback}{propertyChangedCallback}{coerceValueCallback}");
             }
 
             partialClass.AppendLine("}");

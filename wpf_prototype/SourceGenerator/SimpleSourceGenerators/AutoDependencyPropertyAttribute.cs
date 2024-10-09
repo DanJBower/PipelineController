@@ -7,5 +7,7 @@ public class AutoDependencyPropertyAttribute<T> : Attribute
     public T? DefaultValue { get; set; }
     public string? DefaultValueLiteral { get; set; }
 
-    public string? TestProp { get; set; } = "Yooo!";
+    public bool? IncludeValidateValueCallback { get; set; }
+    public bool? IncludePropertyChangedCallback { get; set; }
+    public bool? IncludeCoerceValueCallback { get; set; }
 }
