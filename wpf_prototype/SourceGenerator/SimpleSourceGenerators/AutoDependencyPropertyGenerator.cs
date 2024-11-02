@@ -12,10 +12,6 @@ namespace SimpleSourceGenerators;
 //   ^ Doesn't have to be .NET 8, it's just this project is
 // No longer need to restart visual studio for every change
 
-// TODO: Look into using proper rosyln syntax to generate code rather than static strings.
-// Will make things like the logic for FrameworkPropertyMetadata easier
-// See other online sample for this like https://github.com/CommunityToolkit/dotnet/blob/main/src/CommunityToolkit.Mvvm.SourceGenerators/ComponentModel/ObservablePropertyGenerator.Execute.cs
-
 [Generator(LanguageNames.CSharp)]
 public class AutoDependencyPropertyGenerator : IIncrementalGenerator
 {
@@ -76,57 +72,104 @@ partial class {classDeclarationSyntax.Identifier.Text}
                     includeFrameworkPropertyMetadata = true;
                 }
 
+                var validateValueCallbackName = "null";
                 var validateValueCallback = "";
                 if (namedParameters.TryGetValue("IncludeValidateValueCallback", out var includeValidateValueCallbackInfo) &&
                     includeValidateValueCallbackInfo.Value is true)
                 {
                     validateValueCallback = "";
+                    validateValueCallbackName = $"IsValid{dependencyPropertyFieldName}";
                 }
 
                 var propertyChangedCallbackSet = false;
                 var propertyChangedCallback = "";
+                var propertyChangedCallbackName = "";
                 if (namedParameters.TryGetValue("IncludePropertyChangedCallback", out var includePropertyChangedCallbackInfo) &&
                     includePropertyChangedCallbackInfo.Value is true)
                 {
-                    propertyChangedCallback = "";
+                    propertyChangedCallback = $"";
+                    propertyChangedCallbackName = $"On{dependencyPropertyFieldName}Changed";
                     propertyChangedCallbackSet = true;
                     includeFrameworkPropertyMetadata = true;
                 }
 
                 var coerceValueCallbackSet = false;
                 var coerceValueCallback = "";
+                var coerceValueCallbackName = "";
                 if (namedParameters.TryGetValue("IncludeCoerceValueCallback", out var includeCoerceValueCallbackInfo) &&
                     includeCoerceValueCallbackInfo.Value is true)
                 {
                     coerceValueCallback = "";
+                    coerceValueCallbackName = $"Coerce{dependencyPropertyFieldName}";
                     coerceValueCallbackSet = true;
+                    includeFrameworkPropertyMetadata = true;
+                }
+
+                var isAnimationProhibitedSet = false;
+                var isAnimationProhibited = "";
+                if (namedParameters.TryGetValue("IsAnimationProhibited", out var isAnimationProhibitedInfo))
+                {
+                    isAnimationProhibited = isAnimationProhibitedInfo.ToCSharpString();
+                    isAnimationProhibitedSet = true;
+                    includeFrameworkPropertyMetadata = true;
+                }
+
+                var defaultUpdateSourceTriggerSet = false;
+                var defaultUpdateSourceTrigger = "";
+                if (namedParameters.TryGetValue("DefaultUpdateSourceTrigger", out var defaultUpdateSourceTriggerInfo))
+                {
+                    defaultUpdateSourceTrigger = defaultUpdateSourceTriggerInfo.ToCSharpString();
+                    defaultUpdateSourceTriggerSet = true;
+                    includeFrameworkPropertyMetadata = true;
+                }
+
+                var metadataOptionFlagsSet = false;
+                var metadataOptionFlags = "";
+                if (namedParameters.TryGetValue("MetadataOptionFlags", out var metadataOptionFlagsInfo))
+                {
+                    metadataOptionFlags = metadataOptionFlagsInfo.ToCSharpString();
+                    metadataOptionFlagsSet = true;
                     includeFrameworkPropertyMetadata = true;
                 }
 
                 var frameworkPropertyMetadata = "null";
                 if (includeFrameworkPropertyMetadata)
                 {
-                    StringBuilder frameworkPropertyMetadataBuilder = new(@"new System.Windows.FrameworkPropertyMetadata(
-                ");
+                    List<string> frameworkProperties = [];
 
                     if (defaultSet)
                     {
-                        frameworkPropertyMetadataBuilder.Append($"                defaultValue: {defaultValue}");
+                        frameworkProperties.Add($"defaultValue: {defaultValue}");
+                    }
+
+                    if (isAnimationProhibitedSet)
+                    {
+                        frameworkProperties.Add($"isAnimationProhibited: {isAnimationProhibited}");
                     }
 
                     if (propertyChangedCallbackSet)
                     {
-                        frameworkPropertyMetadataBuilder.Append($"                defaultValue: {defaultValue}");
+                        frameworkProperties.Add($"propertyChangedCallback: {propertyChangedCallbackName}");
                     }
 
                     if (coerceValueCallbackSet)
                     {
-                        frameworkPropertyMetadataBuilder.Append($"                defaultValue: {defaultValue}");
+                        frameworkProperties.Add($"coerceValueCallback: {coerceValueCallbackName}");
                     }
 
-                    frameworkPropertyMetadataBuilder.Append(@"
-            )");
-                    frameworkPropertyMetadata = $"{frameworkPropertyMetadataBuilder}";
+                    if (defaultUpdateSourceTriggerSet)
+                    {
+                        frameworkProperties.Add($"defaultUpdateSourceTrigger: {defaultUpdateSourceTrigger}");
+                    }
+
+                    if (metadataOptionFlagsSet)
+                    {
+                        frameworkProperties.Add($"flags: {metadataOptionFlags}");
+                    }
+
+                    frameworkPropertyMetadata = @$"new System.Windows.FrameworkPropertyMetadata(
+                {string.Join(",\n                ", frameworkProperties)}
+            )";
                 }
 
                 partialClass.AppendLine($@"    {generatedBy}
@@ -140,10 +183,11 @@ partial class {classDeclarationSyntax.Identifier.Text}
     {generatedBy}
     public static readonly System.Windows.DependencyProperty {dependencyPropertyName}
         = System.Windows.DependencyProperty.Register(
-            nameof({dependencyPropertyFieldName}),
-            typeof({type}),
-            typeof({classDeclarationSyntax.Identifier.Text}),
-            {frameworkPropertyMetadata}
+            name: nameof({dependencyPropertyFieldName}),
+            propertyType: typeof({type}),
+            ownerType: typeof({classDeclarationSyntax.Identifier.Text}),
+            typeMetadata: {frameworkPropertyMetadata},
+            validateValueCallback: {validateValueCallbackName}
         );
 {validateValueCallback}{propertyChangedCallback}{coerceValueCallback}");
             }

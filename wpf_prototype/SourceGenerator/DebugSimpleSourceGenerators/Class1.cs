@@ -6,7 +6,12 @@ using System.Windows.Data;
 namespace DebugSimpleSourceGenerators;
 
 [AutoDependencyProperty<string>(Name = "TestProp", DefaultValue = "Hi")]
-[AutoDependencyProperty<string>(Name = "TestPropTwo", DefaultValueLiteral = "\"Test\"", DefaultUpdateSourceTrigger = UpdateSourceTrigger.Default, MetadataOptionFlags = FrameworkPropertyMetadataOptions.None)]
+[AutoDependencyProperty<string>(Name = "TestPropTwo",
+    IsAnimationProhibited = false,
+    DefaultValueLiteral = "\"Test\"",
+    DefaultUpdateSourceTrigger = UpdateSourceTrigger.Default,
+    IncludeCoerceValueCallback = true,
+    MetadataOptionFlags = FrameworkPropertyMetadataOptions.OverridesInheritanceBehavior | FrameworkPropertyMetadataOptions.AffectsArrange)]
 public partial class SampleControl : UserControl
 {
     [global::System.CodeDom.Compiler.GeneratedCode("SimpleSourceGenerators.AutoDependencyPropertyGenerator", "1.0.0.0")]
