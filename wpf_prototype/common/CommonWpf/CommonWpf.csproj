@@ -14,4 +14,8 @@
         <PackageReference Include="SimpleSourceGenerators" Version="1.0.0" />
     </ItemGroup>
 
+    <ItemGroup>
+        <ProjectReference Include="..\..\SourceGenerator\SimpleSourceGeneratorAttributes\SimpleSourceGeneratorAttributes.csproj" />
+    </ItemGroup>
+
 </Project>

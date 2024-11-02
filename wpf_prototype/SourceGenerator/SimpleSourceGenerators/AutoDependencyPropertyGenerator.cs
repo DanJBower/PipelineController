@@ -22,7 +22,7 @@ public class AutoDependencyPropertyGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         var syntaxContexts = context.SyntaxProvider.ForAttributeWithMetadataName(
-            fullyQualifiedMetadataName: typeof(AutoDependencyPropertyAttribute<>).FullName!,
+            fullyQualifiedMetadataName: "SimpleSourceGeneratorAttributes.AutoDependencyPropertyAttribute`1",
             predicate: (node, _) => node is ClassDeclarationSyntax,
             transform: (syntaxContext, _) => syntaxContext)
             .Where(attributeSyntax => attributeSyntax.TargetNode is ClassDeclarationSyntax);
@@ -55,7 +55,7 @@ partial class {classDeclarationSyntax.Identifier.Text}
             {
                 var namedParameters = attributeData.GetAttributeNamedParameters();
 
-                var dependencyPropertyFieldName = namedParameters[nameof(AutoDependencyPropertyAttribute<int>.Name)].Value;
+                var dependencyPropertyFieldName = namedParameters["Name"].Value;
                 var dependencyPropertyName = $"{dependencyPropertyFieldName}Property";
 
                 var type = attributeData.AttributeClass!.TypeArguments.First().ToDisplayString();
@@ -63,13 +63,13 @@ partial class {classDeclarationSyntax.Identifier.Text}
                 var defaultSet = false;
                 string defaultValue = "";
 
-                if (namedParameters.TryGetValue(nameof(AutoDependencyPropertyAttribute<int>.DefaultValue), out var defaultValueInfo))
+                if (namedParameters.TryGetValue("DefaultValue", out var defaultValueInfo))
                 {
                     defaultValue = defaultValueInfo.ToCSharpString();
                     defaultSet = true;
                     includeFrameworkPropertyMetadata = true;
                 }
-                else if (namedParameters.TryGetValue(nameof(AutoDependencyPropertyAttribute<int>.DefaultValueLiteral), out var defaultValueLiteralInfo))
+                else if (namedParameters.TryGetValue("DefaultValueLiteral", out var defaultValueLiteralInfo))
                 {
                     defaultValue = $"{defaultValueLiteralInfo.Value}";
                     defaultSet = true;
@@ -77,7 +77,7 @@ partial class {classDeclarationSyntax.Identifier.Text}
                 }
 
                 var validateValueCallback = "";
-                if (namedParameters.TryGetValue(nameof(AutoDependencyPropertyAttribute<int>.IncludeValidateValueCallback), out var includeValidateValueCallbackInfo) &&
+                if (namedParameters.TryGetValue("IncludeValidateValueCallback", out var includeValidateValueCallbackInfo) &&
                     includeValidateValueCallbackInfo.Value is true)
                 {
                     validateValueCallback = "";
@@ -85,7 +85,7 @@ partial class {classDeclarationSyntax.Identifier.Text}
 
                 var propertyChangedCallbackSet = false;
                 var propertyChangedCallback = "";
-                if (namedParameters.TryGetValue(nameof(AutoDependencyPropertyAttribute<int>.IncludePropertyChangedCallback), out var includePropertyChangedCallbackInfo) &&
+                if (namedParameters.TryGetValue("IncludePropertyChangedCallback", out var includePropertyChangedCallbackInfo) &&
                     includePropertyChangedCallbackInfo.Value is true)
                 {
                     propertyChangedCallback = "";
@@ -95,7 +95,7 @@ partial class {classDeclarationSyntax.Identifier.Text}
 
                 var coerceValueCallbackSet = false;
                 var coerceValueCallback = "";
-                if (namedParameters.TryGetValue(nameof(AutoDependencyPropertyAttribute<int>.IncludeCoerceValueCallback), out var includeCoerceValueCallbackInfo) &&
+                if (namedParameters.TryGetValue("IncludeCoerceValueCallback", out var includeCoerceValueCallbackInfo) &&
                     includeCoerceValueCallbackInfo.Value is true)
                 {
                     coerceValueCallback = "";

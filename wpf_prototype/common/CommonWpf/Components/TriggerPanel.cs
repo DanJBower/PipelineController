@@ -1,4 +1,4 @@
-﻿using SimpleSourceGenerators;
+﻿using SimpleSourceGeneratorAttributes;
 using System.Windows;
 using System.Windows.Controls;
 

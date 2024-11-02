@@ -1,26 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netstandard2.0;net8.0-windows</TargetFrameworks>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
-        <UseWPF>true</UseWPF>
-    </PropertyGroup>
-
-    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>12</LangVersion>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <IsRoslynComponent>true</IsRoslynComponent>
-        <!-- TODO: Fix line below, doesn't seem to work with multi target -->
-        <!-- TODO: Might just be able to target net8 target, not sure if that will break source analyser or not -->
-        <!--<GeneratePackageOnBuild>true</GeneratePackageOnBuild>-->
-        <Description>A simple and fluent API that can be used with popular unit testing frameworks.</Description>
-        <PackageProjectUrl>https://dev.azure.com/DanJBower/BddUnit</PackageProjectUrl>
-        <RepositoryUrl>https://dev.azure.com/DanJBower/_git/BddUnit</RepositoryUrl>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackageProjectUrl>https://github.com/DanJBower/PipelineController</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/DanJBower/PipelineController.git</RepositoryUrl>
         <RepositoryType>Git</RepositoryType>
         <IncludeSymbols>true</IncludeSymbols>
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
@@ -35,14 +25,6 @@
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
     </PropertyGroup>
-
-    <!-- .NET Standard 2.0 doesn't have the Span<T> and IAsyncEnumerable<T> types -->
-    <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-        <PackageReference Include="PolySharp" Version="1.14.1">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" PrivateAssets="all" />
