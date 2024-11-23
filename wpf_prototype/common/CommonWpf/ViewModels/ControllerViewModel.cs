@@ -33,6 +33,18 @@ public partial class ControllerViewModel : ViewModel, IControllerViewModel
         Debug.WriteLine($"{nameof(StartPressed)}: {oldValue} -> {newValue}");
     }
 
+    [ObservableProperty]
+    private string _dPadUpTitle = "Up";
+
+    [ObservableProperty]
+    private string _dPadRightTitle = "Right";
+
+    [ObservableProperty]
+    private string _dPadDownTitle = "Down";
+
+    [ObservableProperty]
+    private string _dPadLeftTitle = "Left";
+
     /*[ObservableProperty]
     private bool _select;
 

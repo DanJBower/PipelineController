@@ -12,7 +12,8 @@
              d:DataContext="{d:DesignInstance Type=mockViewModels:MockControllerViewModel, IsDesignTimeCreatable=True}"
              d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
              d:FontFamily="{DynamicResource ContentControlThemeFontFamily}"
-             d:FontSize="{DynamicResource ControlContentThemeFontSize}">
+             d:FontSize="{DynamicResource ControlContentThemeFontSize}"
+             x:Name="ControllerViewElementBinding">
     <Border Padding="10">
         <Grid IsSharedSizeScope="True">
             <Grid.ColumnDefinitions>
@@ -62,16 +63,16 @@
             <components:FourButtonPanel Grid.Column="0"
                                         Grid.Row="1"
                                         GroupTitle="D-Pad"
-                                        ButtonOneTitle="Up"
+                                        ButtonOneTitle="{Binding DPadUpTitle, Mode=OneWay}"
                                         ButtonOnePressed="True"
                                         ButtonOnePressedColor="{DynamicResource ButtonActiveBrush}"
-                                        ButtonTwoTitle="Right"
+                                        ButtonTwoTitle="{Binding DPadRightTitle, Mode=OneWay}"
                                         ButtonTwoPressed="True"
                                         ButtonTwoPressedColor="{DynamicResource ButtonActiveBrush}"
-                                        ButtonThreeTitle="Down"
+                                        ButtonThreeTitle="{Binding DPadDownTitle, Mode=OneWay}"
                                         ButtonThreePressed="True"
                                         ButtonThreePressedColor="{DynamicResource ButtonActiveBrush}"
-                                        ButtonFourTitle="Left"
+                                        ButtonFourTitle="{Binding DPadLeftTitle, Mode=OneWay}"
                                         ButtonFourPressed="True"
                                         ButtonFourPressedColor="{DynamicResource ButtonActiveBrush}" />
 

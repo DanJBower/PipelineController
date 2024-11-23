@@ -24,7 +24,9 @@
                 Click="ToggleTheme"/>
         <commonViews:ControllerView Grid.Row="1">
             <commonViews:ControllerView.DataContext>
-                <commonViewModels:ControllerViewModel />
+                <commonViewModels:ControllerViewModel>
+                    <commonViewModels:ControllerViewModel.DPadUpTitle>Up (F)</commonViewModels:ControllerViewModel.DPadUpTitle>
+                </commonViewModels:ControllerViewModel>
             </commonViews:ControllerView.DataContext>
         </commonViews:ControllerView>
     </Grid>
