@@ -2291,7 +2291,7 @@ public class PrototypeClient : IAsyncDisposable
         }
     }
 
-    private readonly object _stateLock = new();
+    private readonly Lock _stateLock = new();
 
     public ControllerState ControllerState { get; private set; } = new();
 

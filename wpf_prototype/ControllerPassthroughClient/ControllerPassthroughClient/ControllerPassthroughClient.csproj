@@ -2,7 +2,7 @@
 
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
-        <TargetFramework>net8.0-windows</TargetFramework>
+        <TargetFramework>net9.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <UseWPF>true</UseWPF>
@@ -26,7 +26,7 @@
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
         <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
         <PackageReference Include="ModernWpfUI" Version="0.9.6" />
-        <PackageReference Include="Scrutor" Version="4.2.2" />
+        <PackageReference Include="Scrutor" Version="5.0.2" />
         <PackageReference Include="SimpleSourceGenerators" Version="1.0.0" />
     </ItemGroup>
 

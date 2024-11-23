@@ -1,6 +1,4 @@
 ﻿using ModernWpf;
-using SimpleSourceGenerators;
-using System.Diagnostics;
 using System.Windows;
 
 namespace ControllerPassthroughClient;
@@ -10,9 +8,6 @@ public partial class MainWindow
     public MainWindow()
     {
         InitializeComponent();
-
-        Debug.WriteLine(typeof(AutoDependencyPropertyAttribute<>).FullName!);
-
     }
 
     private void ToggleTheme(object sender, RoutedEventArgs e)
