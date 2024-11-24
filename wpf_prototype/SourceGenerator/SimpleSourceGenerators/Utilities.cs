@@ -68,12 +68,77 @@ public static class Utilities
         return attributeInfo;
     }
 
-    public static string ToCSharpStringWithFixes(this TypedConstant typedConstant)
+    public static string ToCSharpStringWithFixes(this TypedConstant typedConstant, bool castNonStandardNumericTypes = false)
     {
-        if (typedConstant.Type?.SpecialType is SpecialType.System_Single)
+        switch (typedConstant.Type?.SpecialType)
         {
-            var val = (float)typedConstant.Value!;
-            return $"{val:G99}f";
+            case SpecialType.System_Single:
+                {
+                    var val = (float)typedConstant.Value!;
+                    return $"{val:G99}f";
+                }
+            case SpecialType.System_Double:
+                {
+                    var val = (double)typedConstant.Value!;
+                    return $"{val:G99}d";
+                }
+            case SpecialType.System_Decimal:
+                {
+                    var val = (decimal)typedConstant.Value!;
+                    return $"{val}m";
+                }
+            case SpecialType.System_UInt32:
+                {
+                    var val = (uint)typedConstant.Value!;
+                    return $"{val}u";
+                }
+            case SpecialType.System_UInt64:
+                {
+                    var val = (ulong)typedConstant.Value!;
+                    return $"{val}ul";
+                }
+            case SpecialType.System_Int64:
+                {
+                    var val = (long)typedConstant.Value!;
+                    return $"{val}l";
+                }
+        }
+
+        if (castNonStandardNumericTypes)
+        {
+            switch (typedConstant.Type?.SpecialType)
+            {
+                case SpecialType.System_SByte:
+                    {
+                        var val = (sbyte)typedConstant.Value!;
+                        return $"(sbyte){val}";
+                    }
+                case SpecialType.System_Byte:
+                    {
+                        var val = (byte)typedConstant.Value!;
+                        return $"(byte){val}";
+                    }
+                case SpecialType.System_Int16:
+                    {
+                        var val = (short)typedConstant.Value!;
+                        return $"(short){val}";
+                    }
+                case SpecialType.System_UInt16:
+                    {
+                        var val = (ushort)typedConstant.Value!;
+                        return $"(ushort){val}";
+                    }
+                case SpecialType.System_IntPtr:
+                    {
+                        var val = (nint)typedConstant.Value!;
+                        return $"(nint){val}";
+                    }
+                case SpecialType.System_UIntPtr:
+                    {
+                        var val = (nuint)typedConstant.Value!;
+                        return $"(nuint){val}";
+                    }
+            }
         }
 
         return typedConstant.ToCSharpString();

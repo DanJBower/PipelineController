@@ -17,6 +17,12 @@ namespace DebugSimpleSourceGenerators;
     MetadataOptionFlags = FrameworkPropertyMetadataOptions.OverridesInheritanceBehavior | FrameworkPropertyMetadataOptions.AffectsArrange)]
 [AutoDependencyProperty<string>(Name = "TestProp4", DefaultValue = "Hi")]
 [AutoDependencyProperty<float>(Name = "TestProp7", DefaultValue = 0.5f)]
+[AutoDependencyProperty<uint>(Name = "TestProp8", DefaultValue = 8)]
+[AutoDependencyProperty<int>(Name = "TestProp9", DefaultValue = -6)]
+[AutoDependencyProperty<ulong>(Name = "TestProp10", DefaultValue = 10)]
+[AutoDependencyProperty<long>(Name = "TestProp11", DefaultValue = -10)]
+[AutoDependencyProperty<double>(Name = "TestProp12", DefaultValue = 0.5)]
+[AutoDependencyProperty<short>(Name = "TestProp13", DefaultValue = 5)]
 public partial class SampleControl : UserControl
 {
     [global::System.CodeDom.Compiler.GeneratedCode("SimpleSourceGenerators.AutoDependencyPropertyGenerator", "1.0.0.0")]

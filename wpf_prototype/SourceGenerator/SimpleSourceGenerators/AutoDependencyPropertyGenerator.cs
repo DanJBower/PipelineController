@@ -51,7 +51,7 @@ public class AutoDependencyPropertyGenerator : IIncrementalGenerator
 
                 if (namedParameters.TryGetValue("DefaultValue", out var defaultValueInfo))
                 {
-                    defaultValue = defaultValueInfo.ToCSharpStringWithFixes();
+                    defaultValue = defaultValueInfo.ToCSharpStringWithFixes(castNonStandardNumericTypes: true);
                     defaultSet = true;
                     includeFrameworkPropertyMetadata = true;
                 }
