@@ -11,10 +11,6 @@
                     <Border BorderThickness="{TemplateBinding Padding}"
                             Margin="{TemplateBinding Margin}">
                         <Grid Background="{TemplateBinding Background}">
-                            <Grid.Resources>
-                                <ui:BindingProxy x:Key="ButtonNotActiveBrushProxy" Value="{DynamicResource ButtonNotActiveBrush}" />
-                            </Grid.Resources>
-
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>

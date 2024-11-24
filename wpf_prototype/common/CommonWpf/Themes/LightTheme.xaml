@@ -7,4 +7,5 @@
     <SolidColorBrush x:Key="YActiveBrush" Color="#dbca33" />
     <SolidColorBrush x:Key="ButtonActiveBrush" Color="#b24e01" />
     <SolidColorBrush x:Key="ButtonNotActiveBrush" Color="#282828" />
+    <SolidColorBrush x:Key="JoystickBackground" Color="AliceBlue" />
 </ResourceDictionary>

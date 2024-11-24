@@ -19,6 +19,7 @@ public partial class ControllerViewModel : ViewModel, IControllerViewModel
             _uiDispatcher.Invoke(() =>
             {
                 StartPressed = !StartPressed;
+                L3 = !L3;
             }, DispatcherPriority.Send);
         };
         timer.Interval = 1000;
@@ -44,6 +45,9 @@ public partial class ControllerViewModel : ViewModel, IControllerViewModel
 
     [ObservableProperty]
     private string _dPadLeftTitle = "Left";
+
+    [ObservableProperty]
+    private bool _l3;
 
     /*[ObservableProperty]
     private bool _select;

@@ -30,7 +30,6 @@
             <Grid Grid.Column="0"
                   Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -44,15 +43,23 @@
 
                 <Label Grid.Column="0"
                        Grid.Row="0"
-                       Grid.ColumnSpan="5"
+                       Grid.ColumnSpan="4"
                        Content="Joysticks"
                        FontSize="20" />
 
-                <views:JoystickView Grid.Column="1"
-                                    Grid.Row="1" />
+                <components:JoystickPanel Grid.Column="0"
+                                          Grid.Row="1"
+                                          Title="Left Stick"
+                                          X="0"
+                                          Y="0"
+                                          Pressed="False" />
 
-                <views:JoystickView Grid.Column="3"
-                                    Grid.Row="1" />
+                <components:JoystickPanel Grid.Column="2"
+                                          Grid.Row="1"
+                                          Title="Right Stick"
+                                          X="0.152"
+                                          Y="-0.378"
+                                          Pressed="True" />
             </Grid>
 
             <Label Grid.Column="1"
