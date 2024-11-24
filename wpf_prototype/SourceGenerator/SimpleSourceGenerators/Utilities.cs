@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Text;
 
@@ -65,5 +66,16 @@ public static class Utilities
         }
 
         return attributeInfo;
+    }
+
+    public static string ToCSharpStringWithFixes(this TypedConstant typedConstant)
+    {
+        if (typedConstant.Type?.SpecialType is SpecialType.System_Single)
+        {
+            var val = (float)typedConstant.Value!;
+            return $"{val:G99}f";
+        }
+
+        return typedConstant.ToCSharpString();
     }
 }

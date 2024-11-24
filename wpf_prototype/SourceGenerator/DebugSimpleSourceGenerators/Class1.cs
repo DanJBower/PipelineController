@@ -16,6 +16,7 @@ namespace DebugSimpleSourceGenerators;
     IncludeValidateValueCallback = true,
     MetadataOptionFlags = FrameworkPropertyMetadataOptions.OverridesInheritanceBehavior | FrameworkPropertyMetadataOptions.AffectsArrange)]
 [AutoDependencyProperty<string>(Name = "TestProp4", DefaultValue = "Hi")]
+[AutoDependencyProperty<float>(Name = "TestProp7", DefaultValue = 0.5f)]
 public partial class SampleControl : UserControl
 {
     [global::System.CodeDom.Compiler.GeneratedCode("SimpleSourceGenerators.AutoDependencyPropertyGenerator", "1.0.0.0")]

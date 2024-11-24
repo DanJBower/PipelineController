@@ -1,5 +1,4 @@
 ﻿using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using System.Text;
@@ -52,7 +51,7 @@ public class AutoDependencyPropertyGenerator : IIncrementalGenerator
 
                 if (namedParameters.TryGetValue("DefaultValue", out var defaultValueInfo))
                 {
-                    defaultValue = defaultValueInfo.ToCSharpString();
+                    defaultValue = defaultValueInfo.ToCSharpStringWithFixes();
                     defaultSet = true;
                     includeFrameworkPropertyMetadata = true;
                 }
@@ -142,7 +141,7 @@ public class AutoDependencyPropertyGenerator : IIncrementalGenerator
                 var isAnimationProhibited = "";
                 if (namedParameters.TryGetValue("IsAnimationProhibited", out var isAnimationProhibitedInfo))
                 {
-                    isAnimationProhibited = isAnimationProhibitedInfo.ToCSharpString();
+                    isAnimationProhibited = isAnimationProhibitedInfo.ToCSharpStringWithFixes();
                     isAnimationProhibitedSet = true;
                     includeFrameworkPropertyMetadata = true;
                 }
@@ -151,7 +150,7 @@ public class AutoDependencyPropertyGenerator : IIncrementalGenerator
                 var defaultUpdateSourceTrigger = "";
                 if (namedParameters.TryGetValue("DefaultUpdateSourceTrigger", out var defaultUpdateSourceTriggerInfo))
                 {
-                    defaultUpdateSourceTrigger = defaultUpdateSourceTriggerInfo.ToCSharpString();
+                    defaultUpdateSourceTrigger = defaultUpdateSourceTriggerInfo.ToCSharpStringWithFixes();
                     defaultUpdateSourceTriggerSet = true;
                     includeFrameworkPropertyMetadata = true;
                 }
@@ -160,7 +159,7 @@ public class AutoDependencyPropertyGenerator : IIncrementalGenerator
                 var metadataOptionFlags = "";
                 if (namedParameters.TryGetValue("MetadataOptionFlags", out var metadataOptionFlagsInfo))
                 {
-                    metadataOptionFlags = metadataOptionFlagsInfo.ToCSharpString();
+                    metadataOptionFlags = metadataOptionFlagsInfo.ToCSharpStringWithFixes();
                     metadataOptionFlagsSet = true;
                     includeFrameworkPropertyMetadata = true;
                 }
