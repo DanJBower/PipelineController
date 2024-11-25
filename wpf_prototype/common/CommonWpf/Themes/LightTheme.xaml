@@ -24,4 +24,5 @@
 
     <Color x:Key="ThumbColor">#282828</Color>
     <SolidColorBrush x:Key="ThumbBrush" Color="{DynamicResource ThumbColor}" />
+    <SolidColorBrush x:Key="SliderThumbBackground" Color="{DynamicResource ThumbColor}" />
 </ResourceDictionary>

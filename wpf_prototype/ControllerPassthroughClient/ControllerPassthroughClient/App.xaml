@@ -28,7 +28,6 @@
             <FontFamily x:Key="ContentControlThemeFontFamily">Consolas</FontFamily>
             <system:Double x:Key="ControlContentThemeFontSize">16</system:Double>
             <system:Double x:Key="SliderTrackThemeHeight">8</system:Double>
-            <SolidColorBrush x:Key="SliderThumbBackground" Color="{DynamicResource ThumbColor}" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>
