@@ -2,7 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml"
-             xmlns:ui="http://schemas.modernwpf.com/2019">
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -25,6 +26,9 @@
                 <ui:XamlControlsResources />
             </ResourceDictionary.MergedDictionaries>
             <FontFamily x:Key="ContentControlThemeFontFamily">Consolas</FontFamily>
+            <system:Double x:Key="ControlContentThemeFontSize">16</system:Double>
+            <system:Double x:Key="SliderTrackThemeHeight">8</system:Double>
+            <SolidColorBrush x:Key="SliderThumbBackground" Color="{DynamicResource ThumbColor}" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

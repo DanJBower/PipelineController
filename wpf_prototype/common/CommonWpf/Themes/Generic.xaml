@@ -2,5 +2,6 @@
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="/CommonWpf;component/Themes/FourButtonPanelStyle.xaml" />
         <ResourceDictionary Source="/CommonWpf;component/Themes/JoystickPanelStyle.xaml" />
+        <ResourceDictionary Source="/CommonWpf;component/Themes/TriggerPanelStyle.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

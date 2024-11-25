@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mockViewModels="clr-namespace:CommonWpf.ViewModels.Mocks"
              xmlns:components="clr-namespace:CommonWpf.Components"
-             xmlns:views="clr-namespace:CommonWpf.Views"
              mc:Ignorable="d"
              d:DesignHeight="480"
              d:DesignWidth="1024"
@@ -30,9 +29,6 @@
             <Grid Grid.Column="0"
                   Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -43,29 +39,73 @@
 
                 <Label Grid.Column="0"
                        Grid.Row="0"
-                       Grid.ColumnSpan="4"
                        Content="Joysticks"
                        FontSize="20" />
 
-                <components:JoystickPanel Grid.Column="0"
-                                          Grid.Row="1"
-                                          Title="Left Stick"
-                                          X="0"
-                                          Y="0"
-                                          Pressed="False" />
+                <Viewbox Grid.Column="0"
+                         Grid.Row="1"
+                         Stretch="Uniform"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center">
+                    <DockPanel LastChildFill="False"
+                               HorizontalAlignment="Center">
+                        <components:JoystickPanel Title="Left Stick"
+                                                  X="0"
+                                                  Y="0"
+                                                  Pressed="False"
+                                                  Margin="5 0"/>
 
-                <components:JoystickPanel Grid.Column="2"
-                                          Grid.Row="1"
-                                          Title="Right Stick"
-                                          X="0.152"
-                                          Y="-0.378"
-                                          Pressed="True" />
+                        <components:JoystickPanel Title="Right Stick"
+                                                  X="0.152"
+                                                  Y="-0.378"
+                                                  Pressed="True"
+                                                  Margin="5 0"/>
+                    </DockPanel>
+                </Viewbox>
             </Grid>
 
-            <Label Grid.Column="1"
-                   Grid.Row="0"
-                   Content="Triggers"
-                   FontSize="20" />
+            <Grid Grid.Column="1"
+                  Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Column="0"
+                       Grid.Row="0"
+                       Content="Triggers"
+                       FontSize="20" />
+
+                <Viewbox Grid.Column="0"
+                         Grid.Row="1"
+                         Stretch="Uniform"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Center">
+                    <Grid VerticalAlignment="Center"
+                          Width="600">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <components:TriggerPanel Grid.Column="0"
+                                                 Grid.Row="0"
+                                                 DockPanel.Dock="Top"
+                                                 TriggerTitle="Left Trigger"
+                                                 TriggerValue="0.8" />
+
+                        <components:TriggerPanel Grid.Column="0"
+                                                 Grid.Row="1"
+                                                 DockPanel.Dock="Bottom"
+                                                 TriggerTitle="Right Trigger"
+                                                 TriggerValue="0" />
+                    </Grid>
+                </Viewbox>
+            </Grid>
 
             <components:FourButtonPanel Grid.Column="0"
                                         Grid.Row="1"

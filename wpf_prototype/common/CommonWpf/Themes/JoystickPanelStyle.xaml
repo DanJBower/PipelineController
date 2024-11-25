@@ -25,7 +25,7 @@
                                      Stretch="Uniform">
                                 <Canvas Width="126"
                                         Height="126">
-                                    <Ellipse Fill="{DynamicResource JoystickBackground}"
+                                    <Ellipse Fill="{DynamicResource JoystickBackgroundBrush}"
                                              Width="100"
                                              Height="100"
                                              Canvas.Left="13"
@@ -33,7 +33,7 @@
                                     <!-- Canvas.Left and Canvas.Top can have value 0 - 100 and centre stays in canvas -->
                                     <!-- 50 is the centre point -->
                                     <Ellipse x:Name="JoystickPosition"
-                                             Fill="{DynamicResource ButtonNotActiveBrush}"
+                                             Fill="{DynamicResource ThumbBrush}"
                                              Width="26"
                                              Height="26">
                                         <Ellipse.RenderTransform>
@@ -47,7 +47,7 @@
                             <Border Grid.Column="1"
                                     Grid.Row="0"
                                     BorderThickness="5 0">
-                                <Grid>
+                                <Grid VerticalAlignment="Center">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
@@ -62,7 +62,8 @@
 
                                     <TextBlock Grid.Column="0"
                                                Grid.Row="0"
-                                               Text="{TemplateBinding Title}" />
+                                               Text="{TemplateBinding Title}"
+                                               FontSize="18" />
 
                                     <TextBlock Grid.Column="0"
                                                Grid.Row="1">
