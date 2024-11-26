@@ -11,6 +11,7 @@
         Width="1024"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
+        d:Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
         d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
         FontFamily="{DynamicResource ContentControlThemeFontFamily}"
         FontSize="{DynamicResource ControlContentThemeFontSize}">
@@ -19,13 +20,23 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Button Content="Toggle Theme"
-                Grid.Row="0"
-                Click="ToggleTheme"/>
+
+        <DockPanel Grid.Row="0"
+                   LastChildFill="False">
+            <Button DockPanel.Dock="Left"
+                    Content="Keyboard Control (Enabled)"
+                    Margin="5" />
+
+            <Button DockPanel.Dock="Right"
+                    Content="Toggle Theme"
+                    Click="ToggleTheme"
+                    Margin="5" />
+        </DockPanel>
+
         <commonViews:ControllerView Grid.Row="1">
             <commonViews:ControllerView.DataContext>
                 <commonViewModels:ControllerViewModel>
-                    <commonViewModels:ControllerViewModel.DPadUpTitle>Up (F)</commonViewModels:ControllerViewModel.DPadUpTitle>
+                    <commonViewModels:ControllerViewModel.UpTitle>Up (F)</commonViewModels:ControllerViewModel.UpTitle>
                 </commonViewModels:ControllerViewModel>
             </commonViews:ControllerView.DataContext>
         </commonViews:ControllerView>

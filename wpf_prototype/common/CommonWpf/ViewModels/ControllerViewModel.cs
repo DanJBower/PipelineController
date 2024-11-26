@@ -18,38 +18,22 @@ public partial class ControllerViewModel : ViewModel, IControllerViewModel
         {
             _uiDispatcher.Invoke(() =>
             {
-                StartPressed = !StartPressed;
-                L3 = !L3;
+                Start = !Start;
             }, DispatcherPriority.Send);
         };
         timer.Interval = 1000;
         timer.Enabled = true;
     }
 
-    [ObservableProperty]
-    private bool _startPressed;
-
-    partial void OnStartPressedChanged(bool oldValue, bool newValue)
+    partial void OnStartChanged(bool oldValue, bool newValue)
     {
-        Debug.WriteLine($"{nameof(StartPressed)}: {oldValue} -> {newValue}");
+        Debug.WriteLine($"{nameof(Start)}: {oldValue} -> {newValue}");
     }
 
     [ObservableProperty]
-    private string _dPadUpTitle = "Up";
+    private bool _start;
 
     [ObservableProperty]
-    private string _dPadRightTitle = "Right";
-
-    [ObservableProperty]
-    private string _dPadDownTitle = "Down";
-
-    [ObservableProperty]
-    private string _dPadLeftTitle = "Left";
-
-    [ObservableProperty]
-    private bool _l3;
-
-    /*[ObservableProperty]
     private bool _select;
 
     [ObservableProperty]
@@ -110,7 +94,65 @@ public partial class ControllerViewModel : ViewModel, IControllerViewModel
     private bool _rightBumper;
 
     [ObservableProperty]
-    private float _rightTrigger;*/
+    private float _rightTrigger;
 
+    [ObservableProperty]
+    private string _startTitle = "Start";
 
+    [ObservableProperty]
+    private string _selectTitle = "Select";
+
+    [ObservableProperty]
+    private string _homeTitle = "Home";
+
+    [ObservableProperty]
+    private string _bigHomeTitle = "Touch\nPad";
+
+    [ObservableProperty]
+    private string _xTitle = "X";
+
+    [ObservableProperty]
+    private string _yTitle = "Y";
+
+    [ObservableProperty]
+    private string _aTitle = "A";
+
+    [ObservableProperty]
+    private string _bTitle = "B";
+
+    [ObservableProperty]
+    private string _upTitle = "Up";
+
+    [ObservableProperty]
+    private string _rightTitle = "Right";
+
+    [ObservableProperty]
+    private string _downTitle = "Down";
+
+    [ObservableProperty]
+    private string _leftTitle = "Left";
+
+    [ObservableProperty]
+    private string _leftStickTitle = "Left Stick";
+
+    [ObservableProperty]
+    private string _leftStickInTitle = "L3";
+
+    [ObservableProperty]
+    private string _rightStickTitle = "Right Stick";
+
+    [ObservableProperty]
+    private string _rightStickInTitle = "R3";
+
+    [ObservableProperty]
+    private string _leftBumperTitle = "LB";
+
+    [ObservableProperty]
+    private string _leftTriggerTitle = "LT";
+
+    [ObservableProperty]
+    private string _rightBumperTitle = "RB";
+
+    [ObservableProperty]
+    private string _rightTriggerTitle = "RT";
 }
