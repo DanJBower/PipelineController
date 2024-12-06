@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:commonViews="clr-namespace:CommonWpf.Views;assembly=CommonWpf"
         xmlns:commonViewModels="clr-namespace:CommonWpf.ViewModels;assembly=CommonWpf"
+        xmlns:converters="clr-namespace:CommonWpf.Converters;assembly=CommonWpf"
         mc:Ignorable="d"
         Title="MainWindow"
         Height="540"
@@ -16,7 +17,9 @@
         d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
         FontFamily="{DynamicResource ContentControlThemeFontFamily}"
         FontSize="{DynamicResource ControlContentThemeFontSize}"
-        d:DataContext="{d:DesignInstance Type=local:MainViewModel, IsDesignTimeCreatable=True}">
+        d:DataContext="{d:DesignInstance Type=local:MainViewModel, IsDesignTimeCreatable=True}"
+        PreviewKeyDown="MainWindow_OnPreviewKeyDown"
+        PreviewKeyUp="MainWindow_OnPreviewKeyUp">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -47,32 +50,37 @@
                          MinWidth="0"
                          Margin="10 5"
                          GroupName="Input Mode"
-                         IsChecked="True" />
+                         IsChecked="{Binding InputMode, Converter={converters:EnumSelectedConverter}, ConverterParameter={x:Static local:InputMode.Zero}}" />
 
             <RadioButton DockPanel.Dock="Left"
                          Content="Keyboard"
                          MinWidth="0"
                          Margin="10 5"
-                         GroupName="Input Mode" />
+                         GroupName="Input Mode"
+                         IsChecked="{Binding InputMode, Converter={converters:EnumSelectedConverter}, ConverterParameter={x:Static local:InputMode.Keyboard}}" />
 
             <RadioButton DockPanel.Dock="Left"
                          Content="Xbox Controller"
                          IsEnabled="False"
                          MinWidth="0"
                          Margin="10 5"
-                         GroupName="Input Mode" />
+                         GroupName="Input Mode"
+                         IsChecked="{Binding InputMode, Converter={converters:EnumSelectedConverter}, ConverterParameter={x:Static local:InputMode.XboxController}}" />
 
             <RadioButton DockPanel.Dock="Left"
                          Content="Playstation Controller"
                          IsEnabled="False"
                          MinWidth="0"
                          Margin="10 5"
-                         GroupName="Input Mode" />
+                         GroupName="Input Mode"
+                         IsChecked="{Binding InputMode, Converter={converters:EnumSelectedConverter}, ConverterParameter={x:Static local:InputMode.PlaystationController}}"  />
 
-            <Label DockPanel.Dock="Right"
-                   Content="Control Status: Zeroed"
+            <TextBlock DockPanel.Dock="Right"
                    VerticalAlignment="Center"
-                   Margin="5" />
+                   Margin="5">
+                <Run Text="Control Status:" />
+                <Run Text="{Binding InputStatus, Mode=OneWay}" />
+            </TextBlock>
         </DockPanel>
 
         <commonViews:ControllerView Grid.Row="2"

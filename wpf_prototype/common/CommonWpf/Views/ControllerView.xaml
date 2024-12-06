@@ -56,7 +56,7 @@
                                                   Pressed="{Binding LeftStickIn}"
                                                   Margin="5 0"/>
 
-                        <components:JoystickPanel Title="{Binding RightStickInTitle}"
+                        <components:JoystickPanel Title="{Binding RightStickTitle}"
                                                   X="{Binding RightStickX}"
                                                   Y="{Binding RightStickY}"
                                                   Pressed="{Binding RightStickIn}"
