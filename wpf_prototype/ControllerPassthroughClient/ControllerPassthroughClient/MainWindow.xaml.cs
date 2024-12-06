@@ -8,6 +8,7 @@ public partial class MainWindow
     public MainWindow()
     {
         InitializeComponent();
+        DataContext = new MainViewModel();
     }
 
     private void ToggleTheme(object sender, RoutedEventArgs e)

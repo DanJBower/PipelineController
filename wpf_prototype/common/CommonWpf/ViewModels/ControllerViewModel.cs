@@ -1,50 +1,10 @@
 ﻿using CommonWpf.ViewModels.Interfaces;
 using CommunityToolkit.Mvvm.ComponentModel;
-using System.Diagnostics;
-using System.Windows;
-using System.Windows.Threading;
-using Timer = System.Timers.Timer;
 
 namespace CommonWpf.ViewModels;
 
 public partial class ControllerViewModel : ViewModel, IControllerViewModel
 {
-    private readonly Dispatcher _uiDispatcher = Application.Current.Dispatcher;
-    private static readonly Random Random = new(Guid.NewGuid().GetHashCode());
-
-    private static string RandomString(int length)
-    {
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        var result = "";
-
-        for (var i = 0; i < length; i++)
-        {
-            result += chars[Random.Next(chars.Length)];
-        }
-
-        return result;
-    }
-
-    public ControllerViewModel()
-    {
-        Timer timer = new();
-        timer.Elapsed += (_, _) =>
-        {
-            _uiDispatcher.Invoke(() =>
-            {
-                Start = !Start;
-                ATitle = RandomString(3);
-            }, DispatcherPriority.Send);
-        };
-        timer.Interval = 1000;
-        timer.Enabled = true;
-    }
-
-    partial void OnStartChanged(bool oldValue, bool newValue)
-    {
-        Debug.WriteLine($"{nameof(Start)}: {oldValue} -> {newValue}");
-    }
-
     [ObservableProperty]
     private bool _start;
 

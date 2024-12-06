@@ -10,11 +10,13 @@
         Height="540"
         Width="1024"
         xmlns:ui="http://schemas.modernwpf.com/2019"
+        xmlns:local="clr-namespace:ControllerPassthroughClient"
         ui:WindowHelper.UseModernWindowStyle="True"
         d:Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
         d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
         FontFamily="{DynamicResource ContentControlThemeFontFamily}"
-        FontSize="{DynamicResource ControlContentThemeFontSize}">
+        FontSize="{DynamicResource ControlContentThemeFontSize}"
+        d:DataContext="{d:DesignInstance Type=local:MainViewModel, IsDesignTimeCreatable=True}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -73,12 +75,7 @@
                    Margin="5" />
         </DockPanel>
 
-        <commonViews:ControllerView Grid.Row="2">
-            <commonViews:ControllerView.DataContext>
-                <commonViewModels:ControllerViewModel>
-                    <commonViewModels:ControllerViewModel.UpTitle>Up (F)</commonViewModels:ControllerViewModel.UpTitle>
-                </commonViewModels:ControllerViewModel>
-            </commonViews:ControllerView.DataContext>
-        </commonViews:ControllerView>
+        <commonViews:ControllerView Grid.Row="2"
+                                    DataContext="{Binding ControllerViewModel, Mode=OneWay}"/>
     </Grid>
 </Window>

@@ -6,7 +6,7 @@ namespace CommonWpf.Converters;
 
 public class ButtonActiveColorConverter : MarkupMultiValueConverter
 {
-    public override object? Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public override object? Convert(object[] values, Type targetType, object? parameter, CultureInfo culture)
     {
         if (values is [BindingProxy { Value: SolidColorBrush notPressedBrush }, SolidColorBrush pressedBrush, bool isPressed])
         {
