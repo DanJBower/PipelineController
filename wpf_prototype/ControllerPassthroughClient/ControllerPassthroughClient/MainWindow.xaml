@@ -27,21 +27,44 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0">
-            <Button DockPanel.Dock="Left"
-                    Content="Connect to Server"
-                    Margin="5" />
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
 
-            <Button DockPanel.Dock="Right"
-                    Content="Toggle Theme"
-                    Click="ToggleTheme"
-                    Margin="5" />
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-            <Label Content="Server Connection: Disconnected"
+                <Button Grid.Column="0"
+                        Content="Connect to Server"
+                        Margin="5" />
+
+                <CheckBox Grid.Column="1"
+                          Content="Debug Light"
+                          Margin="10 5"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          IsChecked="{Binding DebugLight}" />
+            </Grid>
+
+            <Label Grid.Column="1"
+                   Content="Server Connection: Disconnected"
                    Margin="5"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center" />
-        </DockPanel>
+
+            <Button Grid.Column="2"
+                    DockPanel.Dock="Right"
+                    Content="Toggle Theme"
+                    Click="ToggleTheme"
+                    HorizontalAlignment="Right"
+                    Margin="5" />
+        </Grid>
 
         <DockPanel Grid.Row="1"
                    LastChildFill="False">

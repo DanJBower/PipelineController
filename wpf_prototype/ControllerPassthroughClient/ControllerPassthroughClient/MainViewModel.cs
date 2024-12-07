@@ -6,6 +6,9 @@ namespace ControllerPassthroughClient;
 public partial class MainViewModel : ViewModel
 {
     [ObservableProperty]
+    private bool _debugLight;
+
+    [ObservableProperty]
     private InputMode _inputMode = InputMode.Zero;
 
     [ObservableProperty]
