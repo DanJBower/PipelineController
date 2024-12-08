@@ -1,12 +1,56 @@
 ﻿using CommonWpf.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Diagnostics;
+using System.Windows.Input;
 
 namespace ControllerPassthroughClient;
 
 public partial class MainViewModel : ViewModel
 {
     [ObservableProperty]
+    private string _serverConnectionButtonText = "Connect to Server";
+
+    [ObservableProperty]
     private bool _debugLight;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ToggleServerConnectionCommand))]
+    private ConnectionStatus _serverConnectionStatus;
+
+    [RelayCommand]
+    private void OnPreviewKeyDown(KeyEventArgs? keyEventArgs)
+    {
+        if (keyEventArgs is null)
+        {
+            return;
+        }
+
+        Debug.WriteLine($"Down: {keyEventArgs.Key}");
+        keyEventArgs.Handled = true;
+    }
+
+    [RelayCommand]
+    private void OnPreviewKeyUp(KeyEventArgs? keyEventArgs)
+    {
+        if (keyEventArgs is null)
+        {
+            return;
+        }
+
+        Debug.WriteLine($"Up: {keyEventArgs.Key}");
+    }
+
+    [RelayCommand(CanExecute = nameof(CanToggleServerConnection))]
+    private void ToggleServerConnection()
+    {
+
+    }
+
+    private bool CanToggleServerConnection()
+    {
+        return true;
+    }
 
     [ObservableProperty]
     private InputMode _inputMode = InputMode.Zero;

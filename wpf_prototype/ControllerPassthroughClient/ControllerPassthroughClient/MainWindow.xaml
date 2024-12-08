@@ -12,14 +12,22 @@
         Width="1024"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         xmlns:local="clr-namespace:ControllerPassthroughClient"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         ui:WindowHelper.UseModernWindowStyle="True"
         d:Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
         d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
         FontFamily="{DynamicResource ContentControlThemeFontFamily}"
         FontSize="{DynamicResource ControlContentThemeFontSize}"
-        d:DataContext="{d:DesignInstance Type=local:MainViewModel, IsDesignTimeCreatable=True}"
-        PreviewKeyDown="MainWindow_OnPreviewKeyDown"
-        PreviewKeyUp="MainWindow_OnPreviewKeyUp">
+        d:DataContext="{d:DesignInstance Type=local:MainViewModel, IsDesignTimeCreatable=True}">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="PreviewKeyDown" >
+            <i:InvokeCommandAction Command="{Binding PreviewKeyDownCommand}" PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+        <i:EventTrigger EventName="PreviewKeyUp" >
+            <i:InvokeCommandAction Command="{Binding PreviewKeyUpCommand}" PassEventArgsToCommand="True" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -41,7 +49,8 @@
                 </Grid.ColumnDefinitions>
 
                 <Button Grid.Column="0"
-                        Content="Connect to Server"
+                        Content="{Binding ServerConnectionButtonText}"
+                        Command="{Binding ToggleServerConnectionCommand}"
                         Margin="5" />
 
                 <CheckBox Grid.Column="1"
@@ -52,11 +61,13 @@
                           IsChecked="{Binding DebugLight}" />
             </Grid>
 
-            <Label Grid.Column="1"
-                   Content="Server Connection: Disconnected"
-                   Margin="5"
-                   HorizontalAlignment="Center"
-                   VerticalAlignment="Center" />
+            <TextBlock Grid.Column="1"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Margin="5">
+                <Run Text="Server Connection:" />
+                <Run Text="{Binding ServerConnectionStatus, Mode=OneWay}" />
+            </TextBlock>
 
             <Button Grid.Column="2"
                     DockPanel.Dock="Right"
