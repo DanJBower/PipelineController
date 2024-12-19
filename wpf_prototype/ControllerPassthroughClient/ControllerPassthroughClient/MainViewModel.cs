@@ -242,7 +242,7 @@ public partial class MainViewModel : ViewModel
             {
                 _client = await ClientUtilities.ConnectToClient(ip, port, _serverConnectionCancellationTokenSource.Token);
             }
-            catch (OperationCanceledException e)
+            catch (OperationCanceledException)
             {
                 ServerConnectionStatus = ConnectionStatus.Disconnected;
                 ServerConnectionButtonText = ConnectToServerDefaultText;
