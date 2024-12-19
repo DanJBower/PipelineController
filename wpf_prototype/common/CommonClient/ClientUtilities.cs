@@ -14,10 +14,19 @@ namespace CommonClient;
 
 public static class ClientUtilities
 {
-    public static async Task<PrototypeClient> ConnectToClient(CancellationToken cancellationToken = default)
+    public static async Task<PrototypeClient> FindAndConnectToClient(CancellationToken cancellationToken = default)
+    {
+        var (ip, port) = await FindClient(cancellationToken);
+        var mqttClient = await ConnectToClient(ip, port, cancellationToken);
+        return mqttClient;
+    }
+
+    public static async Task<PrototypeClient> ConnectToClient(
+        string ip,
+        int port,
+        CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        var (ip, port) = await FindClient(cancellationToken);
         var factory = new MqttFactory();
         var mqttClient = factory.CreateMqttClient();
 
@@ -26,11 +35,14 @@ public static class ClientUtilities
             .WithProtocolVersion(MqttProtocolVersion.V500)
             .Build();
 
+        cancellationToken.ThrowIfCancellationRequested();
         await mqttClient.ConnectAsync(options, cancellationToken);
         return new(mqttClient);
     }
 
-    private static async Task<(string, int)> FindClient(CancellationToken cancellationToken)
+    public static async Task<(string, int)> FindClient(CancellationToken cancellationToken = default,
+        int reSearchFrequencyMs = 1000,
+        int maxSearches = 10)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var port = 0;
@@ -67,12 +79,24 @@ public static class ClientUtilities
 
         mdns.Start();
 
+        var searches = 0;
+
         using Timer timer = new();
         timer.Elapsed += (_, _) =>
         {
+            if (searches > maxSearches)
+            {
+                // ReSharper disable once AccessToDisposedClosure
+                timer.Enabled = false;
+                tcs.TrySetException(new ServerNotFoundException());
+                return;
+            }
+
+            // ReSharper disable once AccessToDisposedClosure
             serviceDiscovery.QueryServiceInstances(ServerConstants.ServiceName);
+            searches++;
         };
-        timer.Interval = 1000;
+        timer.Interval = reSearchFrequencyMs;
         timer.Enabled = true;
 
         serviceDiscovery.QueryServiceInstances(ServerConstants.ServiceName);

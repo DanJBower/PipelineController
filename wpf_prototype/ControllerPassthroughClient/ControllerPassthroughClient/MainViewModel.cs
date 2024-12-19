@@ -1,15 +1,30 @@
-﻿using CommonWpf.ViewModels;
+﻿using CommonClient;
+using CommonWpf.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Diagnostics;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace ControllerPassthroughClient;
 
 public partial class MainViewModel : ViewModel
 {
+    private readonly Dispatcher _uiDispatcher = Application.Current.Dispatcher;
+    private CancellationTokenSource _serverConnectionCancellationTokenSource;
+
+    private void DispatchPropertyChange(Action changeProperties)
+    {
+        _uiDispatcher.Invoke(changeProperties, DispatcherPriority.Send);
+    }
+
+    private PrototypeClient _client;
+
+    private const string ConnectToServerDefaultText = "Connect to Server";
+
     [ObservableProperty]
-    private string _serverConnectionButtonText = "Connect to Server";
+    private string _serverConnectionButtonText = ConnectToServerDefaultText;
 
     [ObservableProperty]
     private bool _debugLight;
@@ -42,14 +57,75 @@ public partial class MainViewModel : ViewModel
     }
 
     [RelayCommand(CanExecute = nameof(CanToggleServerConnection))]
-    private void ToggleServerConnection()
+    private async Task ToggleServerConnection()
     {
+        if (ServerConnectionStatus is ConnectionStatus.Disconnected or ConnectionStatus.ServerNotFound or ConnectionStatus.Error)
+        {
+            if (_serverConnectionCancellationTokenSource is not null)
+            {
+                _serverConnectionCancellationTokenSource.Dispose();
+            }
 
+            _serverConnectionCancellationTokenSource = new();
+
+            ServerConnectionButtonText = "Cancel Server Connection";
+            ServerConnectionStatus = ConnectionStatus.Searching;
+
+            string ip;
+            int port;
+
+            try
+            {
+                (ip, port) = await ClientUtilities.FindClient(_serverConnectionCancellationTokenSource.Token);
+            }
+            catch (ServerNotFoundException)
+            {
+                ServerConnectionStatus = ConnectionStatus.ServerNotFound;
+                ServerConnectionButtonText = ConnectToServerDefaultText;
+                return;
+            }
+            catch (OperationCanceledException)
+            {
+                ServerConnectionStatus = ConnectionStatus.Disconnected;
+                ServerConnectionButtonText = ConnectToServerDefaultText;
+                return;
+            }
+
+            ServerConnectionStatus = ConnectionStatus.Connecting;
+
+            try
+            {
+                _client = await ClientUtilities.ConnectToClient(ip, port, _serverConnectionCancellationTokenSource.Token);
+            }
+            catch (OperationCanceledException e)
+            {
+                ServerConnectionStatus = ConnectionStatus.Disconnected;
+                ServerConnectionButtonText = ConnectToServerDefaultText;
+                return;
+            }
+
+            ServerConnectionButtonText = "Disconnect from Server";
+            ServerConnectionStatus = ConnectionStatus.Connected;
+        }
+        else if (ServerConnectionStatus is ConnectionStatus.Connected)
+        {
+            ServerConnectionStatus = ConnectionStatus.Disconnecting;
+            await _client.DisposeAsync();
+            ServerConnectionStatus = ConnectionStatus.Disconnected;
+            ServerConnectionButtonText = ConnectToServerDefaultText;
+        }
+        else
+        {
+            if (_serverConnectionCancellationTokenSource is not null)
+            {
+                await _serverConnectionCancellationTokenSource.CancelAsync().ConfigureAwait(false);
+            }
+        }
     }
 
     private bool CanToggleServerConnection()
     {
-        return true;
+        return ServerConnectionStatus is not ConnectionStatus.Disconnecting;
     }
 
     [ObservableProperty]
@@ -68,6 +144,21 @@ public partial class MainViewModel : ViewModel
         };
 
         UpdateKeyboardPressLabels(value);
+
+        switch (value)
+        {
+            case InputMode.Zero:
+                Zero();
+                break;
+            case InputMode.Keyboard:
+                break;
+            case InputMode.XboxController:
+                break;
+            case InputMode.PlaystationController:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(value), value, null);
+        }
     }
 
     [ObservableProperty]
@@ -125,5 +216,31 @@ public partial class MainViewModel : ViewModel
             ControllerViewModel.RightBumperTitle = ControllerViewModel.DefaultRightBumperTitle;
             ControllerViewModel.RightTriggerTitle = ControllerViewModel.DefaultRightTriggerTitle;
         }
+    }
+
+    private void Zero()
+    {
+        ControllerViewModel.Start = false;
+        ControllerViewModel.Select = false;
+        ControllerViewModel.Home = false;
+        ControllerViewModel.BigHome = false;
+        ControllerViewModel.X = false;
+        ControllerViewModel.Y = false;
+        ControllerViewModel.A = false;
+        ControllerViewModel.B = false;
+        ControllerViewModel.Up = false;
+        ControllerViewModel.Right = false;
+        ControllerViewModel.Down = false;
+        ControllerViewModel.Left = false;
+        ControllerViewModel.LeftStickX = 0;
+        ControllerViewModel.LeftStickY = 0;
+        ControllerViewModel.LeftStickIn = false;
+        ControllerViewModel.RightStickX = 0;
+        ControllerViewModel.RightStickY = 0;
+        ControllerViewModel.RightStickIn = false;
+        ControllerViewModel.LeftBumper = false;
+        ControllerViewModel.LeftTrigger = 0;
+        ControllerViewModel.RightBumper = false;
+        ControllerViewModel.RightTrigger = 0;
     }
 }
