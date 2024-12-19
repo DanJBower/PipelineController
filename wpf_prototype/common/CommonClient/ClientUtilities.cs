@@ -1,9 +1,10 @@
-﻿using Makaretu.Dns;
-using MQTTnet;
+﻿using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Formatter;
 using ServerInfo;
-using Timer = System.Timers.Timer;
+using System.Net.Sockets;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace CommonClient;
 
@@ -12,7 +13,7 @@ namespace CommonClient;
 // * Pass cancellation token to connect to client so searching for client
 //   can be cancelled if wanted
 
-public static class ClientUtilities
+public static partial class ClientUtilities
 {
     public static async Task<PrototypeClient> FindAndConnectToClient(CancellationToken cancellationToken = default)
     {
@@ -40,70 +41,37 @@ public static class ClientUtilities
         return new(mqttClient);
     }
 
-    public static async Task<(string, int)> FindClient(CancellationToken cancellationToken = default,
-        int reSearchFrequencyMs = 1000,
-        int maxSearches = 10)
+    [GeneratedRegex("^" + ServerConstants.Name + ServerConstants.ServiceName + @"@((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:(\d+)" + "$")]
+    private static partial Regex ServerIpRegex();
+
+    public static async Task<(string, int)> FindClient(CancellationToken cancellationToken = default)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        var port = 0;
-        var tcs = new TaskCompletionSource<(string Address, int Port)>();
-        using var mdns = new MulticastService();
-        using var serviceDiscovery = new ServiceDiscovery(mdns);
+        using UdpClient udpClient = new(ServerConstants.BroadcastPort);
 
-        serviceDiscovery.ServiceInstanceDiscovered += (_, e) =>
+        while (true)
         {
-            // ReSharper disable once AccessToDisposedClosure
-            mdns.SendQuery(e.ServiceInstanceName, type: DnsType.SRV);
-        };
+            cancellationToken.ThrowIfCancellationRequested();
+            var result = await udpClient.ReceiveAsync(cancellationToken);
+            string message;
 
-        mdns.AnswerReceived += (_, e) =>
-        {
-            var servers = e.Message.Answers.OfType<SRVRecord>();
-            foreach (var server in servers)
+            try
             {
-                if (server.Name.Labels[0].Equals(ServerConstants.Name))
-                {
-                    port = server.Port;
-                    // ReSharper disable once AccessToDisposedClosure
-                    mdns.SendQuery(server.Target, type: DnsType.A);
-                }
+                message = Encoding.UTF8.GetString(result.Buffer);
+            }
+            catch
+            {
+                continue;
             }
 
-            var address = e.Message.Answers.OfType<AddressRecord>().FirstOrDefault();
-            if (address is not null)
+            var matchInfo = ServerIpRegex().Match(message);
+
+            if (matchInfo.Success)
             {
-                var ip = address.Address.ToString();
-                tcs.SetResult((ip, port));
+                var ip = string.Join("", matchInfo.Groups[1].Captures.Select(x => x.Value));
+                var port = int.Parse(matchInfo.Groups[4].Value);
+
+                return (ip, port);
             }
-        };
-
-        mdns.Start();
-
-        var searches = 0;
-
-        using Timer timer = new();
-        timer.Elapsed += (_, _) =>
-        {
-            if (searches > maxSearches)
-            {
-                // ReSharper disable once AccessToDisposedClosure
-                timer.Enabled = false;
-                tcs.TrySetException(new ServerNotFoundException());
-                return;
-            }
-
-            // ReSharper disable once AccessToDisposedClosure
-            serviceDiscovery.QueryServiceInstances(ServerConstants.ServiceName);
-            searches++;
-        };
-        timer.Interval = reSearchFrequencyMs;
-        timer.Enabled = true;
-
-        serviceDiscovery.QueryServiceInstances(ServerConstants.ServiceName);
-
-        await using (cancellationToken.Register(() => { tcs.TrySetCanceled(); }))
-        {
-            return await tcs.Task;
         }
     }
 }

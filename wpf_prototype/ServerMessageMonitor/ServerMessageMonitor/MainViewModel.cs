@@ -53,15 +53,9 @@ public partial class MainViewModel : ViewModel
             {
                 (ip, port) = await ClientUtilities.FindClient(_serverConnectionCancellationTokenSource.Token);
             }
-            catch (ServerNotFoundException)
-            {
-                ServerConnectionStatus = ConnectionStatus.ServerNotFound;
-                ServerConnectionButtonText = ConnectToServerDefaultText;
-                return;
-            }
             catch (OperationCanceledException)
             {
-                ServerConnectionStatus = ConnectionStatus.Disconnected;
+                ServerConnectionStatus = ConnectionStatus.ServerNotFound;
                 ServerConnectionButtonText = ConnectToServerDefaultText;
                 return;
             }

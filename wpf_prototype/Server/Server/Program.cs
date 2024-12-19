@@ -1,5 +1,4 @@
 ﻿using Controller;
-using Makaretu.Dns;
 using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Formatter;
@@ -7,19 +6,22 @@ using MQTTnet.Protocol;
 using MQTTnet.Server;
 using ServerInfo;
 using System.Net;
-using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Text;
+using Timer = System.Timers.Timer;
 
 using var mqttServer = await StartServer();
 
 try
 {
     await SetInitialValues();
-    var (mdns, serviceDiscovery) = AdvertiseServer();
-    using var _1 = mdns;
-    using var _2 = serviceDiscovery;
+    var (udpClient, timer) = AdvertiseServer();
+    using var _1 = udpClient;
+    using var _3 = timer;
     Console.WriteLine("Press Enter to exit");
     Console.ReadLine();
-    mdns.Stop();
+    udpClient.Close();
+    timer.Enabled = false;
 }
 finally
 {
@@ -56,16 +58,9 @@ static async Task StopServer(MqttServer server)
 
 static async Task MqttServerOnStartedAsync(EventArgs _)
 {
-    var localIp = GetLocalIpAddress();
+    var localIp = GetHostIp();
     Log($"Started server on {localIp}:{ServerConstants.Port}");
     await Task.CompletedTask;
-}
-
-static string GetLocalIpAddress()
-{
-    var host = Dns.GetHostEntry(Dns.GetHostName());
-    var ip = host.AddressList.FirstOrDefault(ip => ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork);
-    return ip?.ToString() ?? throw new NetworkInformationException();
 }
 
 static async Task MqttServerOnStoppedAsync(EventArgs _)
@@ -86,7 +81,35 @@ static async Task MqttServerOnClientDisconnectedAsync(ClientDisconnectedEventArg
     await Task.CompletedTask;
 }
 
-static (MulticastService, ServiceDiscovery) AdvertiseServer()
+static (UdpClient, Timer) AdvertiseServer()
+{
+    var udpClient = new UdpClient();
+    var broadcastEndPoint = new IPEndPoint(IPAddress.Broadcast, ServerConstants.BroadcastPort);
+    var message = $"{ServerConstants.Name}{ServerConstants.ServiceName}@{GetHostIp()}:{ServerConstants.Port}";
+
+    Timer timer = new();
+    timer.Elapsed += (_, _) =>
+    {
+        var data = Encoding.UTF8.GetBytes(message);
+        udpClient.Send(data, data.Length, broadcastEndPoint);
+        // Console.WriteLine($"Broadcasted: {message}");
+    };
+    timer.Interval = ServerConstants.BroadcastIntervalMs;
+    timer.Enabled = true;
+
+    return (udpClient, timer);
+}
+
+static string GetHostIp()
+{
+    // https://stackoverflow.com/a/27376368/4601149
+    using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0);
+    socket.Connect("8.8.8.8", 65530);
+    var endPoint = (IPEndPoint)socket.LocalEndPoint!;
+    return endPoint.Address.ToString();
+}
+
+/*static (MulticastService, ServiceDiscovery) AdvertiseServer()
 {
     var mdns = new MulticastService();
     var service = new ServiceProfile(ServerConstants.Name, ServerConstants.ServiceName, ServerConstants.Port);
@@ -94,7 +117,7 @@ static (MulticastService, ServiceDiscovery) AdvertiseServer()
     serviceDiscovery.Advertise(service);
     mdns.Start();
     return (mdns, serviceDiscovery);
-}
+}*/
 
 static void Log(string message = "")
 {
@@ -144,7 +167,7 @@ static async Task SetInitialValues()
     var mqttFactory = new MqttFactory();
     using var client = mqttFactory.CreateMqttClient();
     var clientOptions = new MqttClientOptionsBuilder()
-        .WithTcpServer(GetLocalIpAddress(), ServerConstants.Port)
+        .WithTcpServer(GetHostIp(), ServerConstants.Port)
         .WithProtocolVersion(MqttProtocolVersion.V500)
         .Build();
     await client.ConnectAsync(clientOptions);

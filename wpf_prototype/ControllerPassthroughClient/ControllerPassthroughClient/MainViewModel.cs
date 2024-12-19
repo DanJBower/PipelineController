@@ -212,6 +212,7 @@ public partial class MainViewModel : ViewModel
         {
             _serverConnectionCancellationTokenSource?.Dispose();
             _serverConnectionCancellationTokenSource = new();
+            _serverConnectionCancellationTokenSource.CancelAfter(10000);
 
             ServerConnectionButtonText = "Cancel Server Connection";
             ServerConnectionStatus = ConnectionStatus.Searching;
@@ -223,15 +224,9 @@ public partial class MainViewModel : ViewModel
             {
                 (ip, port) = await ClientUtilities.FindClient(_serverConnectionCancellationTokenSource.Token);
             }
-            catch (ServerNotFoundException)
-            {
-                ServerConnectionStatus = ConnectionStatus.ServerNotFound;
-                ServerConnectionButtonText = ConnectToServerDefaultText;
-                return;
-            }
             catch (OperationCanceledException)
             {
-                ServerConnectionStatus = ConnectionStatus.Disconnected;
+                ServerConnectionStatus = ConnectionStatus.ServerNotFound;
                 ServerConnectionButtonText = ConnectToServerDefaultText;
                 return;
             }
@@ -255,7 +250,7 @@ public partial class MainViewModel : ViewModel
         else if (ServerConnectionStatus is ConnectionStatus.Connected)
         {
             ServerConnectionStatus = ConnectionStatus.Disconnecting;
-            await _client.DisposeAsync();
+            await _client!.DisposeAsync();
             ServerConnectionStatus = ConnectionStatus.Disconnected;
             ServerConnectionButtonText = ConnectToServerDefaultText;
         }
