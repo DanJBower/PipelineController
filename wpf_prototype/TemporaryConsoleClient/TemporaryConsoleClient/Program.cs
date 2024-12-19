@@ -9,7 +9,7 @@ cancellationTokenSource.CancelAfter(20000);
 
 try
 {
-    await using var client = await ClientUtilities.ConnectToClient(cancellationTokenSource.Token);
+    await using var client = await ClientUtilities.FindAndConnectToClient(cancellationTokenSource.Token);
 
     SubscribeToEvent<bool>(client, nameof(client.StartUpdated));
     SubscribeToEvent<bool>(client, nameof(client.SelectUpdated));
@@ -53,24 +53,24 @@ try
     await SendBool(client, client.SetRight, true);
     await SendBool(client, client.SetDown, true);
     await SendBool(client, client.SetLeft, true);
-    await SendFloat(client, client.SetLeftStickX, 10);
-    await SendFloat(client, client.SetLeftStickY, 35);
+    await SendFloat(client, client.SetLeftStickX, 1);
+    await SendFloat(client, client.SetLeftStickY, -0.5f);
     await SendBool(client, client.SetLeftStickIn, true);
-    await SendFloat(client, client.SetRightStickX, 256);
-    await SendFloat(client, client.SetRightStickY, 346);
+    await SendFloat(client, client.SetRightStickX, -0.2f);
+    await SendFloat(client, client.SetRightStickY, 0.4f);
     await SendBool(client, client.SetRightStickIn, true);
     await SendBool(client, client.SetLeftBumper, true);
-    await SendFloat(client, client.SetLeftTrigger, 273);
+    await SendFloat(client, client.SetLeftTrigger, 0.6f);
     await SendBool(client, client.SetRightBumper, true);
-    await SendFloat(client, client.SetRightTrigger, 378);
+    await SendFloat(client, client.SetRightTrigger, 0.8f);
     await SendBool(client, client.SetDebugLight, true);
 
 
     await Task.Delay(1000);
-    await client.SetLeftStick((15, 4));
+    await client.SetLeftStick((0.1f, -0.2f));
 
     await Task.Delay(1000);
-    await client.SetRightStick((234, 74));
+    await client.SetRightStick((0.8f, -1));
 
     await Task.Delay(1000);
     await client.SetController(new(
