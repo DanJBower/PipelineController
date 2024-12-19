@@ -11,7 +11,7 @@ using Makaretu.Dns;
     {
         foreach (var nic in e.NetworkInterfaces)
         {
-            Console.WriteLine($"NIC '{nic.Name}'");
+            WriteLine($"NIC '{nic.Name}'");
         }
 
         // Ask for the name of all services.
@@ -20,7 +20,7 @@ using Makaretu.Dns;
 
     sd.ServiceDiscovered += (s, serviceName) =>
     {
-        Console.WriteLine($"service '{serviceName}'");
+        WriteLine($"service '{serviceName}'");
 
         // Ask for the name of instances of the service.
         mdns.SendQuery(serviceName, type: DnsType.PTR);
@@ -28,7 +28,7 @@ using Makaretu.Dns;
 
     sd.ServiceInstanceDiscovered += (s, e) =>
     {
-        Console.WriteLine($"service instance '{e.ServiceInstanceName}'");
+        WriteLine($"service instance '{e.ServiceInstanceName}'");
 
         // Ask for the service instance details.
         mdns.SendQuery(e.ServiceInstanceName, type: DnsType.SRV);
@@ -40,7 +40,7 @@ using Makaretu.Dns;
         var servers = e.Message.Answers.OfType<SRVRecord>();
         foreach (var server in servers)
         {
-            Console.WriteLine($"host '{server.Target}' for '{server.Name}'");
+            WriteLine($"host '{server.Target}' for '{server.Name}'");
 
             // Ask for the host IP addresses.
             mdns.SendQuery(server.Target, type: DnsType.A);
@@ -51,11 +51,11 @@ using Makaretu.Dns;
         var addresses = e.Message.Answers.OfType<AddressRecord>();
         foreach (var address in addresses)
         {
-            Console.WriteLine($"host '{address.Name}' at {address.Address}");
+            WriteLine($"host '{address.Name}' at {address.Address}");
         }
 
     };
 
     mdns.Start();
-    Console.ReadKey();
+    ReadKey();
 }
