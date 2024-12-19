@@ -118,7 +118,7 @@ public partial class MainViewModel : ViewModel
                 break;
 
             case Key.W or Key.A or Key.S or Key.D:
-                await HandleStick(Key.W, Key.S, Key.D, Key.A, UpdateLeftStickX, UpdateLeftStickY);
+                await HandleKeyboardStick(Key.W, Key.S, Key.D, Key.A, UpdateLeftStickX, UpdateLeftStickY);
                 break;
 
             case Key.Q:
@@ -126,7 +126,7 @@ public partial class MainViewModel : ViewModel
                 break;
 
             case Key.Up or Key.Down or Key.Right or Key.Left:
-                await HandleStick(Key.Up, Key.Down, Key.Right, Key.Left, UpdateRightStickX, UpdateRightStickY);
+                await HandleKeyboardStick(Key.Up, Key.Down, Key.Right, Key.Left, UpdateRightStickX, UpdateRightStickY);
                 break;
 
             case Key.E:
@@ -151,7 +151,7 @@ public partial class MainViewModel : ViewModel
         }
     }
 
-    private async Task HandleStick(Key upKey, Key downKey,
+    private async Task HandleKeyboardStick(Key upKey, Key downKey,
         Key rightKey, Key leftKey,
         Func<float, Task> setX,
         Func<float, Task> setY)
