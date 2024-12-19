@@ -2,6 +2,7 @@
 using CommonWpf.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Controller;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
@@ -12,14 +13,14 @@ namespace ControllerPassthroughClient;
 public partial class MainViewModel : ViewModel
 {
     private readonly Dispatcher _uiDispatcher = Application.Current.Dispatcher;
-    private CancellationTokenSource _serverConnectionCancellationTokenSource;
+    private CancellationTokenSource? _serverConnectionCancellationTokenSource;
 
     private void DispatchPropertyChange(Action changeProperties)
     {
         _uiDispatcher.Invoke(changeProperties, DispatcherPriority.Send);
     }
 
-    private PrototypeClient _client;
+    private PrototypeClient? _client;
 
     private const string ConnectToServerDefaultText = "Connect to Server";
 
@@ -61,11 +62,7 @@ public partial class MainViewModel : ViewModel
     {
         if (ServerConnectionStatus is ConnectionStatus.Disconnected or ConnectionStatus.ServerNotFound or ConnectionStatus.Error)
         {
-            if (_serverConnectionCancellationTokenSource is not null)
-            {
-                _serverConnectionCancellationTokenSource.Dispose();
-            }
-
+            _serverConnectionCancellationTokenSource?.Dispose();
             _serverConnectionCancellationTokenSource = new();
 
             ServerConnectionButtonText = "Cancel Server Connection";

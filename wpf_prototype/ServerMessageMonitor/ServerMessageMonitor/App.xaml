@@ -1,9 +1,33 @@
 ﻿<Application x:Class="ServerMessageMonitor.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ServerMessageMonitor"
-             StartupUri="MainWindow.xaml">
+             StartupUri="MainWindow.xaml"
+             xmlns:ui="http://schemas.modernwpf.com/2019"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ui:ThemeResources RequestedTheme="Dark">
+                    <ui:ThemeResources.ThemeDictionaries>
+                        <ResourceDictionary x:Key="Light">
+                            <ResourceDictionary.MergedDictionaries>
+                                <ResourceDictionary Source="/ModernWpf;component/themeresources/Light.xaml"/>
+                                <ResourceDictionary Source="/CommonWpf;component/Themes/LightTheme.xaml"/>
+                            </ResourceDictionary.MergedDictionaries>
+                        </ResourceDictionary>
+                        <ResourceDictionary x:Key="Dark">
+                            <ResourceDictionary.MergedDictionaries>
+                                <ResourceDictionary Source="/ModernWpf;component/themeresources/Dark.xaml"/>
+                                <ResourceDictionary Source="/CommonWpf;component/Themes/DarkTheme.xaml"/>
+                            </ResourceDictionary.MergedDictionaries>
+                        </ResourceDictionary>
+                    </ui:ThemeResources.ThemeDictionaries>
+                </ui:ThemeResources>
+                <ui:XamlControlsResources />
+            </ResourceDictionary.MergedDictionaries>
+            <FontFamily x:Key="ContentControlThemeFontFamily">Consolas</FontFamily>
+            <system:Double x:Key="ControlContentThemeFontSize">16</system:Double>
+            <system:Double x:Key="SliderTrackThemeHeight">8</system:Double>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

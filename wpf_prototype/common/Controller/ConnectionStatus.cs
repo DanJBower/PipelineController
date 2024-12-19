@@ -1,4 +1,4 @@
-﻿namespace ControllerPassthroughClient;
+﻿namespace Controller;
 
 public enum ConnectionStatus
 {
