@@ -10,7 +10,7 @@ using MQTTnet;
 using ServerInfo;
 
 {
-    WriteLine("Attempting to connect to client");
+    WriteLine("Attempting to connect to server");
     await using var client = await ClientUtilities.FindAndConnectToClient();
 
     bool nextDebugLightValue = true;
