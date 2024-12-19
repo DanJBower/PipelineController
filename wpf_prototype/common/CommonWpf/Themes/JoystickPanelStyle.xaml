@@ -38,7 +38,7 @@
                                              Height="26">
                                         <Ellipse.RenderTransform>
                                             <TranslateTransform X="{Binding X, RelativeSource={RelativeSource TemplatedParent}, Converter={converters:JoystickPositionConverter}, Mode=OneWay}"
-                                                                Y="{Binding Y, RelativeSource={RelativeSource TemplatedParent}, Converter={converters:JoystickPositionConverter}, Mode=OneWay}" />
+                                                                Y="{Binding Y, RelativeSource={RelativeSource TemplatedParent}, Converter={converters:InverseJoystickPositionConverter}, Mode=OneWay}" />
                                         </Ellipse.RenderTransform>
                                     </Ellipse>
                                 </Canvas>

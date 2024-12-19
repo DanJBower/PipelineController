@@ -58,7 +58,9 @@
                           Margin="10 5"
                           HorizontalAlignment="Center"
                           VerticalAlignment="Center"
-                          IsChecked="{Binding DebugLight}" />
+                          IsChecked="{Binding DebugLight}"
+                          Command="{Binding DebugLightUpdateCommand}"
+                          CommandParameter="{Binding IsChecked, RelativeSource={RelativeSource Self}, Mode=OneWay}" />
             </Grid>
 
             <TextBlock Grid.Column="1"
