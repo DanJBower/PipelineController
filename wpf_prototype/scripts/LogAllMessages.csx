@@ -11,7 +11,7 @@ using ServerInfo;
 
 {
     WriteLine("Attempting to connect to client");
-    await using var client = await ClientUtilities.ConnectToClient();
+    await using var client = await ClientUtilities.FindAndConnectToClient();
 
     var mqttFactory = new MqttFactory();
 
