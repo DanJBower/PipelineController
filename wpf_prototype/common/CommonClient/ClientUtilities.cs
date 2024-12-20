@@ -44,6 +44,12 @@ public static partial class ClientUtilities
     [GeneratedRegex("^" + ServerConstants.Name + ServerConstants.ServiceName + @"@((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}:(\d+)" + "$")]
     private static partial Regex ServerIpRegex();
 
+    /// <summary>
+    /// Please note, this likely requires a rule to be set up on windows firewall for both inbound and outbound traffic
+    /// Set a rule up for domain + private networks to allow port <see cref="ServerConstants.BroadcastPort"/> on UDP
+    /// I chose "Allow the connection" when setting up mine
+    /// Really important! Make sure your wifi is set to private and not public... I lost hours to this
+    /// </summary>
     public static async Task<(string, int)> FindClient(CancellationToken cancellationToken = default)
     {
         using UdpClient udpClient = new(ServerConstants.BroadcastPort);

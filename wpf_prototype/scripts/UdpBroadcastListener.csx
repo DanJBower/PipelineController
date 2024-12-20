@@ -5,10 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using ServerInfo;
 
-private const int ListenPort = ServerConstants.BroadcastPort;
-var IP = new IPEndPoint(IPAddress.Any, ListenPort);
-
-using (UdpClient udpClient = new(ListenPort))
+using (UdpClient udpClient = new(ServerConstants.BroadcastPort))
 {
     await ListenForUdpBroadcasts(udpClient);
 
@@ -25,7 +22,7 @@ async Task<(string, int)> ListenForUdpBroadcasts(UdpClient udpClient, Cancellati
 
         try
         {
-            message = $"From {result.RemoteEndPoint.Address} Received {Encoding.UTF8.GetString(result.Buffer)}";
+            message = $"{DateTime.Now}: From {result.RemoteEndPoint.Address} Received {Encoding.UTF8.GetString(result.Buffer)}";
         }
         catch
         {
