@@ -49,6 +49,8 @@ public static partial class ClientUtilities
     /// Set a rule up for domain + private networks to allow port <see cref="ServerConstants.BroadcastPort"/> on UDP
     /// I chose "Allow the connection" when setting up mine
     /// Really important! Make sure your wifi is set to private and not public... I lost hours to this
+    ///
+    /// TODO Check if firewall is blocking mqtt port now for some reason...
     /// </summary>
     public static async Task<(string, int)> FindClient(CancellationToken cancellationToken = default)
     {
