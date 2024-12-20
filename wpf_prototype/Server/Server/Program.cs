@@ -84,7 +84,9 @@ static async Task MqttServerOnClientDisconnectedAsync(ClientDisconnectedEventArg
 static (UdpClient, Timer) AdvertiseServer()
 {
     var udpClient = new UdpClient();
-    var broadcastEndPoint = new IPEndPoint(IPAddress.Broadcast, ServerConstants.BroadcastPort);
+    udpClient.EnableBroadcast = true;
+    // var broadcastEndPoint = new IPEndPoint(IPAddress.Broadcast, ServerConstants.BroadcastPort);
+    var broadcastEndPoint = new IPEndPoint(new IPAddress([192, 168, 68, 255]), ServerConstants.BroadcastPort);
     var message = $"{ServerConstants.Name}{ServerConstants.ServiceName}@{GetHostIp()}:{ServerConstants.Port}";
 
     Timer timer = new();
