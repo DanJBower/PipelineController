@@ -36,6 +36,7 @@ static async Task<MqttServer> StartServer()
     var mqttServerFactory = new MqttFactory();
     var mqttServerOptions = new MqttServerOptionsBuilder()
         .WithDefaultEndpoint()
+        .WithDefaultEndpointBoundIPAddress(GetHostIpAddress())
         .WithDefaultEndpointPort(ServerConstants.Port)
         .Build();
     var mqttServer = mqttServerFactory.CreateMqttServer(mqttServerOptions);
@@ -83,10 +84,24 @@ static async Task MqttServerOnClientDisconnectedAsync(ClientDisconnectedEventArg
 
 static (UdpClient, Timer) AdvertiseServer()
 {
-    var udpClient = new UdpClient();
+    var udpClient = new UdpClient(ServerConstants.BroadcastSourcePort);
     udpClient.EnableBroadcast = true;
-    // var broadcastEndPoint = new IPEndPoint(IPAddress.Broadcast, ServerConstants.BroadcastPort);
-    var broadcastEndPoint = new IPEndPoint(new IPAddress([192, 168, 68, 255]), ServerConstants.BroadcastPort);
+    var localAddress = GetHostIpAddress().GetAddressBytes();
+
+    if (localAddress.Length != 4)
+    {
+        throw new Exception("Didn't get an IPV4 address - Help!");
+    }
+
+    var broadcastAddress = localAddress[0] switch
+    {
+        192 when localAddress[1] == 168 => new IPAddress([192, 168, localAddress[2], 255]),
+        // 172 when localAddress[1] >= 16 && localAddress[1] <= 31 => new IPAddress([172, 31, 255, 255]),
+        // 10 => new IPAddress([10, 255, 255, 255]),
+        _ => IPAddress.Broadcast
+    };
+
+    var broadcastEndPoint = new IPEndPoint(broadcastAddress, ServerConstants.BroadcastDestinationPort);
     var message = $"{ServerConstants.Name}{ServerConstants.ServiceName}@{GetHostIp()}:{ServerConstants.Port}";
 
     Timer timer = new();
@@ -102,13 +117,18 @@ static (UdpClient, Timer) AdvertiseServer()
     return (udpClient, timer);
 }
 
-static string GetHostIp()
+static IPAddress GetHostIpAddress()
 {
     // https://stackoverflow.com/a/27376368/4601149
     using var socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, 0);
     socket.Connect("8.8.8.8", 65530);
     var endPoint = (IPEndPoint)socket.LocalEndPoint!;
-    return endPoint.Address.ToString();
+    return endPoint.Address;
+}
+
+static string GetHostIp()
+{
+    return GetHostIpAddress().ToString();
 }
 
 /*static (MulticastService, ServiceDiscovery) AdvertiseServer()

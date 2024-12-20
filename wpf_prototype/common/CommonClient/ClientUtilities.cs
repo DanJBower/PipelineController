@@ -46,7 +46,7 @@ public static partial class ClientUtilities
 
     /// <summary>
     /// Please note, this likely requires a rule to be set up on windows firewall for both inbound and outbound traffic
-    /// Set a rule up for domain + private networks to allow port <see cref="ServerConstants.BroadcastPort"/> on UDP
+    /// Set a rule up for domain + private networks to allow port <see cref="ServerConstants.BroadcastDestinationPort"/> on UDP
     /// I chose "Allow the connection" when setting up mine
     /// Really important! Make sure your wifi is set to private and not public... I lost hours to this
     ///
@@ -54,7 +54,7 @@ public static partial class ClientUtilities
     /// </summary>
     public static async Task<(string, int)> FindClient(CancellationToken cancellationToken = default)
     {
-        using UdpClient udpClient = new(ServerConstants.BroadcastPort);
+        using UdpClient udpClient = new(ServerConstants.BroadcastDestinationPort);
 
         while (true)
         {
