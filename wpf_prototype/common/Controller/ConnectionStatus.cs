@@ -6,6 +6,7 @@ public enum ConnectionStatus
     Disconnecting,
     Searching,
     ServerNotFound,
+    ServerUnreachable,
     Connecting,
     Connected,
     Error,

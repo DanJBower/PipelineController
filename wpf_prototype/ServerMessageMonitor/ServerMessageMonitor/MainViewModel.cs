@@ -3,6 +3,7 @@ using CommonWpf.ViewModels;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Controller;
+using MQTTnet.Exceptions;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -64,11 +65,24 @@ public partial class MainViewModel : ViewModel
 
             try
             {
+                if (!(await ClientUtilities.CheckServerReachable(ip, cancellationToken: _serverConnectionCancellationTokenSource.Token)))
+                {
+                    ServerConnectionStatus = ConnectionStatus.ServerUnreachable;
+                    ServerConnectionButtonText = ConnectToServerDefaultText;
+                    return;
+                }
+
                 _client = await ClientUtilities.ConnectToClient(ip, port, _serverConnectionCancellationTokenSource.Token);
             }
             catch (OperationCanceledException)
             {
                 ServerConnectionStatus = ConnectionStatus.Disconnected;
+                ServerConnectionButtonText = ConnectToServerDefaultText;
+                return;
+            }
+            catch (MqttCommunicationException)
+            {
+                ServerConnectionStatus = ConnectionStatus.Error;
                 ServerConnectionButtonText = ConnectToServerDefaultText;
                 return;
             }

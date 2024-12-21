@@ -2,6 +2,7 @@
 using MQTTnet.Client;
 using MQTTnet.Formatter;
 using ServerInfo;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -22,12 +23,34 @@ public static partial class ClientUtilities
         return mqttClient;
     }
 
+    public static async Task<bool> CheckServerReachable(string ip, int maxAttempts = 4, CancellationToken cancellationToken = default)
+    {
+        using var pinger = new Ping();
+
+        for (var i = 0; i < maxAttempts; i++)
+        {
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var reply = await pinger.SendPingAsync(ip);
+
+                if (reply.Status == IPStatus.Success)
+                {
+                    return true;
+                }
+            }
+            catch (PingException) { }
+        }
+
+        return false;
+    }
+
     /// <summary>
-	/// For some reason sometimes the connection won't connect. If this happens
-	/// try pinging the client device from the server device and see if the pings
-	/// are successful. If it's an option try ping the server from the client too
-	/// I just lost like 3 hours of time to trying to debug this and seemingly nothing
-	/// was wrong as pinging server -> client just fixed it........
+    /// For some reason sometimes the connection won't connect. If this happens
+    /// try pinging the client device from the server device and see if the pings
+    /// are successful. If it's an option try ping the server from the client too
+    /// I just lost like 3 hours of time to trying to debug this and seemingly nothing
+    /// was wrong as pinging server -> client just fixed it........
     /// </summary>
     public static async Task<PrototypeClient> ConnectToClient(
         string ip,
