@@ -5,9 +5,12 @@ using CommunityToolkit.Mvvm.Input;
 using Controller;
 using MQTTnet.Exceptions;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Windows.Gaming.Input;
+using Timer = System.Timers.Timer;
 
 namespace ControllerPassthroughClient;
 
@@ -15,6 +18,13 @@ public partial class MainViewModel : ViewModel
 {
     private readonly Dispatcher _uiDispatcher = Application.Current.Dispatcher;
     private CancellationTokenSource? _serverConnectionCancellationTokenSource;
+
+    public MainViewModel()
+    {
+        Gamepad.GamepadAdded += OnXboxControllerAdded;
+        _readXboxControllerTimer.Interval = 16;
+        _readXboxControllerTimer.Elapsed += async (_, _) => await UpdateFromXboxController();
+    }
 
     private void DispatchPropertyChange(Action changeProperties)
     {
@@ -40,6 +50,14 @@ public partial class MainViewModel : ViewModel
     private readonly ConcurrentDictionary<Key, bool> _keyPressedLookup = [];
 
     [RelayCommand]
+    private void OnWindowClosing(KeyEventArgs? keyEventArgs)
+    {
+        Debug.WriteLine("Shutting down");
+        _readXboxControllerTimer.Enabled = false;
+        _readXboxControllerTimer.Dispose();
+    }
+
+    [RelayCommand]
     private async Task OnPreviewKeyDown(KeyEventArgs? keyEventArgs)
     {
         if (keyEventArgs is null)
@@ -57,8 +75,7 @@ public partial class MainViewModel : ViewModel
         }
         _keyPressedLookup.AddOrUpdate(keyEventArgs.Key, true, (_, _) => true);
 
-        if (InputMode is not InputMode.Keyboard &&
-            (InputMode is not InputMode.XboxController || keyEventArgs.Key is not Key.Space))
+        if (InputMode is not InputMode.Keyboard)
         {
             return;
         }
@@ -197,8 +214,7 @@ public partial class MainViewModel : ViewModel
         // Debug.WriteLine($"Up: {keyEventArgs.Key}");
         _keyPressedLookup.AddOrUpdate(keyEventArgs.Key, false, (_, _) => false);
 
-        if (InputMode is not InputMode.Keyboard &&
-            (InputMode is not InputMode.XboxController || keyEventArgs.Key is not Key.Space))
+        if (InputMode is not InputMode.Keyboard)
         {
             return;
         }
@@ -298,21 +314,73 @@ public partial class MainViewModel : ViewModel
         };
 
         UpdateKeyboardPressLabels(value);
+        _readXboxControllerTimer.Enabled = false; // Disable the xbox controller polling
+        Zero().ConfigureAwait(false); // Zero commands to prevent left over inputs
 
         switch (value)
         {
             case InputMode.Zero:
-                Zero().ConfigureAwait(false);
-                break;
             case InputMode.Keyboard:
                 break;
             case InputMode.XboxController:
+                _xboxController = Gamepad.Gamepads.FirstOrDefault();
+                _readXboxControllerTimer.Enabled = true;
                 break;
             case InputMode.PlaystationController:
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(value), value, null);
         }
+    }
+
+    private Gamepad? _xboxController;
+    private readonly Timer _readXboxControllerTimer = new();
+
+    private void OnXboxControllerAdded(object? sender, Gamepad e)
+    {
+        _xboxController = e;
+
+        if (InputMode is InputMode.XboxController)
+        {
+            _readXboxControllerTimer.Enabled = true;
+        }
+    }
+
+    private async Task UpdateFromXboxController()
+    {
+        if (_xboxController is null)
+        {
+            return;
+        }
+
+        var reading = _xboxController.GetCurrentReading();
+
+        var state = new ControllerState(
+            Start: reading.Buttons.HasFlag(GamepadButtons.Menu),
+            Select: reading.Buttons.HasFlag(GamepadButtons.View),
+            Home: _keyPressedLookup.GetOrAdd(Key.M, false),
+            BigHome: _keyPressedLookup.GetOrAdd(Key.Space, false),
+            X: reading.Buttons.HasFlag(GamepadButtons.X),
+            Y: reading.Buttons.HasFlag(GamepadButtons.Y),
+            A: reading.Buttons.HasFlag(GamepadButtons.A),
+            B: reading.Buttons.HasFlag(GamepadButtons.B),
+            Up: reading.Buttons.HasFlag(GamepadButtons.DPadUp),
+            Right: reading.Buttons.HasFlag(GamepadButtons.DPadRight),
+            Down: reading.Buttons.HasFlag(GamepadButtons.DPadDown),
+            Left: reading.Buttons.HasFlag(GamepadButtons.DPadLeft),
+            LeftStickX: (float)reading.LeftThumbstickX,
+            LeftStickY: (float)reading.LeftThumbstickY,
+            LeftStickIn: reading.Buttons.HasFlag(GamepadButtons.LeftThumbstick),
+            RightStickX: (float)reading.RightThumbstickX,
+            RightStickY: (float)reading.RightThumbstickY,
+            RightStickIn: reading.Buttons.HasFlag(GamepadButtons.RightThumbstick),
+            LeftBumper: reading.Buttons.HasFlag(GamepadButtons.LeftShoulder),
+            LeftTrigger: (float)reading.LeftTrigger,
+            RightBumper: reading.Buttons.HasFlag(GamepadButtons.RightShoulder),
+            RightTrigger: (float)reading.RightTrigger
+        );
+
+        await UpdateFullController(state);
     }
 
     [ObservableProperty]
@@ -347,7 +415,10 @@ public partial class MainViewModel : ViewModel
         {
             ControllerViewModel.StartTitle = ControllerViewModel.DefaultStartTitle;
             ControllerViewModel.SelectTitle = ControllerViewModel.DefaultSelectTitle;
-            ControllerViewModel.HomeTitle = ControllerViewModel.DefaultHomeTitle;
+
+            ControllerViewModel.HomeTitle = inputMode is InputMode.XboxController ?
+                $"{ControllerViewModel.DefaultHomeTitle} (M)" :
+                ControllerViewModel.DefaultHomeTitle;
 
             ControllerViewModel.BigHomeTitle = inputMode is InputMode.XboxController ?
                 $"{ControllerViewModel.DefaultBigHomeTitle}\n(SPACE)" :
@@ -404,6 +475,48 @@ public partial class MainViewModel : ViewModel
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
             await _client.SetDebugLight(debugLight);
+        }
+    }
+
+    private async Task UpdateFullController(ControllerState state)
+    {
+        DispatchPropertyChange(() =>
+        {
+            var (start, select, home, bigHome,
+                x, y, a, b,
+                up, right, down, left,
+                leftStickX, leftStickY, leftStickIn,
+                rightStickX, rightStickY, rightStickIn,
+                leftBumper, leftTrigger,
+                rightBumper, rightTrigger) = state;
+
+            ControllerViewModel.Start = start;
+            ControllerViewModel.Select = select;
+            ControllerViewModel.Home = home;
+            ControllerViewModel.BigHome = bigHome;
+            ControllerViewModel.X = x;
+            ControllerViewModel.Y = y;
+            ControllerViewModel.A = a;
+            ControllerViewModel.B = b;
+            ControllerViewModel.Up = up;
+            ControllerViewModel.Right = right;
+            ControllerViewModel.Down = down;
+            ControllerViewModel.Left = left;
+            ControllerViewModel.LeftStickX = leftStickX;
+            ControllerViewModel.LeftStickY = leftStickY;
+            ControllerViewModel.LeftStickIn = leftStickIn;
+            ControllerViewModel.RightStickX = rightStickX;
+            ControllerViewModel.RightStickY = rightStickY;
+            ControllerViewModel.RightStickIn = rightStickIn;
+            ControllerViewModel.LeftBumper = leftBumper;
+            ControllerViewModel.LeftTrigger = leftTrigger;
+            ControllerViewModel.RightBumper = rightBumper;
+            ControllerViewModel.RightTrigger = rightTrigger;
+        });
+
+        if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
+        {
+            await _client.SetController(state);
         }
     }
 
@@ -625,5 +738,28 @@ public partial class MainViewModel : ViewModel
         {
             await _client.SetRightTrigger(rightTrigger);
         }
+    }
+
+    /*private double ScaleXboxJoystickInput(double input)
+    {
+        return Scale(input,
+            -2500, 25000,
+            -1, 1);
+    }
+
+    private double ScaleXboxTriggerInput(double input)
+    {
+        return Scale(input,
+            -2500, 25000,
+            0, 1);
+    }*/
+
+    private double Scale(double input,
+        double oldMin, double oldMax,
+        double newMin, double newMax)
+    {
+        var oldRange = oldMax - oldMin;
+        var newRange = newMax - newMin;
+        return (((input - oldMin) * newRange) / oldRange) + newMin;
     }
 }

@@ -26,6 +26,9 @@
         <i:EventTrigger EventName="PreviewKeyUp" >
             <i:InvokeCommandAction Command="{Binding PreviewKeyUpCommand}" PassEventArgsToCommand="True" />
         </i:EventTrigger>
+        <i:EventTrigger EventName="Closing" >
+            <i:InvokeCommandAction Command="{Binding WindowClosingCommand}" PassEventArgsToCommand="False" />
+        </i:EventTrigger>
     </i:Interaction.Triggers>
 
     <Grid>
@@ -97,7 +100,6 @@
 
             <RadioButton DockPanel.Dock="Left"
                          Content="Xbox Controller"
-                         IsEnabled="False"
                          MinWidth="0"
                          Margin="10 5"
                          GroupName="Input Mode"
