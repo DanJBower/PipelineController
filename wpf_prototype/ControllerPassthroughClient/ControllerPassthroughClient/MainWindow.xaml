@@ -99,7 +99,7 @@
                          IsChecked="{Binding InputMode, Converter={converters:EnumSelectedConverter}, ConverterParameter={x:Static local:InputMode.Keyboard}}" />
 
             <RadioButton DockPanel.Dock="Left"
-                         Content="Xbox Controller"
+                         Content="XInput"
                          MinWidth="0"
                          Margin="10 5"
                          GroupName="Input Mode"
