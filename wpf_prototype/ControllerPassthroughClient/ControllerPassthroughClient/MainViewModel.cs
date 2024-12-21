@@ -22,9 +22,14 @@ public partial class MainViewModel : ViewModel
 
     public MainViewModel()
     {
+        const double controllerUpdateRateHz = 60;
+        const double controllerUpdateRateMs = 1000 / controllerUpdateRateHz;
         Gamepad.GamepadAdded += OnXboxControllerAdded;
-        _readXboxControllerTimer.Interval = 16;
+        _readXboxControllerTimer.Interval = controllerUpdateRateMs;
         _readXboxControllerTimer.Elapsed += async (_, _) => await UpdateFromXboxController();
+
+        _readPs5ControllerTimer.Interval = controllerUpdateRateMs;
+        _readPs5ControllerTimer.Elapsed += async (_, _) => await UpdateFromPs5Controller();
     }
 
     private void DispatchPropertyChange(Action changeProperties)
@@ -56,6 +61,8 @@ public partial class MainViewModel : ViewModel
         Debug.WriteLine("Shutting down");
         _readXboxControllerTimer.Enabled = false;
         _readXboxControllerTimer.Dispose();
+        StopPs5Controller();
+        _readPs5ControllerTimer.Dispose();
     }
 
     [RelayCommand]
@@ -311,11 +318,14 @@ public partial class MainViewModel : ViewModel
         {
             InputMode.Zero => "Zeroed",
             InputMode.Keyboard => "Keyboard",
+            InputMode.XboxController => "XInput",
+            InputMode.PlaystationController => "PS5",
             _ => "",
         };
 
         UpdateKeyboardPressLabels(value);
         _readXboxControllerTimer.Enabled = false; // Disable the xbox controller polling
+        StopPs5Controller();
         Zero().ConfigureAwait(false); // Zero commands to prevent left over inputs
 
         switch (value)
@@ -328,6 +338,7 @@ public partial class MainViewModel : ViewModel
                 _readXboxControllerTimer.Enabled = true;
                 break;
             case InputMode.PlaystationController:
+                InitialisePs5Controller();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(value), value, null);
@@ -741,17 +752,123 @@ public partial class MainViewModel : ViewModel
         }
     }
 
-    private double ScalePs5JoystickInput(double input)
+    private unsafe SDL_Gamepad* _gamepad;
+    private readonly Timer _readPs5ControllerTimer = new();
+
+    private void InitialisePs5Controller()
     {
-        return Scale(input,
-            short.MinValue, short.MaxValue,
+        SDL3.SDL_SetHint(SDL3.SDL_HINT_JOYSTICK_HIDAPI_PS5, "1");
+        if (!SDL3.SDL_Init(SDL_InitFlags.SDL_INIT_JOYSTICK | SDL_InitFlags.SDL_INIT_GAMEPAD))
+        {
+            throw new Exception("Couldn't initialise SDL");
+        }
+
+        var gamepadId = GetFirstValidControllerId();
+
+        unsafe
+        {
+            _gamepad = SDL3.SDL_OpenGamepad(gamepadId);
+        }
+
+        _readPs5ControllerTimer.Enabled = true;
+    }
+
+    private void StopPs5Controller()
+    {
+        _readPs5ControllerTimer.Enabled = false;
+
+        unsafe
+        {
+            SDL3.SDL_CloseGamepad(_gamepad);
+        }
+
+        SDL3.SDL_Quit();
+    }
+
+    private static SDL_JoystickID GetFirstValidControllerId()
+    {
+        var joystickIds = SDL3.SDL_GetJoysticks();
+
+        if (joystickIds is null || joystickIds.Count == 0)
+        {
+            throw new Exception("Couldn't find any joysticks");
+        }
+
+        for (var i = 0; i < joystickIds.Count; i++)
+        {
+            var joystickId = joystickIds[i];
+
+            if (!SDL3.SDL_IsGamepad(joystickId))
+            {
+                continue;
+            }
+
+            bool isPs5Joystick;
+
+            unsafe
+            {
+                var gamepad = SDL3.SDL_OpenGamepad(joystickId);
+                var gamepadType = SDL3.SDL_GetGamepadType(gamepad);
+                isPs5Joystick = gamepadType is SDL_GamepadType.SDL_GAMEPAD_TYPE_PS5;
+                SDL3.SDL_CloseGamepad(gamepad);
+            }
+
+            if (isPs5Joystick)
+            {
+                return joystickId;
+            }
+        }
+
+        throw new Exception("Couldn't find any gamepads from joystick list");
+    }
+
+    private async Task UpdateFromPs5Controller()
+    {
+        SDL3.SDL_PumpEvents();
+        ControllerState state;
+        unsafe
+        {
+            // LeftStickX: (float)ScalePs5JoystickInput(SDL3.SDL_GetGamepadAxis(_gamepad, SDL_GamepadAxis.SDL_GAMEPAD_AXIS_LEFTX))
+            state = new ControllerState(
+                Start: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_START),
+                Select: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_BACK),
+                Home: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_GUIDE),
+                BigHome: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_TOUCHPAD),
+                X: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_WEST),
+                Y: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_NORTH),
+                A: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_SOUTH),
+                B: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_EAST),
+                Up: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_DPAD_UP),
+                Right: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_DPAD_RIGHT),
+                Down: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_DPAD_DOWN),
+                Left: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_DPAD_LEFT),
+                LeftStickX: ScalePs5JoystickInput(SDL3.SDL_GetGamepadAxis(_gamepad, SDL_GamepadAxis.SDL_GAMEPAD_AXIS_LEFTX)),
+                LeftStickY: -ScalePs5JoystickInput(SDL3.SDL_GetGamepadAxis(_gamepad, SDL_GamepadAxis.SDL_GAMEPAD_AXIS_LEFTY)),
+                LeftStickIn: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_LEFT_STICK),
+                RightStickX: ScalePs5JoystickInput(SDL3.SDL_GetGamepadAxis(_gamepad, SDL_GamepadAxis.SDL_GAMEPAD_AXIS_RIGHTX)),
+                RightStickY: -ScalePs5JoystickInput(SDL3.SDL_GetGamepadAxis(_gamepad, SDL_GamepadAxis.SDL_GAMEPAD_AXIS_RIGHTY)),
+                RightStickIn: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_RIGHT_STICK),
+                LeftBumper: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_LEFT_SHOULDER),
+                LeftTrigger: ScalePs5TriggerInput(SDL3.SDL_GetGamepadAxis(_gamepad, SDL_GamepadAxis.SDL_GAMEPAD_AXIS_LEFT_TRIGGER)),
+                RightBumper: SDL3.SDL_GetGamepadButton(_gamepad, SDL_GamepadButton.SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER),
+                RightTrigger: ScalePs5TriggerInput(SDL3.SDL_GetGamepadAxis(_gamepad, SDL_GamepadAxis.SDL_GAMEPAD_AXIS_RIGHT_TRIGGER))
+            );
+        }
+
+        await UpdateFullController(state);
+    }
+
+    private float ScalePs5JoystickInput(double input)
+    {
+        return (float)Scale(input,
+            short.MinValue, short.MaxValue + 1,
             -1, 1);
     }
 
-    private double ScalePs5TriggerInput(double input)
+    private float ScalePs5TriggerInput(double input)
     {
-        return Scale(input,
-            0, short.MaxValue,
+        return (float)Scale(input,
+            0, short.MaxValue + 1,
             0, 1);
     }
 
@@ -762,15 +879,5 @@ public partial class MainViewModel : ViewModel
         var oldRange = oldMax - oldMin;
         var newRange = newMax - newMin;
         return (((input - oldMin) * newRange) / oldRange) + newMin;
-    }
-
-    private void PS5Controller()
-    {
-        SDL3.SDL_SetHint(SDL3.SDL_HINT_JOYSTICK_HIDAPI_PS5, "1");
-        if (!SDL3.SDL_Init(SDL_InitFlags.SDL_INIT_VIDEO | SDL_InitFlags.SDL_INIT_JOYSTICK | SDL_InitFlags.SDL_INIT_GAMEPAD))
-        {
-
-        }
-
     }
 }
