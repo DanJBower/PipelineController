@@ -30,6 +30,7 @@
     <ItemGroup>
         <ProjectReference Include="..\..\common\CommonClient\CommonClient.csproj" />
         <ProjectReference Include="..\..\common\CommonWpf\CommonWpf.csproj" />
+        <ProjectReference Include="..\..\common\Controller\Controller.csproj" />
         <ProjectReference Include="..\..\common\ServerInfo\ServerInfo.csproj" />
     </ItemGroup>
 
