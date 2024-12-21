@@ -19,7 +19,12 @@
         <FileVersion Condition=" '$(pipelineAssemblyVersion)' == '' ">1.0.0.0</FileVersion>
         <Version Condition=" '$(pipelinePackageVersion)' == '' ">1.0.0</Version>
         <AssemblyName>LogAllEvents</AssemblyName>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="ppy.SDL3-CS" Version="2024.1128.0" />
+    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\common\CommonClient\CommonClient.csproj" />

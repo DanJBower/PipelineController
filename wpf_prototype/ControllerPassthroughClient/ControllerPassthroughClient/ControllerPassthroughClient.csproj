@@ -29,6 +29,7 @@
         <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.26100.1742" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
         <PackageReference Include="ModernWpfUI" Version="0.9.6" />
+        <PackageReference Include="ppy.SDL3-CS" Version="2024.1128.0" />
         <PackageReference Include="Scrutor" Version="5.0.2" />
         <PackageReference Include="SimpleSourceGenerators" Version="1.0.0" />
     </ItemGroup>

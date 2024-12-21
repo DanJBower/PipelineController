@@ -107,7 +107,6 @@
 
             <RadioButton DockPanel.Dock="Left"
                          Content="Playstation Controller"
-                         IsEnabled="False"
                          MinWidth="0"
                          Margin="10 5"
                          GroupName="Input Mode"

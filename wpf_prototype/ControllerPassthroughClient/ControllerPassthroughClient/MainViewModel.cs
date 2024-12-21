@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Controller;
 using MQTTnet.Exceptions;
+using SDL;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Windows;
@@ -740,19 +741,19 @@ public partial class MainViewModel : ViewModel
         }
     }
 
-    /*private double ScaleXboxJoystickInput(double input)
+    private double ScalePs5JoystickInput(double input)
     {
         return Scale(input,
-            -2500, 25000,
+            short.MinValue, short.MaxValue,
             -1, 1);
     }
 
-    private double ScaleXboxTriggerInput(double input)
+    private double ScalePs5TriggerInput(double input)
     {
         return Scale(input,
-            -2500, 25000,
+            0, short.MaxValue,
             0, 1);
-    }*/
+    }
 
     private double Scale(double input,
         double oldMin, double oldMax,
@@ -761,5 +762,15 @@ public partial class MainViewModel : ViewModel
         var oldRange = oldMax - oldMin;
         var newRange = newMax - newMin;
         return (((input - oldMin) * newRange) / oldRange) + newMin;
+    }
+
+    private void PS5Controller()
+    {
+        SDL3.SDL_SetHint(SDL3.SDL_HINT_JOYSTICK_HIDAPI_PS5, "1");
+        if (!SDL3.SDL_Init(SDL_InitFlags.SDL_INIT_VIDEO | SDL_InitFlags.SDL_INIT_JOYSTICK | SDL_InitFlags.SDL_INIT_GAMEPAD))
+        {
+
+        }
+
     }
 }
