@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Threading;
 using ServerInfo;
 
-using (UdpClient udpClient = new(ServerConstants.BroadcastPort))
+using (UdpClient udpClient = new(ServerConstants.BroadcastDestinationPort))
 {
     await ListenForUdpBroadcasts(udpClient);
 

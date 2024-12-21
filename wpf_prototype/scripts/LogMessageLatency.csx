@@ -21,7 +21,8 @@ using ServerInfo;
     client.MqttClient.ApplicationMessageReceivedAsync += async e =>
     {
         var (sentTimestamp, _) = ServerDataConverter.ExtractData(e.ApplicationMessage.PayloadSegment.Array);
-        var latency = DateTime.Now - sentTimestamp;
+        var receivedTimestamp = DateTime.Now;
+        var latency = receivedTimestamp - sentTimestamp;
 
         if (latency.TotalSeconds > 1)
         {
