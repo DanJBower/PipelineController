@@ -22,6 +22,13 @@ public static partial class ClientUtilities
         return mqttClient;
     }
 
+    /// <summary>
+	/// For some reason sometimes the connection won't connect. If this happens
+	/// try pinging the client device from the server device and see if the pings
+	/// are successful. If it's an option try ping the server from the client too
+	/// I just lost like 3 hours of time to trying to debug this and seemingly nothing
+	/// was wrong as pinging server -> client just fixed it........
+    /// </summary>
     public static async Task<PrototypeClient> ConnectToClient(
         string ip,
         int port,
@@ -49,8 +56,6 @@ public static partial class ClientUtilities
     /// Set a rule up for domain + private networks to allow port <see cref="ServerConstants.BroadcastDestinationPort"/> on UDP
     /// I chose "Allow the connection" when setting up mine
     /// Really important! Make sure your wifi is set to private and not public... I lost hours to this
-    ///
-    /// TODO Check if firewall is blocking mqtt port now for some reason...
     /// </summary>
     public static async Task<(string, int)> FindClient(CancellationToken cancellationToken = default)
     {
