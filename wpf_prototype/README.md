@@ -13,6 +13,7 @@ There's also a source generator project. This was to make it easier to write `De
 
 Dependencies for building:
 
+* [Zadig](https://zadig.akeo.ie/) to install `RP2 Boot (Interface 1)` (Windows only?)
 * NET 9
 * Windows 10/11 if wanting to use the WPF apps.
 * Windows SDK 10.0.26100 if wanting to use the WPF apps.
