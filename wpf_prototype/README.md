@@ -2,7 +2,7 @@
 
 This folder in the repo contains a fully working prototype for the pipeline controller. It's written in C# for everything except for the Pi software. The Pi software is written for a Pi Pico W. The main components are:
 
-* PiController - The Pi Pico controller software. Modify `**TODO INSERT FILE NAME**` to configure for your WiFi and which profile to build for (Xbox or PS5). Tested on PS5 and Xbox Series X. Note: Can probably support Xbox One/PS4 pretty easily with only small modifications as it relies on [GP2040-CE](https://gp2040-ce.info/) for the controller output, however, I didn't have one available for testing.
+* PiController - The Pi Pico controller software. Modify `**TODO INSERT FILE NAME**` to configure for your WiFi and which profile to build for (Xbox or PS5). Tested on Windows 10 PC, PS5 and Xbox Series X. Note: Can probably support Xbox One/PS4 pretty easily with only small modifications as it relies on [GP2040-CE](https://gp2040-ce.info/) for the controller output, however, I didn't have one available for testing.
 * A number of common projects - Includes projects for connecting to the MQTT server and server constants. (Platform independent apart from the WPF one)
 * Server - The MQTT server. (Platform independent)
 * Controller Passthrough Client - A WPF app for
