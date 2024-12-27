@@ -22,5 +22,4 @@ Dependencies for building:
 
 There is a second version of the source generator publish, `publish_source_generators_clear_old.bat`. This clears the local NuGet cache and it must be run every time the source generator code is changed or the new NuGet won't be used. It should only be run when Visual Studio is closed other wise it will fail to clean properly.
 
-Note: If any of the published executables look blurry on windows systems with multiple DPIs in use, right click the exe > Properties > Compatibility, Change high DPI settings. Tick the override high dpi scaling behavour and set it to either `System` or `System (Enhanced)`.
-
+Note: If any of the published executables look blurry on windows systems with multiple DPIs in use, right click the exe > Properties > Compatibility, Change high DPI settings. Tick the override high dpi scaling behaviour and set it to either `System` or `System (Enhanced)`.
