@@ -261,6 +261,9 @@ private SimpleGlobalHook StartKeyListener()
 
 ControllerState GetKeyboardState()
 {
+    var (lX, lY) = HandleKeyboardStick(KeyCode.VcW, KeyCode.VcS, KeyCode.VcD, KeyCode.VcA);
+    var (rX, rY) = HandleKeyboardStick(KeyCode.VcUp, KeyCode.VcDown, KeyCode.VcRight, KeyCode.VcLeft);
+
     return new ControllerState(
         Start: _keyPressedLookup.GetOrAdd(KeyCode.VcB, false),
         Select: _keyPressedLookup.GetOrAdd(KeyCode.VcN, false),
@@ -274,17 +277,48 @@ ControllerState GetKeyboardState()
         Right: _keyPressedLookup.GetOrAdd(KeyCode.VcL, false),
         Down: _keyPressedLookup.GetOrAdd(KeyCode.VcK, false),
         Left: _keyPressedLookup.GetOrAdd(KeyCode.VcJ, false),
-        // LeftStickX: (float)reading.LeftThumbstickX,
-        // LeftStickY: (float)reading.LeftThumbstickY,
+        LeftStickX: (float)lX,
+        LeftStickY: (float)lY,
         LeftStickIn: _keyPressedLookup.GetOrAdd(KeyCode.VcQ, false),
-        // RightStickX: (float)reading.RightThumbstickX,
-        // RightStickY: (float)reading.RightThumbstickY,
+        RightStickX: (float)rX,
+        RightStickY: (float)rY,
         RightStickIn: _keyPressedLookup.GetOrAdd(KeyCode.VcE, false),
         LeftBumper: _keyPressedLookup.GetOrAdd(KeyCode.VcZ, false),
-        // LeftTrigger: (float)reading.LeftTrigger,
-        RightBumper: _keyPressedLookup.GetOrAdd(KeyCode.VcC, false)
-    // RightTrigger: (float)reading.RightTrigger
+        LeftTrigger: _keyPressedLookup.GetOrAdd(KeyCode.VcX, false) ? 1 : 0,
+        RightBumper: _keyPressedLookup.GetOrAdd(KeyCode.VcC, false),
+        RightTrigger: _keyPressedLookup.GetOrAdd(KeyCode.VcV, false) ? 1 : 0
     );
+}
+
+private (double, double) HandleKeyboardStick(KeyCode upKey, KeyCode downKey,
+        KeyCode rightKey, KeyCode leftKey)
+{
+    var x = HandleStickAxis(rightKey, leftKey);
+    var y = HandleStickAxis(upKey, downKey);
+    var r = Math.Sqrt((x * x) + (y * y));
+
+    if (r > 1)
+    {
+        x /= r;
+        y /= r;
+    }
+
+    return (x, y);
+}
+
+private double HandleStickAxis(KeyCode positiveKey, KeyCode negativeKey)
+{
+    var up = _keyPressedLookup.GetOrAdd(positiveKey, false);
+    var down = _keyPressedLookup.GetOrAdd(negativeKey, false);
+
+    float x = up switch
+    {
+        true when !down => 1,
+        false when down => -1,
+        _ => 0
+    };
+
+    return x;
 }
 
 public class SemaphoreLocker
