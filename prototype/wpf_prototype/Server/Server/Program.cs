@@ -10,22 +10,28 @@ using System.Net.Sockets;
 using System.Text;
 using Timer = System.Timers.Timer;
 
-using var mqttServer = await StartServer();
-
-try
+// Do not use a using declaration. It would compile in
+// this app but would break the script version of the
+// server as it reads in and runs this file.
+// Using declaration not supports in dotnet script. See:
+// https://github.com/dotnet-script/dotnet-script/issues/611
+using (var mqttServer = await StartServer())
 {
-    await SetInitialValues();
-    var (udpClient, timer) = AdvertiseServer();
-    using var _1 = udpClient;
-    using var _3 = timer;
-    Console.WriteLine("Press Enter to exit");
-    Console.ReadLine();
-    udpClient.Close();
-    timer.Enabled = false;
-}
-finally
-{
-    await StopServer(mqttServer);
+    try
+    {
+        await SetInitialValues();
+        var (udpClient, timer) = AdvertiseServer();
+        using var _1 = udpClient;
+        using var _3 = timer;
+        Console.WriteLine("Press Enter to exit");
+        Console.ReadLine();
+        udpClient.Close();
+        timer.Enabled = false;
+    }
+    finally
+    {
+        await StopServer(mqttServer);
+    }
 }
 
 return;
