@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <PublishReadyToRun>true</PublishReadyToRun>
+        <PublishTrimmed>false</PublishTrimmed>
+        <EmitCompilerGeneratedFiles Condition="'$(Configuration)' == 'Debug'">true</EmitCompilerGeneratedFiles>
+        <AssemblyVersion Condition=" '$(pipelineAssemblyVersion)' != '' ">$(pipelineAssemblyVersion)</AssemblyVersion>
+        <FileVersion Condition=" '$(pipelineAssemblyVersion)' != '' ">$(pipelineAssemblyVersion)</FileVersion>
+        <Version Condition=" '$(pipelinePackageVersion)' != '' ">$(pipelinePackageVersion)</Version>
+        <AssemblyVersion Condition=" '$(pipelineAssemblyVersion)' == '' ">1.0.0.0</AssemblyVersion>
+        <FileVersion Condition=" '$(pipelineAssemblyVersion)' == '' ">1.0.0.0</FileVersion>
+        <Version Condition=" '$(pipelinePackageVersion)' == '' ">1.0.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Makaretu.Dns.Multicast" Version="0.27.0" />
+        <PackageReference Include="MQTTnet" Version="4.3.7.1207" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Controller\Controller.csproj" />
+        <ProjectReference Include="..\ServerInfo\ServerInfo.csproj" />
+    </ItemGroup>
+
+</Project>

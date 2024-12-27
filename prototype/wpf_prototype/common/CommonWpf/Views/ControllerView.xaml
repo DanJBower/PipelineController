@@ -1,0 +1,174 @@
+﻿<UserControl x:Class="CommonWpf.Views.ControllerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mockViewModels="clr-namespace:CommonWpf.ViewModels.Mocks"
+             xmlns:components="clr-namespace:CommonWpf.Components"
+             mc:Ignorable="d"
+             d:DesignHeight="480"
+             d:DesignWidth="1024"
+             d:Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+             d:DataContext="{d:DesignInstance Type=mockViewModels:MockControllerViewModel, IsDesignTimeCreatable=True}"
+             d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+             d:FontFamily="{DynamicResource ContentControlThemeFontFamily}"
+             d:FontSize="{DynamicResource ControlContentThemeFontSize}"
+             x:Name="ControllerViewElementBinding">
+    <Border Padding="10">
+        <Grid IsSharedSizeScope="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Column="0"
+                  Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Column="0"
+                       Grid.Row="0"
+                       Content="Joysticks"
+                       FontSize="20" />
+
+                <Viewbox Grid.Column="0"
+                         Grid.Row="1"
+                         Stretch="Uniform"
+                         HorizontalAlignment="Center"
+                         VerticalAlignment="Center">
+                    <DockPanel LastChildFill="False"
+                               HorizontalAlignment="Center">
+                        <components:JoystickPanel Title="{Binding LeftStickTitle}"
+                                                  X="{Binding LeftStickX}"
+                                                  Y="{Binding LeftStickY}"
+                                                  Pressed="{Binding LeftStickIn}"
+                                                  Margin="5 0"/>
+
+                        <components:JoystickPanel Title="{Binding RightStickTitle}"
+                                                  X="{Binding RightStickX}"
+                                                  Y="{Binding RightStickY}"
+                                                  Pressed="{Binding RightStickIn}"
+                                                  Margin="5 0"/>
+                    </DockPanel>
+                </Viewbox>
+            </Grid>
+
+            <Grid Grid.Column="1"
+                  Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Column="0"
+                       Grid.Row="0"
+                       Content="Triggers"
+                       FontSize="20" />
+
+                <Viewbox Grid.Column="0"
+                         Grid.Row="1"
+                         Stretch="Uniform"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Center">
+                    <Grid VerticalAlignment="Center"
+                          Width="600">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <components:TriggerPanel Grid.Column="0"
+                                                 Grid.Row="0"
+                                                 TriggerTitle="{Binding LeftTriggerTitle, Mode=OneWay}"
+                                                 TriggerValue="{Binding LeftTrigger}" />
+
+                        <components:TriggerPanel Grid.Column="0"
+                                                 Grid.Row="1"
+                                                 TriggerTitle="{Binding RightTriggerTitle, Mode=OneWay}"
+                                                 TriggerValue="{Binding RightTrigger}" />
+                    </Grid>
+                </Viewbox>
+            </Grid>
+
+            <components:FourButtonPanel Grid.Column="0"
+                                        Grid.Row="1"
+                                        GroupTitle="D-Pad"
+                                        ButtonOneTitle="{Binding UpTitle, Mode=OneWay}"
+                                        ButtonOnePressed="{Binding Up}"
+                                        ButtonOnePressedColor="{DynamicResource ButtonActiveBrush}"
+                                        ButtonTwoTitle="{Binding RightTitle, Mode=OneWay}"
+                                        ButtonTwoPressed="{Binding Right}"
+                                        ButtonTwoPressedColor="{DynamicResource ButtonActiveBrush}"
+                                        ButtonThreeTitle="{Binding DownTitle, Mode=OneWay}"
+                                        ButtonThreePressed="{Binding Down}"
+                                        ButtonThreePressedColor="{DynamicResource ButtonActiveBrush}"
+                                        ButtonFourTitle="{Binding LeftTitle, Mode=OneWay}"
+                                        ButtonFourPressed="{Binding Left}"
+                                        ButtonFourPressedColor="{DynamicResource ButtonActiveBrush}" />
+
+            <components:FourButtonPanel Grid.Column="1"
+                                        Grid.Row="1"
+                                        GroupTitle="Action Buttons"
+                                        ButtonOneTitle="{Binding ATitle, Mode=OneWay}"
+                                        ButtonOnePressed="{Binding A}"
+                                        ButtonOnePressedColor="{DynamicResource AActiveBrush}"
+                                        ButtonTwoTitle="{Binding BTitle, Mode=OneWay}"
+                                        ButtonTwoPressed="{Binding B}"
+                                        ButtonTwoPressedColor="{DynamicResource BActiveBrush}"
+                                        ButtonThreeTitle="{Binding XTitle, Mode=OneWay}"
+                                        ButtonThreePressed="{Binding X}"
+                                        ButtonThreePressedColor="{DynamicResource XActiveBrush}"
+                                        ButtonFourTitle="{Binding YTitle, Mode=OneWay}"
+                                        ButtonFourPressed="{Binding Y}"
+                                        ButtonFourPressedColor="{DynamicResource YActiveBrush}" />
+
+            <components:FourButtonPanel Grid.Column="0"
+                                        Grid.Row="2"
+                                        GroupTitle="Menu Buttons"
+                                        ButtonOneTitle="{Binding StartTitle, Mode=OneWay}"
+                                        ButtonOnePressed="{Binding Start}"
+                                        ButtonOnePressedColor="{DynamicResource ButtonActiveBrush}"
+                                        ButtonTwoTitle="{Binding SelectTitle, Mode=OneWay}"
+                                        ButtonTwoPressed="{Binding Select}"
+                                        ButtonTwoPressedColor="{DynamicResource ButtonActiveBrush}"
+                                        ButtonThreeTitle="{Binding BigHomeTitle, Mode=OneWay}"
+                                        ButtonThreePressed="{Binding BigHome}"
+                                        ButtonThreePressedColor="{DynamicResource ButtonActiveBrush}"
+                                        ButtonFourTitle="{Binding HomeTitle, Mode=OneWay}"
+                                        ButtonFourPressed="{Binding Home}"
+                                        ButtonFourPressedColor="{DynamicResource ButtonActiveBrush}" />
+
+            <components:FourButtonPanel Grid.Column="1"
+                                        Grid.Row="2"
+                                        GroupTitle="Bumpers / Joystick In"
+                                        ButtonOneTitle="{Binding LeftBumperTitle, Mode=OneWay}"
+                                        ButtonOnePressed="{Binding LeftBumper}"
+                                        ButtonOnePressedColor="{DynamicResource ButtonActiveBrush}"
+                                        ButtonTwoTitle="{Binding RightBumperTitle, Mode=OneWay}"
+                                        ButtonTwoPressed="{Binding RightBumper}"
+                                        ButtonTwoPressedColor="{DynamicResource ButtonActiveBrush}"
+                                        ButtonThreeTitle="{Binding LeftStickInTitle, Mode=OneWay}"
+                                        ButtonThreePressed="{Binding LeftStickIn}"
+                                        ButtonThreePressedColor="{DynamicResource ButtonActiveBrush}"
+                                        ButtonFourTitle="{Binding RightStickInTitle, Mode=OneWay}"
+                                        ButtonFourPressed="{Binding RightStickIn}"
+                                        ButtonFourPressedColor="{DynamicResource ButtonActiveBrush}" />
+        </Grid>
+    </Border>
+</UserControl>

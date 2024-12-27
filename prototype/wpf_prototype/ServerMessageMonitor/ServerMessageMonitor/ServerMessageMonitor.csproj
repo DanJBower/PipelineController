@@ -1,0 +1,37 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net9.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UseWPF>true</UseWPF>
+        <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <PublishReadyToRun>true</PublishReadyToRun>
+        <PublishTrimmed>false</PublishTrimmed>
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+        <EmitCompilerGeneratedFiles Condition="'$(Configuration)' == 'Debug'">true</EmitCompilerGeneratedFiles>
+        <AssemblyVersion Condition=" '$(pipelineAssemblyVersion)' != '' ">$(pipelineAssemblyVersion)</AssemblyVersion>
+        <FileVersion Condition=" '$(pipelineAssemblyVersion)' != '' ">$(pipelineAssemblyVersion)</FileVersion>
+        <Version Condition=" '$(pipelinePackageVersion)' != '' ">$(pipelinePackageVersion)</Version>
+        <AssemblyVersion Condition=" '$(pipelineAssemblyVersion)' == '' ">1.0.0.0</AssemblyVersion>
+        <FileVersion Condition=" '$(pipelineAssemblyVersion)' == '' ">1.0.0.0</FileVersion>
+        <Version Condition=" '$(pipelinePackageVersion)' == '' ">1.0.0</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+        <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
+        <PackageReference Include="Scrutor" Version="4.2.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\common\CommonClient\CommonClient.csproj" />
+        <ProjectReference Include="..\..\common\CommonWpf\CommonWpf.csproj" />
+        <ProjectReference Include="..\..\common\Controller\Controller.csproj" />
+        <ProjectReference Include="..\..\common\ServerInfo\ServerInfo.csproj" />
+    </ItemGroup>
+
+</Project>

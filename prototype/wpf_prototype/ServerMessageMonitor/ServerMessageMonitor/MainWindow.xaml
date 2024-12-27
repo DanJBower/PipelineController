@@ -1,0 +1,73 @@
+﻿<Window x:Class="ServerMessageMonitor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ServerMessageMonitor"
+        xmlns:views="clr-namespace:CommonWpf.Views;assembly=CommonWpf"
+        mc:Ignorable="d"
+        Title="Controller Message Monitor"
+        Height="540"
+        Width="1024"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        ui:WindowHelper.UseModernWindowStyle="True"
+        d:Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
+        d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
+        FontFamily="{DynamicResource ContentControlThemeFontFamily}"
+        FontSize="{DynamicResource ControlContentThemeFontSize}"
+        d:DataContext="{d:DesignInstance Type=local:MainViewModel, IsDesignTimeCreatable=True}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0"
+                        Content="{Binding ServerConnectionButtonText}"
+                        Command="{Binding ToggleServerConnectionCommand}"
+                        Margin="5" />
+
+                <CheckBox Grid.Column="1"
+                          Content="Debug Light"
+                          Margin="10 5"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          IsChecked="{Binding DebugLight}"
+                          IsHitTestVisible="False"
+                          Focusable="False" />
+            </Grid>
+
+            <TextBlock Grid.Column="1"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"
+                       Margin="5">
+                <Run Text="Server Connection:" />
+                <Run Text="{Binding ServerConnectionStatus, Mode=OneWay}" />
+            </TextBlock>
+
+            <Button Grid.Column="2"
+                    DockPanel.Dock="Right"
+                    Content="Toggle Theme"
+                    Click="ToggleTheme"
+                    HorizontalAlignment="Right"
+                    Margin="5" />
+        </Grid>
+
+        <views:ControllerView Grid.Row="2"
+                                    DataContext="{Binding ControllerViewModel, Mode=OneWay}"/>
+    </Grid>
+</Window>

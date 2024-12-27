@@ -1,5 +1,7 @@
 # Pipeline controller
 
+**Please note this has currently only been developed to a working state in the wpf_prototype folder.**
+
 Pipeline controller provides a way to send Xbox Series X/S and PS5 controller signals to Xbox Series X/S, Windows PCs, and PS5s
 
 It allows automated plans to be created and executed on the target machine as if a real controller were playing the game

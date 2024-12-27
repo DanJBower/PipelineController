@@ -1,0 +1,28 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Decent colour picker https://hslpicker.com/ -->
+    <Color x:Key="AActiveColor">#3ccc4d</Color>
+    <SolidColorBrush x:Key="AActiveBrush" Color="{DynamicResource AActiveColor}" />
+
+    <Color x:Key="BActiveColor">#c24242</Color>
+    <SolidColorBrush x:Key="BActiveBrush" Color="{DynamicResource BActiveColor}" />
+
+    <Color x:Key="XActiveColor">#40bdc2</Color>
+    <SolidColorBrush x:Key="XActiveBrush" Color="{DynamicResource XActiveColor}" />
+
+    <Color x:Key="YActiveColor">#dbca33</Color>
+    <SolidColorBrush x:Key="YActiveBrush" Color="{DynamicResource YActiveColor}" />
+
+    <Color x:Key="ButtonActiveColor">#b24e01</Color>
+    <SolidColorBrush x:Key="ButtonActiveBrush" Color="{DynamicResource ButtonActiveColor}" />
+
+    <Color x:Key="ButtonNotActiveColor">#282828</Color>
+    <SolidColorBrush x:Key="ButtonNotActiveBrush" Color="{DynamicResource ButtonNotActiveColor}" />
+
+    <Color x:Key="JoystickBackgroundColor">AliceBlue</Color>
+    <SolidColorBrush x:Key="JoystickBackgroundBrush" Color="{DynamicResource JoystickBackgroundColor}" />
+
+    <Color x:Key="ThumbColor">#282828</Color>
+    <SolidColorBrush x:Key="ThumbBrush" Color="{DynamicResource ThumbColor}" />
+    <SolidColorBrush x:Key="SliderThumbBackground" Color="{DynamicResource ThumbColor}" />
+</ResourceDictionary>

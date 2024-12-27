@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net9.0-windows10.0.26100</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UseWPF>true</UseWPF>
+        <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <PublishReadyToRun>true</PublishReadyToRun>
+        <PublishTrimmed>false</PublishTrimmed>
+        <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+        <EmitCompilerGeneratedFiles Condition="'$(Configuration)' == 'Debug'">true</EmitCompilerGeneratedFiles>
+        <AssemblyVersion Condition=" '$(pipelineAssemblyVersion)' != '' ">$(pipelineAssemblyVersion)</AssemblyVersion>
+        <FileVersion Condition=" '$(pipelineAssemblyVersion)' != '' ">$(pipelineAssemblyVersion)</FileVersion>
+        <Version Condition=" '$(pipelinePackageVersion)' != '' ">$(pipelinePackageVersion)</Version>
+        <AssemblyVersion Condition=" '$(pipelineAssemblyVersion)' == '' ">1.0.0.0</AssemblyVersion>
+        <FileVersion Condition=" '$(pipelineAssemblyVersion)' == '' ">1.0.0.0</FileVersion>
+        <Version Condition=" '$(pipelinePackageVersion)' == '' ">1.0.0</Version>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />
+        <PackageReference Include="DryIoc.Microsoft.DependencyInjection" Version="6.2.0" />
+        <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+        <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.26100.1742" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135" />
+        <PackageReference Include="ModernWpfUI" Version="0.9.6" />
+        <PackageReference Include="ppy.SDL3-CS" Version="2024.1128.0" />
+        <PackageReference Include="Scrutor" Version="5.0.2" />
+        <PackageReference Include="SimpleSourceGenerators" Version="1.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\common\CommonClient\CommonClient.csproj" />
+        <ProjectReference Include="..\..\common\CommonWpf\CommonWpf.csproj" />
+        <ProjectReference Include="..\..\common\ServerInfo\ServerInfo.csproj" />
+    </ItemGroup>
+
+</Project>
