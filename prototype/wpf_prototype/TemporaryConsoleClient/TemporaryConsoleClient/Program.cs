@@ -1,7 +1,12 @@
 ﻿using CommonClient;
 using Controller;
+using TemporaryConsoleClient;
 
 // Used for monitoring all events happening in the client
+
+await ConsoleControllerPassthrough.RunApproach3().ConfigureAwait(false);
+
+return;
 
 Console.WriteLine("Attempting to connect to client");
 using var cancellationTokenSource = new CancellationTokenSource();
