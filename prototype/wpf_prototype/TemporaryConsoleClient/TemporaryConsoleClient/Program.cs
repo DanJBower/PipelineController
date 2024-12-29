@@ -2,12 +2,10 @@
 using Controller;
 using TemporaryConsoleClient;
 
-// Used for monitoring all events happening in the client
-
-await ConsoleControllerPassthrough.RunApproach3().ConfigureAwait(false);
-
+await ConsoleControllerPassthrough.RunApproach1().ConfigureAwait(false);
 return;
 
+// Used for monitoring all events happening in the client
 Console.WriteLine("Attempting to connect to client");
 using var cancellationTokenSource = new CancellationTokenSource();
 cancellationTokenSource.CancelAfter(20000);

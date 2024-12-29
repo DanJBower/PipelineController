@@ -6,12 +6,16 @@ using Timer = System.Timers.Timer;
 
 namespace TemporaryConsoleClient;
 
+// Was using this to see if there was a way to get messages being sent every 1ms
+// The only way I could get it to work accurately was using a while loop in approach 4
+
 public static class ConsoleControllerPassthrough
 {
     private static readonly Lock Lock = new();
     private static PrototypeClient Client;
     private static long StartTime;
     private static readonly List<double> Times = [];
+    private static readonly List<double> AdditionalDebugTimes = [];
 
     public static async Task RunApproach1()
     {
@@ -134,20 +138,88 @@ public static class ConsoleControllerPassthrough
                                Messages per second: {mps:0.00}
                                Times:
                                 * {string.Join("\n * ", Times)}
+                               Additional Debug Times:
+                                * {string.Join("\n * ", AdditionalDebugTimes)}
                                """);
     }
 
     private static async Task Approach3PollController(CancellationToken token)
     {
+        var lastStart = Stopwatch.GetTimestamp();
         var targetDelay = new TimeSpan(0, 0, 0, 0, 1);
         while (!token.IsCancellationRequested)
         {
+            AdditionalDebugTimes.Add(Stopwatch.GetElapsedTime(lastStart).TotalMilliseconds);
+            lastStart = Stopwatch.GetTimestamp();
             await PollPs5Controller();
-            var delay = targetDelay - Stopwatch.GetElapsedTime(StartTime);
+            var delay = targetDelay - Stopwatch.GetElapsedTime(lastStart);
             if (delay > TimeSpan.Zero)
             {
                 await Task.Delay(delay);
             }
+        }
+    }
+
+    public static async Task RunApproach4()
+    {
+        Console.WriteLine("Finding and connecting to server");
+        await using var client = await ClientUtilities.FindAndConnectToClient();
+        Client = client;
+        Console.WriteLine("Server connected");
+        StartSdl();
+        Console.WriteLine("Listening for PS5 controller input");
+        Console.WriteLine("Press enter to exit");
+        CancellationTokenSource cts = new();
+        StartTime = Stopwatch.GetTimestamp();
+        var approach4 = Approach4PollController(cts.Token);
+
+        while (true)
+        {
+            if (Console.KeyAvailable)
+            {
+                var keyInfo = Console.ReadKey(intercept: true);
+
+                if (keyInfo.Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+            }
+        }
+
+        await cts.CancelAsync();
+        await Task.Delay(200); // Allow timer to fully stop
+
+        StopSdl();
+        var totalDuration = Stopwatch.GetElapsedTime(StartTime).TotalSeconds;
+        var mps = Times.Count / totalDuration;
+        File.WriteAllText("Stats4.log", $"""
+                               Duration: {totalDuration:0.00}s
+                               Total messages: {Times.Count}
+                               Messages per second: {mps:0.00}
+                               Times:
+                                * {string.Join("\n * ", Times.Select((time, i) => $"[{i}]: {time}"))}
+                               Additional Debug Times:
+                                * {string.Join("\n * ", AdditionalDebugTimes.Select((time, i) => $"[{i}]: {time}"))}
+                               """);
+    }
+
+    private static async Task Approach4PollController(CancellationToken token)
+    {
+        var targetDelay = new TimeSpan(0, 0, 0, 0, 1);
+        var lastStart = Stopwatch.GetTimestamp();
+        await PollPs5Controller();
+
+        while (!token.IsCancellationRequested)
+        {
+            var timeElapsed = Stopwatch.GetElapsedTime(lastStart);
+            if (timeElapsed < targetDelay)
+            {
+                continue;
+            }
+
+            AdditionalDebugTimes.Add(timeElapsed.TotalMilliseconds);
+            lastStart = Stopwatch.GetTimestamp();
+            await PollPs5Controller();
         }
     }
 
