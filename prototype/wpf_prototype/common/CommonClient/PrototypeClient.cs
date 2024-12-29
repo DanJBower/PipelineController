@@ -3,6 +3,7 @@ using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Protocol;
 using ServerInfo;
+using System.Collections.Concurrent;
 
 namespace CommonClient;
 
@@ -11,9 +12,13 @@ public class PrototypeClient : IAsyncDisposable
     private static readonly MqttFactory MqttFactory = new();
     public IMqttClient MqttClient { get; }
 
-    public PrototypeClient(IMqttClient client)
+    private readonly int _maxMessageQueueParallelism;
+
+    public PrototypeClient(IMqttClient client, int maxMessageQueueParallelism = 10)
     {
+        _maxMessageQueueParallelism = maxMessageQueueParallelism;
         MqttClient = client;
+        Task.Run(() => ProcessMessageQueue(client, _messageQueueCancellationTokenSource.Token));
 
         TriggerControllerEventActions = new()
         {
@@ -538,10 +543,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _fullMessageBuilder = InitialFullMessageBuilder;
 
-    public async Task SetController(ControllerState controllerState)
+    public async Task SetController(ControllerState controllerState, bool addToMessageQueue = false)
     {
-        await SendMessage(_fullMessageBuilder, controllerState);
-        _fullMessageBuilder = AliasedFullMessageBuilder;
+        await SendMessage(_fullMessageBuilder, controllerState, addToMessageQueue);
+        // _fullFullMessageBuilder;
     }
 
     public async Task SetController(
@@ -692,10 +697,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _leftStickMessageBuilder = InitialLeftStickMessageBuilder;
 
-    public async Task SetLeftStick((float x, float y) leftStick)
+    public async Task SetLeftStick((float x, float y) leftStick, bool addToMessageQueue = false)
     {
-        await SendMessage(_leftStickMessageBuilder, leftStick);
-        _leftStickMessageBuilder = AliasedLeftStickMessageBuilder;
+        await SendMessage(_leftStickMessageBuilder, leftStick, addToMessageQueue);
+        // _leftStickLeftStickMessageBuilder;
     }
 
     private void OnLeftStickUpdated(DateTime timestamp, (float x, float y) leftStick)
@@ -785,10 +790,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _rightStickMessageBuilder = InitialRightStickMessageBuilder;
 
-    public async Task SetRightStick((float x, float y) rightStick)
+    public async Task SetRightStick((float x, float y) rightStick, bool addToMessageQueue = false)
     {
-        await SendMessage(_rightStickMessageBuilder, rightStick);
-        _rightStickMessageBuilder = AliasedRightStickMessageBuilder;
+        await SendMessage(_rightStickMessageBuilder, rightStick, addToMessageQueue);
+        // _rightStickRightStickMessageBuilder;
     }
 
     private void OnRightStickUpdated(DateTime timestamp, (float x, float y) rightStick)
@@ -865,17 +870,64 @@ public class PrototypeClient : IAsyncDisposable
         }
     }
 
+    private BlockingCollection<MqttApplicationMessage> _messageQueue = new();
+    private ConcurrentBag<Task> _messagesCurrentlyBeingSent = [];
+    private CancellationTokenSource _messageQueueCancellationTokenSource = new();
+
     public DateTime ControllerStateLastUpdated { get; private set; }
     public event EventHandler<ValueUpdatedEventArgs<ControllerState>>? ControllerUpdated;
 
     private async Task SendMessage<T>(MqttApplicationMessageBuilder messageBuilder,
-        T messagePayload)
+        T messagePayload,
+        bool addToMessageQueue)
     {
         var message = messageBuilder
             .WithPayload(ServerDataConverter.ExtractBytes(messagePayload))
             .Build();
 
-        await MqttClient.PublishAsync(message);
+        if (addToMessageQueue)
+        {
+            _messageQueue.Add(message);
+        }
+        else
+        {
+            await MqttClient.PublishAsync(message);
+        }
+    }
+
+    private async Task ProcessMessageQueue(IMqttClient client, CancellationToken cancellationToken)
+    {
+        var parallelOptions = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = _maxMessageQueueParallelism,
+            CancellationToken = cancellationToken
+        };
+
+        await Task.Run(() =>
+        {
+            Parallel.ForEach(_messageQueue.GetConsumingEnumerable(cancellationToken), parallelOptions, PublishMessage);
+        }, cancellationToken);
+
+        return;
+
+        void PublishMessage(MqttApplicationMessage message)
+        {
+            var task = Task.Run(async () =>
+            {
+                await client.PublishAsync(message, cancellationToken);
+            }, cancellationToken);
+
+            _messagesCurrentlyBeingSent.Add(task);
+
+            // TODO Remove the task from active list when it's done
+            // _ = task.ContinueWith(_ => _messagesCurrentlyBeingSent.(task));
+        }
+    }
+
+    public async Task WaitForMessageQueueToFinishProcessing(CancellationToken cancellationToken = default)
+    {
+        // TODO
+
     }
 
     private static readonly MqttApplicationMessageBuilder InitialStartMessageBuilder = new MqttApplicationMessageBuilder()
@@ -891,10 +943,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _startMessageBuilder = InitialStartMessageBuilder;
 
-    public async Task SetStart(bool start)
+    public async Task SetStart(bool start, bool addToMessageQueue = false)
     {
-        await SendMessage(_startMessageBuilder, start);
-        _startMessageBuilder = AliasedStartMessageBuilder;
+        await SendMessage(_startMessageBuilder, start, addToMessageQueue);
+        // _startStartMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? StartUpdated;
@@ -953,10 +1005,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _selectMessageBuilder = InitialSelectMessageBuilder;
 
-    public async Task SetSelect(bool select)
+    public async Task SetSelect(bool select, bool addToMessageQueue = false)
     {
-        await SendMessage(_selectMessageBuilder, select);
-        _selectMessageBuilder = AliasedSelectMessageBuilder;
+        await SendMessage(_selectMessageBuilder, select, addToMessageQueue);
+        // _selectSelectMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? SelectUpdated;
@@ -1015,10 +1067,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _homeMessageBuilder = InitialHomeMessageBuilder;
 
-    public async Task SetHome(bool home)
+    public async Task SetHome(bool home, bool addToMessageQueue = false)
     {
-        await SendMessage(_homeMessageBuilder, home);
-        _homeMessageBuilder = AliasedHomeMessageBuilder;
+        await SendMessage(_homeMessageBuilder, home, addToMessageQueue);
+        // _homeMessageBuilder = AliasedHomeMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? HomeUpdated;
@@ -1077,10 +1129,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _bigHomeMessageBuilder = InitialBigHomeMessageBuilder;
 
-    public async Task SetBigHome(bool bigHome)
+    public async Task SetBigHome(bool bigHome, bool addToMessageQueue = false)
     {
-        await SendMessage(_bigHomeMessageBuilder, bigHome);
-        _bigHomeMessageBuilder = AliasedBigHomeMessageBuilder;
+        await SendMessage(_bigHomeMessageBuilder, bigHome, addToMessageQueue);
+        // _bigHomeMessageBuilder = AliasedBigHomeMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? BigHomeUpdated;
@@ -1139,10 +1191,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _xMessageBuilder = InitialXMessageBuilder;
 
-    public async Task SetX(bool x)
+    public async Task SetX(bool x, bool addToMessageQueue = false)
     {
-        await SendMessage(_xMessageBuilder, x);
-        _xMessageBuilder = AliasedXMessageBuilder;
+        await SendMessage(_xMessageBuilder, x, addToMessageQueue);
+        // _xMessageBuilder = AliasedXMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? XUpdated;
@@ -1201,10 +1253,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _yMessageBuilder = InitialYMessageBuilder;
 
-    public async Task SetY(bool y)
+    public async Task SetY(bool y, bool addToMessageQueue = false)
     {
-        await SendMessage(_yMessageBuilder, y);
-        _yMessageBuilder = AliasedYMessageBuilder;
+        await SendMessage(_yMessageBuilder, y, addToMessageQueue);
+        // _yMessageBuilder = AliasedYMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? YUpdated;
@@ -1263,10 +1315,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _aMessageBuilder = InitialAMessageBuilder;
 
-    public async Task SetA(bool a)
+    public async Task SetA(bool a, bool addToMessageQueue = false)
     {
-        await SendMessage(_aMessageBuilder, a);
-        _aMessageBuilder = AliasedAMessageBuilder;
+        await SendMessage(_aMessageBuilder, a, addToMessageQueue);
+        // _aMessageBuilder = AliasedAMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? AUpdated;
@@ -1325,10 +1377,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _bMessageBuilder = InitialBMessageBuilder;
 
-    public async Task SetB(bool b)
+    public async Task SetB(bool b, bool addToMessageQueue = false)
     {
-        await SendMessage(_bMessageBuilder, b);
-        _bMessageBuilder = AliasedBMessageBuilder;
+        await SendMessage(_bMessageBuilder, b, addToMessageQueue);
+        // _bMessageBuilder = AliasedBMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? BUpdated;
@@ -1387,10 +1439,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _upMessageBuilder = InitialUpMessageBuilder;
 
-    public async Task SetUp(bool up)
+    public async Task SetUp(bool up, bool addToMessageQueue = false)
     {
-        await SendMessage(_upMessageBuilder, up);
-        _upMessageBuilder = AliasedUpMessageBuilder;
+        await SendMessage(_upMessageBuilder, up, addToMessageQueue);
+        // _upMessageBuilder = AliasedUpMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? UpUpdated;
@@ -1449,10 +1501,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _rightMessageBuilder = InitialRightMessageBuilder;
 
-    public async Task SetRight(bool right)
+    public async Task SetRight(bool right, bool addToMessageQueue = false)
     {
-        await SendMessage(_rightMessageBuilder, right);
-        _rightMessageBuilder = AliasedRightMessageBuilder;
+        await SendMessage(_rightMessageBuilder, right, addToMessageQueue);
+        // _rightMessageBuilder = AliasedRightMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? RightUpdated;
@@ -1511,10 +1563,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _downMessageBuilder = InitialDownMessageBuilder;
 
-    public async Task SetDown(bool down)
+    public async Task SetDown(bool down, bool addToMessageQueue = false)
     {
-        await SendMessage(_downMessageBuilder, down);
-        _downMessageBuilder = AliasedDownMessageBuilder;
+        await SendMessage(_downMessageBuilder, down, addToMessageQueue);
+        // _downMessageBuilder = AliasedDownMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? DownUpdated;
@@ -1573,10 +1625,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _leftMessageBuilder = InitialLeftMessageBuilder;
 
-    public async Task SetLeft(bool left)
+    public async Task SetLeft(bool left, bool addToMessageQueue = false)
     {
-        await SendMessage(_leftMessageBuilder, left);
-        _leftMessageBuilder = AliasedLeftMessageBuilder;
+        await SendMessage(_leftMessageBuilder, left, addToMessageQueue);
+        // _leftMessageBuilder = AliasedLeftMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? LeftUpdated;
@@ -1635,10 +1687,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _leftStickXMessageBuilder = InitialLeftStickXMessageBuilder;
 
-    public async Task SetLeftStickX(float leftStickX)
+    public async Task SetLeftStickX(float leftStickX, bool addToMessageQueue = false)
     {
-        await SendMessage(_leftStickXMessageBuilder, leftStickX);
-        _leftStickXMessageBuilder = AliasedLeftStickXMessageBuilder;
+        await SendMessage(_leftStickXMessageBuilder, leftStickX, addToMessageQueue);
+        // _leftStickXMessageBuilder = AliasedLeftStickXMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<float>>? LeftStickXUpdated;
@@ -1697,10 +1749,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _leftStickYMessageBuilder = InitialLeftStickYMessageBuilder;
 
-    public async Task SetLeftStickY(float leftStickY)
+    public async Task SetLeftStickY(float leftStickY, bool addToMessageQueue = false)
     {
-        await SendMessage(_leftStickYMessageBuilder, leftStickY);
-        _leftStickYMessageBuilder = AliasedLeftStickYMessageBuilder;
+        await SendMessage(_leftStickYMessageBuilder, leftStickY, addToMessageQueue);
+        // _leftStickYMessageBuilder = AliasedLeftStickYMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<float>>? LeftStickYUpdated;
@@ -1759,10 +1811,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _leftStickInMessageBuilder = InitialLeftStickInMessageBuilder;
 
-    public async Task SetLeftStickIn(bool leftStickIn)
+    public async Task SetLeftStickIn(bool leftStickIn, bool addToMessageQueue = false)
     {
-        await SendMessage(_leftStickInMessageBuilder, leftStickIn);
-        _leftStickInMessageBuilder = AliasedLeftStickInMessageBuilder;
+        await SendMessage(_leftStickInMessageBuilder, leftStickIn, addToMessageQueue);
+        // _leftStickInMessageBuilder = AliasedLeftStickInMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? LeftStickInUpdated;
@@ -1821,10 +1873,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _rightStickXMessageBuilder = InitialRightStickXMessageBuilder;
 
-    public async Task SetRightStickX(float rightStickX)
+    public async Task SetRightStickX(float rightStickX, bool addToMessageQueue = false)
     {
-        await SendMessage(_rightStickXMessageBuilder, rightStickX);
-        _rightStickXMessageBuilder = AliasedRightStickXMessageBuilder;
+        await SendMessage(_rightStickXMessageBuilder, rightStickX, addToMessageQueue);
+        // _rightStickXMessageBuilder = AliasedRightStickXMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<float>>? RightStickXUpdated;
@@ -1883,10 +1935,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _rightStickYMessageBuilder = InitialRightStickYMessageBuilder;
 
-    public async Task SetRightStickY(float rightStickY)
+    public async Task SetRightStickY(float rightStickY, bool addToMessageQueue = false)
     {
-        await SendMessage(_rightStickYMessageBuilder, rightStickY);
-        _rightStickYMessageBuilder = AliasedRightStickYMessageBuilder;
+        await SendMessage(_rightStickYMessageBuilder, rightStickY, addToMessageQueue);
+        // _rightStickYMessageBuilder = AliasedRightStickYMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<float>>? RightStickYUpdated;
@@ -1945,10 +1997,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _rightStickInMessageBuilder = InitialRightStickInMessageBuilder;
 
-    public async Task SetRightStickIn(bool rightStickIn)
+    public async Task SetRightStickIn(bool rightStickIn, bool addToMessageQueue = false)
     {
-        await SendMessage(_rightStickInMessageBuilder, rightStickIn);
-        _rightStickInMessageBuilder = AliasedRightStickInMessageBuilder;
+        await SendMessage(_rightStickInMessageBuilder, rightStickIn, addToMessageQueue);
+        // _rightStickInMessageBuilder = AliasedRightStickInMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? RightStickInUpdated;
@@ -2007,10 +2059,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _leftBumperMessageBuilder = InitialLeftBumperMessageBuilder;
 
-    public async Task SetLeftBumper(bool leftBumper)
+    public async Task SetLeftBumper(bool leftBumper, bool addToMessageQueue = false)
     {
-        await SendMessage(_leftBumperMessageBuilder, leftBumper);
-        _leftBumperMessageBuilder = AliasedLeftBumperMessageBuilder;
+        await SendMessage(_leftBumperMessageBuilder, leftBumper, addToMessageQueue);
+        // _leftBumperMessageBuilder = AliasedLeftBumperMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? LeftBumperUpdated;
@@ -2069,10 +2121,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _leftTriggerMessageBuilder = InitialLeftTriggerMessageBuilder;
 
-    public async Task SetLeftTrigger(float leftTrigger)
+    public async Task SetLeftTrigger(float leftTrigger, bool addToMessageQueue = false)
     {
-        await SendMessage(_leftTriggerMessageBuilder, leftTrigger);
-        _leftTriggerMessageBuilder = AliasedLeftTriggerMessageBuilder;
+        await SendMessage(_leftTriggerMessageBuilder, leftTrigger, addToMessageQueue);
+        // _leftTriggerMessageBuilder = AliasedLeftTriggerMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<float>>? LeftTriggerUpdated;
@@ -2131,10 +2183,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _rightBumperMessageBuilder = InitialRightBumperMessageBuilder;
 
-    public async Task SetRightBumper(bool rightBumper)
+    public async Task SetRightBumper(bool rightBumper, bool addToMessageQueue = false)
     {
-        await SendMessage(_rightBumperMessageBuilder, rightBumper);
-        _rightBumperMessageBuilder = AliasedRightBumperMessageBuilder;
+        await SendMessage(_rightBumperMessageBuilder, rightBumper, addToMessageQueue);
+        // _rightBumperMessageBuilder = AliasedRightBumperMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? RightBumperUpdated;
@@ -2193,10 +2245,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _rightTriggerMessageBuilder = InitialRightTriggerMessageBuilder;
 
-    public async Task SetRightTrigger(float rightTrigger)
+    public async Task SetRightTrigger(float rightTrigger, bool addToMessageQueue = false)
     {
-        await SendMessage(_rightTriggerMessageBuilder, rightTrigger);
-        _rightTriggerMessageBuilder = AliasedRightTriggerMessageBuilder;
+        await SendMessage(_rightTriggerMessageBuilder, rightTrigger, addToMessageQueue);
+        // _rightTriggerMessageBuilder = AliasedRightTriggerMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<float>>? RightTriggerUpdated;
@@ -2255,10 +2307,10 @@ public class PrototypeClient : IAsyncDisposable
 
     private MqttApplicationMessageBuilder _debugLightMessageBuilder = InitialDebugLightMessageBuilder;
 
-    public async Task SetDebugLight(bool debugLight)
+    public async Task SetDebugLight(bool debugLight, bool addToMessageQueue = false)
     {
-        await SendMessage(_debugLightMessageBuilder, debugLight);
-        _debugLightMessageBuilder = AliasedDebugLightMessageBuilder;
+        await SendMessage(_debugLightMessageBuilder, debugLight, addToMessageQueue);
+        // _debugLightMessageBuilder = AliasedDebugLightMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? DebugLightUpdated;
@@ -2354,6 +2406,8 @@ public class PrototypeClient : IAsyncDisposable
     {
         if (disposing)
         {
+            _messageQueue.CompleteAdding();
+            _messageQueueCancellationTokenSource.Cancel();
             DisableControllerChangeMonitoring().RunSynchronously();
             MqttClient.DisconnectAsync().RunSynchronously();
             MqttClient.Dispose();
@@ -2362,6 +2416,8 @@ public class PrototypeClient : IAsyncDisposable
 
     protected virtual async ValueTask DisposeAsyncCore()
     {
+        _messageQueue.CompleteAdding();
+        await _messageQueueCancellationTokenSource.CancelAsync();
         await DisableControllerChangeMonitoring().ConfigureAwait(false);
         await MqttClient.DisconnectAsync().ConfigureAwait(false);
         MqttClient.Dispose();

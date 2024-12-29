@@ -2,7 +2,7 @@
 using Controller;
 using TemporaryConsoleClient;
 
-await ConsoleControllerPassthrough.RunApproach1().ConfigureAwait(false);
+await ConsoleControllerPassthrough.RunApproach4().ConfigureAwait(false);
 return;
 
 // Used for monitoring all events happening in the client
