@@ -11,7 +11,6 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Windows.Gaming.Input;
-using Timer = System.Timers.Timer;
 
 namespace ControllerPassthroughClient;
 
@@ -19,17 +18,15 @@ public partial class MainViewModel : ViewModel
 {
     private readonly Dispatcher _uiDispatcher = Application.Current.Dispatcher;
     private CancellationTokenSource? _serverConnectionCancellationTokenSource;
+    private long _startTime;
 
     public MainViewModel()
     {
+        _startTime = Stopwatch.GetTimestamp();
         const double controllerUpdateRateHz = 60;
-        const double controllerUpdateRateMs = 1000 / controllerUpdateRateHz;
         Gamepad.GamepadAdded += OnXboxControllerAdded;
-        _readXboxControllerTimer.Interval = controllerUpdateRateMs;
-        _readXboxControllerTimer.Elapsed += async (_, _) => await UpdateFromXboxController();
-
-        _readPs5ControllerTimer.Interval = controllerUpdateRateMs;
-        _readPs5ControllerTimer.Elapsed += async (_, _) => await UpdateFromPs5Controller();
+        _readXboxControllerTimer = HighAccuracyTimer.FromHz(controllerUpdateRateHz, UpdateFromXboxController);
+        _readXboxControllerTimer = HighAccuracyTimer.FromHz(controllerUpdateRateHz, UpdateFromPs5Controller);
     }
 
     private void DispatchPropertyChange(Action changeProperties)
@@ -59,10 +56,8 @@ public partial class MainViewModel : ViewModel
     private void OnWindowClosing()
     {
         Debug.WriteLine("Shutting down");
-        _readXboxControllerTimer.Enabled = false;
-        _readXboxControllerTimer.Dispose();
+        _readXboxControllerTimer.Stop();
         StopPs5Controller();
-        _readPs5ControllerTimer.Dispose();
     }
 
     [RelayCommand]
@@ -324,7 +319,7 @@ public partial class MainViewModel : ViewModel
         };
 
         UpdateKeyboardPressLabels(value);
-        _readXboxControllerTimer.Enabled = false; // Disable the xbox controller polling
+        _readXboxControllerTimer.Stop(); // Disable the xbox controller polling
         StopPs5Controller();
         Zero().ConfigureAwait(false); // Zero commands to prevent left over inputs
 
@@ -335,7 +330,7 @@ public partial class MainViewModel : ViewModel
                 break;
             case InputMode.XboxController:
                 _xboxController = Gamepad.Gamepads.FirstOrDefault();
-                _readXboxControllerTimer.Enabled = true;
+                _readXboxControllerTimer.Start();
                 break;
             case InputMode.PlaystationController:
                 InitialisePs5Controller();
@@ -346,7 +341,7 @@ public partial class MainViewModel : ViewModel
     }
 
     private Gamepad? _xboxController;
-    private readonly Timer _readXboxControllerTimer = new();
+    private readonly HighAccuracyTimer _readXboxControllerTimer;
 
     private void OnXboxControllerAdded(object? sender, Gamepad e)
     {
@@ -354,7 +349,7 @@ public partial class MainViewModel : ViewModel
 
         if (InputMode is InputMode.XboxController)
         {
-            _readXboxControllerTimer.Enabled = true;
+            _readXboxControllerTimer.Start();
         }
     }
 
@@ -364,6 +359,8 @@ public partial class MainViewModel : ViewModel
         {
             return;
         }
+
+        Debug.WriteLine($"{Stopwatch.GetElapsedTime(_startTime).TotalMilliseconds:0.00}");
 
         var reading = _xboxController.GetCurrentReading();
 
@@ -753,7 +750,7 @@ public partial class MainViewModel : ViewModel
     }
 
     private unsafe SDL_Gamepad* _gamepad;
-    private readonly Timer _readPs5ControllerTimer = new();
+    private readonly HighAccuracyTimer _readPs5ControllerTimer;
 
     private void InitialisePs5Controller()
     {
@@ -770,12 +767,12 @@ public partial class MainViewModel : ViewModel
             _gamepad = SDL3.SDL_OpenGamepad(gamepadId);
         }
 
-        _readPs5ControllerTimer.Enabled = true;
+        _readPs5ControllerTimer.Start();
     }
 
     private void StopPs5Controller()
     {
-        _readPs5ControllerTimer.Enabled = false;
+        _readPs5ControllerTimer.Stop();
 
         unsafe
         {
@@ -824,6 +821,7 @@ public partial class MainViewModel : ViewModel
 
     private async Task UpdateFromPs5Controller()
     {
+        Debug.WriteLine($"{Stopwatch.GetElapsedTime(_startTime).TotalMilliseconds:0.00}");
         SDL3.SDL_PumpEvents();
         ControllerState state;
         unsafe

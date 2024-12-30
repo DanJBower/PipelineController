@@ -21,9 +21,9 @@ public class HighAccuracyTimer
         _useLongRunningHint = useLongRunningHint;
     }
 
-    public HighAccuracyTimer FromHz(double hz,
+    public static HighAccuracyTimer FromHz(double hz,
         Func<Task> action,
-        bool slew,
+        bool slew = false,
         bool useLongRunningHint = false)
     {
         var interval = 1000 / hz;
