@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks.Dataflow;
 
-namespace TemporaryConsoleClient;
+namespace CommonClient;
 
 public class SimpleProcessingQueue<T>
 {

@@ -3,7 +3,6 @@ using MQTTnet;
 using MQTTnet.Client;
 using MQTTnet.Protocol;
 using ServerInfo;
-using System.Collections.Concurrent;
 
 namespace CommonClient;
 
@@ -12,15 +11,15 @@ public class PrototypeClient : IAsyncDisposable
     private static readonly MqttFactory MqttFactory = new();
     public IMqttClient MqttClient { get; }
 
-    private readonly int _maxMessageQueueParallelism;
+    private CancellationTokenSource _messageQueueCancellationTokenSource = new();
+    private SimpleProcessingQueue<MqttApplicationMessage> _messageQueue;
 
-    public PrototypeClient(IMqttClient client, int maxMessageQueueParallelism = 10)
+    public PrototypeClient(IMqttClient client, int maxMessageQueueParallelism = -1)
     {
-        _maxMessageQueueParallelism = maxMessageQueueParallelism;
         MqttClient = client;
-        Task.Run(() => ProcessMessageQueue(client, _messageQueueCancellationTokenSource.Token));
+        _messageQueue = new(MqttClient.PublishAsync, _messageQueueCancellationTokenSource.Token, maxMessageQueueParallelism);
 
-        TriggerControllerEventActions = new()
+        _triggerControllerEventActions = new()
         {
             {Topics.StartTopicAlias, (timestamp, data) => OnStartUpdated(timestamp, data)},
             {Topics.SelectTopicAlias, (timestamp, data) => OnSelectUpdated(timestamp, data)},
@@ -49,6 +48,76 @@ public class PrototypeClient : IAsyncDisposable
             {Topics.RightStickTopicAlias, (timestamp, data) => OnRightStickUpdated(timestamp, data)},
             {Topics.DebugLightTopicAlias, (timestamp, data) => OnDebugLightUpdated(timestamp, data)},
         };
+    }
+
+    /// <summary>
+    /// Need to send a message before the alias can be used on its own.
+    /// Only required for sending messages, the alias topic is received
+    /// without any additional steps being required.
+    /// </summary>
+    public async Task RegisterAliases(bool debugLight = false,
+        ControllerState? state = null)
+    {
+        state ??= new();
+
+        // Need to send a message before the alias can be used on its own.
+        // Only a
+        await SetDebugLight(debugLight, addToMessageQueue: true);
+        await SetLeftStick((state.LeftStickX, state.LeftStickY), addToMessageQueue: true);
+        await SetRightStick((state.RightStickX, state.RightStickY), addToMessageQueue: true);
+        await SetController(state, addToMessageQueue: true);
+        await SetController(start: state.Start,
+            select: state.Select,
+            home: state.Home,
+            bigHome: state.BigHome,
+            x: state.X,
+            y: state.Y,
+            a: state.A,
+            b: state.B,
+            up: state.Up,
+            right: state.Right,
+            down: state.Down,
+            left: state.Left,
+            leftStickX: state.LeftStickX,
+            leftStickY: state.LeftStickY,
+            leftStickIn: state.LeftStickIn,
+            rightStickX: state.RightStickX,
+            rightStickY: state.RightStickY,
+            rightStickIn: state.RightStickIn,
+            leftBumper: state.LeftBumper,
+            leftTrigger: state.LeftTrigger,
+            rightBumper: state.RightBumper,
+            rightTrigger: state.RightTrigger,
+            addToMessageQueue: true);
+
+        await WaitForMessageQueueToFinishProcessingCurrentMessages();
+
+        _fullMessageBuilder = AliasedFullMessageBuilder;
+        _startMessageBuilder = AliasedStartMessageBuilder;
+        _selectMessageBuilder = AliasedSelectMessageBuilder;
+        _homeMessageBuilder = AliasedHomeMessageBuilder;
+        _bigHomeMessageBuilder = AliasedBigHomeMessageBuilder;
+        _xMessageBuilder = AliasedXMessageBuilder;
+        _yMessageBuilder = AliasedYMessageBuilder;
+        _aMessageBuilder = AliasedAMessageBuilder;
+        _bMessageBuilder = AliasedBMessageBuilder;
+        _upMessageBuilder = AliasedUpMessageBuilder;
+        _rightMessageBuilder = AliasedRightMessageBuilder;
+        _downMessageBuilder = AliasedDownMessageBuilder;
+        _leftMessageBuilder = AliasedLeftMessageBuilder;
+        _leftStickXMessageBuilder = AliasedLeftStickXMessageBuilder;
+        _leftStickYMessageBuilder = AliasedLeftStickYMessageBuilder;
+        _leftStickInMessageBuilder = AliasedLeftStickInMessageBuilder;
+        _rightStickXMessageBuilder = AliasedRightStickXMessageBuilder;
+        _rightStickYMessageBuilder = AliasedRightStickYMessageBuilder;
+        _rightStickInMessageBuilder = AliasedRightStickInMessageBuilder;
+        _leftBumperMessageBuilder = AliasedLeftBumperMessageBuilder;
+        _leftTriggerMessageBuilder = AliasedLeftTriggerMessageBuilder;
+        _rightBumperMessageBuilder = AliasedRightBumperMessageBuilder;
+        _rightTriggerMessageBuilder = AliasedRightTriggerMessageBuilder;
+        _leftStickMessageBuilder = AliasedLeftStickMessageBuilder;
+        _rightStickMessageBuilder = AliasedRightStickMessageBuilder;
+        _debugLightMessageBuilder = AliasedDebugLightMessageBuilder;
     }
 
     private void OnFullControllerUpdated(DateTime timestamp, ControllerState state)
@@ -546,7 +615,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetController(ControllerState controllerState, bool addToMessageQueue = false)
     {
         await SendMessage(_fullMessageBuilder, controllerState, addToMessageQueue);
-        // _fullFullMessageBuilder;
     }
 
     public async Task SetController(
@@ -701,7 +769,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetLeftStick((float x, float y) leftStick, bool addToMessageQueue = false)
     {
         await SendMessage(_leftStickMessageBuilder, leftStick, addToMessageQueue);
-        // _leftStickLeftStickMessageBuilder;
     }
 
     private void OnLeftStickUpdated(DateTime timestamp, (float x, float y) leftStick)
@@ -794,7 +861,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetRightStick((float x, float y) rightStick, bool addToMessageQueue = false)
     {
         await SendMessage(_rightStickMessageBuilder, rightStick, addToMessageQueue);
-        // _rightStickRightStickMessageBuilder;
     }
 
     private void OnRightStickUpdated(DateTime timestamp, (float x, float y) rightStick)
@@ -871,10 +937,6 @@ public class PrototypeClient : IAsyncDisposable
         }
     }
 
-    private BlockingCollection<MqttApplicationMessage> _messageQueue = new();
-    private ConcurrentBag<Task> _messagesCurrentlyBeingSent = [];
-    private CancellationTokenSource _messageQueueCancellationTokenSource = new();
-
     public DateTime ControllerStateLastUpdated { get; private set; }
     public event EventHandler<ValueUpdatedEventArgs<ControllerState>>? ControllerUpdated;
 
@@ -888,7 +950,7 @@ public class PrototypeClient : IAsyncDisposable
 
         if (addToMessageQueue)
         {
-            _messageQueue.Add(message);
+            _messageQueue.Enqueue(message);
         }
         else
         {
@@ -896,39 +958,9 @@ public class PrototypeClient : IAsyncDisposable
         }
     }
 
-    private async Task ProcessMessageQueue(IMqttClient client, CancellationToken cancellationToken)
+    public async Task WaitForMessageQueueToFinishProcessingCurrentMessages(CancellationToken cancellationToken = default)
     {
-        var parallelOptions = new ParallelOptions
-        {
-            MaxDegreeOfParallelism = _maxMessageQueueParallelism,
-            CancellationToken = cancellationToken
-        };
-
-        await Task.Run(() =>
-        {
-            Parallel.ForEach(_messageQueue.GetConsumingEnumerable(cancellationToken), parallelOptions, PublishMessage);
-        }, cancellationToken);
-
-        return;
-
-        void PublishMessage(MqttApplicationMessage message)
-        {
-            var task = Task.Run(async () =>
-            {
-                await client.PublishAsync(message, cancellationToken);
-            }, cancellationToken);
-
-            _messagesCurrentlyBeingSent.Add(task);
-
-            // TODO Remove the task from active list when it's done
-            // _ = task.ContinueWith(_ => _messagesCurrentlyBeingSent.(task));
-        }
-    }
-
-    public async Task WaitForMessageQueueToFinishProcessing(CancellationToken cancellationToken = default)
-    {
-        // TODO
-
+        await _messageQueue.WaitForQueueToEmpty(cancellationToken);
     }
 
     private static readonly MqttApplicationMessageBuilder InitialStartMessageBuilder = new MqttApplicationMessageBuilder()
@@ -947,7 +979,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetStart(bool start, bool addToMessageQueue = false)
     {
         await SendMessage(_startMessageBuilder, start, addToMessageQueue);
-        // _startStartMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? StartUpdated;
@@ -1009,7 +1040,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetSelect(bool select, bool addToMessageQueue = false)
     {
         await SendMessage(_selectMessageBuilder, select, addToMessageQueue);
-        // _selectSelectMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? SelectUpdated;
@@ -1071,7 +1101,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetHome(bool home, bool addToMessageQueue = false)
     {
         await SendMessage(_homeMessageBuilder, home, addToMessageQueue);
-        // _homeMessageBuilder = AliasedHomeMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? HomeUpdated;
@@ -1133,7 +1162,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetBigHome(bool bigHome, bool addToMessageQueue = false)
     {
         await SendMessage(_bigHomeMessageBuilder, bigHome, addToMessageQueue);
-        // _bigHomeMessageBuilder = AliasedBigHomeMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? BigHomeUpdated;
@@ -1195,7 +1223,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetX(bool x, bool addToMessageQueue = false)
     {
         await SendMessage(_xMessageBuilder, x, addToMessageQueue);
-        // _xMessageBuilder = AliasedXMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? XUpdated;
@@ -1257,7 +1284,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetY(bool y, bool addToMessageQueue = false)
     {
         await SendMessage(_yMessageBuilder, y, addToMessageQueue);
-        // _yMessageBuilder = AliasedYMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? YUpdated;
@@ -1319,7 +1345,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetA(bool a, bool addToMessageQueue = false)
     {
         await SendMessage(_aMessageBuilder, a, addToMessageQueue);
-        // _aMessageBuilder = AliasedAMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? AUpdated;
@@ -1381,7 +1406,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetB(bool b, bool addToMessageQueue = false)
     {
         await SendMessage(_bMessageBuilder, b, addToMessageQueue);
-        // _bMessageBuilder = AliasedBMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? BUpdated;
@@ -1443,7 +1467,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetUp(bool up, bool addToMessageQueue = false)
     {
         await SendMessage(_upMessageBuilder, up, addToMessageQueue);
-        // _upMessageBuilder = AliasedUpMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? UpUpdated;
@@ -1505,7 +1528,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetRight(bool right, bool addToMessageQueue = false)
     {
         await SendMessage(_rightMessageBuilder, right, addToMessageQueue);
-        // _rightMessageBuilder = AliasedRightMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? RightUpdated;
@@ -1567,7 +1589,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetDown(bool down, bool addToMessageQueue = false)
     {
         await SendMessage(_downMessageBuilder, down, addToMessageQueue);
-        // _downMessageBuilder = AliasedDownMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? DownUpdated;
@@ -1629,7 +1650,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetLeft(bool left, bool addToMessageQueue = false)
     {
         await SendMessage(_leftMessageBuilder, left, addToMessageQueue);
-        // _leftMessageBuilder = AliasedLeftMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? LeftUpdated;
@@ -1691,7 +1711,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetLeftStickX(float leftStickX, bool addToMessageQueue = false)
     {
         await SendMessage(_leftStickXMessageBuilder, leftStickX, addToMessageQueue);
-        // _leftStickXMessageBuilder = AliasedLeftStickXMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<float>>? LeftStickXUpdated;
@@ -1753,7 +1772,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetLeftStickY(float leftStickY, bool addToMessageQueue = false)
     {
         await SendMessage(_leftStickYMessageBuilder, leftStickY, addToMessageQueue);
-        // _leftStickYMessageBuilder = AliasedLeftStickYMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<float>>? LeftStickYUpdated;
@@ -1815,7 +1833,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetLeftStickIn(bool leftStickIn, bool addToMessageQueue = false)
     {
         await SendMessage(_leftStickInMessageBuilder, leftStickIn, addToMessageQueue);
-        // _leftStickInMessageBuilder = AliasedLeftStickInMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? LeftStickInUpdated;
@@ -1877,7 +1894,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetRightStickX(float rightStickX, bool addToMessageQueue = false)
     {
         await SendMessage(_rightStickXMessageBuilder, rightStickX, addToMessageQueue);
-        // _rightStickXMessageBuilder = AliasedRightStickXMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<float>>? RightStickXUpdated;
@@ -1939,7 +1955,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetRightStickY(float rightStickY, bool addToMessageQueue = false)
     {
         await SendMessage(_rightStickYMessageBuilder, rightStickY, addToMessageQueue);
-        // _rightStickYMessageBuilder = AliasedRightStickYMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<float>>? RightStickYUpdated;
@@ -2001,7 +2016,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetRightStickIn(bool rightStickIn, bool addToMessageQueue = false)
     {
         await SendMessage(_rightStickInMessageBuilder, rightStickIn, addToMessageQueue);
-        // _rightStickInMessageBuilder = AliasedRightStickInMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? RightStickInUpdated;
@@ -2063,7 +2077,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetLeftBumper(bool leftBumper, bool addToMessageQueue = false)
     {
         await SendMessage(_leftBumperMessageBuilder, leftBumper, addToMessageQueue);
-        // _leftBumperMessageBuilder = AliasedLeftBumperMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? LeftBumperUpdated;
@@ -2125,7 +2138,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetLeftTrigger(float leftTrigger, bool addToMessageQueue = false)
     {
         await SendMessage(_leftTriggerMessageBuilder, leftTrigger, addToMessageQueue);
-        // _leftTriggerMessageBuilder = AliasedLeftTriggerMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<float>>? LeftTriggerUpdated;
@@ -2187,7 +2199,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetRightBumper(bool rightBumper, bool addToMessageQueue = false)
     {
         await SendMessage(_rightBumperMessageBuilder, rightBumper, addToMessageQueue);
-        // _rightBumperMessageBuilder = AliasedRightBumperMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? RightBumperUpdated;
@@ -2249,7 +2260,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetRightTrigger(float rightTrigger, bool addToMessageQueue = false)
     {
         await SendMessage(_rightTriggerMessageBuilder, rightTrigger, addToMessageQueue);
-        // _rightTriggerMessageBuilder = AliasedRightTriggerMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<float>>? RightTriggerUpdated;
@@ -2311,7 +2321,6 @@ public class PrototypeClient : IAsyncDisposable
     public async Task SetDebugLight(bool debugLight, bool addToMessageQueue = false)
     {
         await SendMessage(_debugLightMessageBuilder, debugLight, addToMessageQueue);
-        // _debugLightMessageBuilder = AliasedDebugLightMessageBuilder;
     }
 
     public event EventHandler<ValueUpdatedEventArgs<bool>>? DebugLightUpdated;
@@ -2350,14 +2359,14 @@ public class PrototypeClient : IAsyncDisposable
 
     private bool _subscribed;
 
-    private readonly Dictionary<ushort, Action<DateTime, dynamic>> TriggerControllerEventActions;
+    private readonly Dictionary<ushort, Action<DateTime, dynamic>> _triggerControllerEventActions;
 
     private async Task MessageReceived(MqttApplicationMessageReceivedEventArgs e)
     {
         if (e.ApplicationMessage.TopicAlias > 0)
         {
             var (timestamp, data) = ServerDataConverter.ExtractData(e.ApplicationMessage.PayloadSegment.Array);
-            TriggerControllerEventActions[e.ApplicationMessage.TopicAlias](timestamp, data);
+            _triggerControllerEventActions[e.ApplicationMessage.TopicAlias](timestamp, data);
         }
     }
 
