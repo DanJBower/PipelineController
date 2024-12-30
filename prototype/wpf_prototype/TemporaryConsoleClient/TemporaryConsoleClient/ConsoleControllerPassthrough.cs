@@ -22,6 +22,7 @@ public static class ConsoleControllerPassthrough
         Console.WriteLine("Finding and connecting to server");
         await using var client = await ClientUtilities.FindAndConnectToClient();
         Client = client;
+        await client.RegisterAliases();
         Console.WriteLine("Server connected");
         StartSdl();
         Console.WriteLine("Listening for PS5 controller input");
@@ -46,6 +47,8 @@ public static class ConsoleControllerPassthrough
         }
 
         StopSdl();
+        Console.WriteLine("Waiting for message queue to finish processing current messages");
+        await client.WaitForMessageQueueToFinishProcessingCurrentMessages();
         var totalDuration = Stopwatch.GetElapsedTime(StartTime).TotalSeconds;
         var mps = Times.Count / totalDuration;
         File.WriteAllText("Stats1.log", $"""
@@ -62,6 +65,7 @@ public static class ConsoleControllerPassthrough
         Console.WriteLine("Finding and connecting to server");
         await using var client = await ClientUtilities.FindAndConnectToClient();
         Client = client;
+        await client.RegisterAliases();
         Console.WriteLine("Server connected");
         StartSdl();
         Console.WriteLine("Listening for PS5 controller input");
@@ -89,6 +93,8 @@ public static class ConsoleControllerPassthrough
         await Task.Delay(200); // Allow timer to fully stop
 
         StopSdl();
+        Console.WriteLine("Waiting for message queue to finish processing current messages");
+        await client.WaitForMessageQueueToFinishProcessingCurrentMessages();
         var totalDuration = Stopwatch.GetElapsedTime(StartTime).TotalSeconds;
         var mps = Times.Count / totalDuration;
         File.WriteAllText("Stats2.log", $"""
@@ -105,6 +111,7 @@ public static class ConsoleControllerPassthrough
         Console.WriteLine("Finding and connecting to server");
         await using var client = await ClientUtilities.FindAndConnectToClient();
         Client = client;
+        await client.RegisterAliases();
         Console.WriteLine("Server connected");
         StartSdl();
         Console.WriteLine("Listening for PS5 controller input");
@@ -130,6 +137,8 @@ public static class ConsoleControllerPassthrough
         await Task.Delay(200); // Allow timer to fully stop
 
         StopSdl();
+        Console.WriteLine("Waiting for message queue to finish processing current messages");
+        await client.WaitForMessageQueueToFinishProcessingCurrentMessages();
         var totalDuration = Stopwatch.GetElapsedTime(StartTime).TotalSeconds;
         var mps = Times.Count / totalDuration;
         File.WriteAllText("Stats3.log", $"""
@@ -175,8 +184,15 @@ public static class ConsoleControllerPassthrough
         StartTime = Stopwatch.GetTimestamp();
         var approach4 = Approach4PollController(cts.Token);
 
+        /*Task.Factory.StartNew(async () => await Approach4PollController(cts.Token),
+            cts.Token,
+            TaskCreationOptions.LongRunning,
+            TaskScheduler.Default)
+            .Unwrap();*/
+
         while (true)
         {
+            Console.WriteLine("Testing something");
             if (Console.KeyAvailable)
             {
                 var keyInfo = Console.ReadKey(intercept: true);
@@ -192,6 +208,8 @@ public static class ConsoleControllerPassthrough
         await Task.Delay(200); // Allow timer to fully stop
 
         StopSdl();
+        Console.WriteLine("Waiting for message queue to finish processing current messages");
+        await client.WaitForMessageQueueToFinishProcessingCurrentMessages();
         var totalDuration = Stopwatch.GetElapsedTime(StartTime).TotalSeconds;
         var mps = Times.Count / totalDuration;
         File.WriteAllText("Stats4.log", $"""
@@ -216,6 +234,7 @@ public static class ConsoleControllerPassthrough
             var timeElapsed = Stopwatch.GetElapsedTime(lastStart);
             if (timeElapsed < targetDelay)
             {
+                await Task.Yield();
                 continue;
             }
 
@@ -295,7 +314,7 @@ public static class ConsoleControllerPassthrough
     {
         var state = GetPs5ControllerState();
 
-        await Client.SetController(state);
+        await Client.SetController(state, addToMessageQueue: true);
 
         using (Lock.EnterScope())
         {
