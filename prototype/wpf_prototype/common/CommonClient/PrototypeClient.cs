@@ -571,116 +571,117 @@ public class PrototypeClient : IAsyncDisposable
         bool? leftBumper = null,
         float? leftTrigger = null,
         bool? rightBumper = null,
-        float? rightTrigger = null)
+        float? rightTrigger = null,
+        bool addToMessageQueue = false)
     {
         if (start.HasValue)
         {
-            await SetStart(start.Value);
+            await SetStart(start.Value, addToMessageQueue);
         }
 
         if (select.HasValue)
         {
-            await SetSelect(select.Value);
+            await SetSelect(select.Value, addToMessageQueue);
         }
 
         if (home.HasValue)
         {
-            await SetHome(home.Value);
+            await SetHome(home.Value, addToMessageQueue);
         }
 
         if (bigHome.HasValue)
         {
-            await SetBigHome(bigHome.Value);
+            await SetBigHome(bigHome.Value, addToMessageQueue);
         }
 
         if (x.HasValue)
         {
-            await SetX(x.Value);
+            await SetX(x.Value, addToMessageQueue);
         }
 
         if (y.HasValue)
         {
-            await SetY(y.Value);
+            await SetY(y.Value, addToMessageQueue);
         }
 
         if (a.HasValue)
         {
-            await SetA(a.Value);
+            await SetA(a.Value, addToMessageQueue);
         }
 
         if (b.HasValue)
         {
-            await SetB(b.Value);
+            await SetB(b.Value, addToMessageQueue);
         }
 
         if (up.HasValue)
         {
-            await SetUp(up.Value);
+            await SetUp(up.Value, addToMessageQueue);
         }
 
         if (right.HasValue)
         {
-            await SetRight(right.Value);
+            await SetRight(right.Value, addToMessageQueue);
         }
 
         if (down.HasValue)
         {
-            await SetDown(down.Value);
+            await SetDown(down.Value, addToMessageQueue);
         }
 
         if (left.HasValue)
         {
-            await SetLeft(left.Value);
+            await SetLeft(left.Value, addToMessageQueue);
         }
 
         if (leftStickX.HasValue)
         {
-            await SetLeftStickX(leftStickX.Value);
+            await SetLeftStickX(leftStickX.Value, addToMessageQueue);
         }
 
         if (leftStickY.HasValue)
         {
-            await SetLeftStickY(leftStickY.Value);
+            await SetLeftStickY(leftStickY.Value, addToMessageQueue);
         }
 
         if (leftStickIn.HasValue)
         {
-            await SetLeftStickIn(leftStickIn.Value);
+            await SetLeftStickIn(leftStickIn.Value, addToMessageQueue);
         }
 
         if (rightStickX.HasValue)
         {
-            await SetRightStickX(rightStickX.Value);
+            await SetRightStickX(rightStickX.Value, addToMessageQueue);
         }
 
         if (rightStickY.HasValue)
         {
-            await SetRightStickY(rightStickY.Value);
+            await SetRightStickY(rightStickY.Value, addToMessageQueue);
         }
 
         if (rightStickIn.HasValue)
         {
-            await SetRightStickIn(rightStickIn.Value);
+            await SetRightStickIn(rightStickIn.Value, addToMessageQueue);
         }
 
         if (leftBumper.HasValue)
         {
-            await SetLeftBumper(leftBumper.Value);
+            await SetLeftBumper(leftBumper.Value, addToMessageQueue);
         }
 
         if (leftTrigger.HasValue)
         {
-            await SetLeftTrigger(leftTrigger.Value);
+            await SetLeftTrigger(leftTrigger.Value, addToMessageQueue);
         }
 
         if (rightBumper.HasValue)
         {
-            await SetRightBumper(rightBumper.Value);
+            await SetRightBumper(rightBumper.Value, addToMessageQueue);
         }
 
         if (rightTrigger.HasValue)
         {
-            await SetRightTrigger(rightTrigger.Value);
+            await SetRightTrigger(rightTrigger.Value, addToMessageQueue);
         }
     }
 
