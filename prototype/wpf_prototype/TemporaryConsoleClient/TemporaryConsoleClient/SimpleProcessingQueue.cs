@@ -9,16 +9,18 @@ public class SimpleProcessingQueue<T>
     private event EventHandler? CollectionEmptyEvent;
 
     public SimpleProcessingQueue(Func<T, CancellationToken, Task> processItem,
-        ExecutionDataflowBlockOptions? executionDataflowBlockOptions = default)
+        ExecutionDataflowBlockOptions? executionDataflowBlockOptions)
     {
         executionDataflowBlockOptions ??= new();
         _itemQueue = new(async item => await ProcessItem(processItem, item, executionDataflowBlockOptions.CancellationToken), executionDataflowBlockOptions);
     }
 
     public SimpleProcessingQueue(Func<T, CancellationToken, Task> processItem,
-        CancellationToken cancellationToken) : this(processItem, new ExecutionDataflowBlockOptions
+        CancellationToken cancellationToken = default,
+        int maxDegreeOfParallelism = -1) : this(processItem, new ExecutionDataflowBlockOptions
         {
-            CancellationToken = cancellationToken
+            CancellationToken = cancellationToken,
+            MaxDegreeOfParallelism = maxDegreeOfParallelism,
         })
     {
 
@@ -26,12 +28,6 @@ public class SimpleProcessingQueue<T>
 
     public int Count { get; private set; }
     public bool AddingCompleted { get; private set; }
-
-    private async Task ProcessQueue(Func<T, CancellationToken, Task> processItem,
-        ParallelOptions parallelOptions)
-    {
-
-    }
 
     private async Task ProcessItem(Func<T, CancellationToken, Task> processItem,
         T item,
@@ -54,12 +50,17 @@ public class SimpleProcessingQueue<T>
     {
         using (_lock.EnterScope())
         {
+            if (AddingCompleted)
+            {
+                throw new Exception($"Can no longer add new items to the {nameof(SimpleProcessingQueue<object>)}");
+            }
+
             Count++;
             _itemQueue.Post(item);
         }
     }
 
-    public async Task WaitForQueueToEmpty(CancellationToken? cancellationToken = null)
+    public async Task WaitForQueueToEmpty(CancellationToken cancellationToken = default)
     {
         using (_lock.EnterScope())
         {
@@ -69,14 +70,14 @@ public class SimpleProcessingQueue<T>
             }
         }
 
-        cancellationToken?.ThrowIfCancellationRequested();
+        cancellationToken.ThrowIfCancellationRequested();
         var tcs = new TaskCompletionSource();
 
         CollectionEmptyEvent += FinishWaiting;
 
         try
         {
-            await using (cancellationToken?.Register(() => { tcs.TrySetCanceled(); }))
+            await using (cancellationToken.Register(() => { tcs.TrySetCanceled(); }))
             {
                 await tcs.Task;
             }

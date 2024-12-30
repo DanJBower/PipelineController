@@ -1,15 +1,11 @@
 ﻿using CommonClient;
 using Controller;
 using System.Diagnostics;
-using System.Threading.Tasks.Dataflow;
 using TemporaryConsoleClient;
 
 var startTime = Stopwatch.GetTimestamp();
 SimpleProcessingQueue<(int, int)>? simpleProcessingQueueSample = null;
-simpleProcessingQueueSample = new(ProcessItem, new ExecutionDataflowBlockOptions
-{
-    MaxDegreeOfParallelism = DataflowBlockOptions.Unbounded,
-});
+simpleProcessingQueueSample = new(ProcessItem);
 
 Log("Starting add run 1");
 Log();
