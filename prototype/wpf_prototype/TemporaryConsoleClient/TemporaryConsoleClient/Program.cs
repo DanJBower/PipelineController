@@ -1,13 +1,18 @@
 ﻿using CommonClient;
 using Controller;
 using System.Diagnostics;
+using System.Threading.Tasks.Dataflow;
 using TemporaryConsoleClient;
 
 var startTime = Stopwatch.GetTimestamp();
 SimpleProcessingQueue<(int, int)>? simpleProcessingQueueSample = null;
-simpleProcessingQueueSample = new(ProcessItem);
+simpleProcessingQueueSample = new(ProcessItem, new ExecutionDataflowBlockOptions
+{
+    MaxDegreeOfParallelism = DataflowBlockOptions.Unbounded,
+});
 
 Log("Starting add run 1");
+Log();
 
 var taskId = 0;
 
@@ -25,7 +30,9 @@ Log("5 second delay");
 Log();
 await Task.Delay(5000);
 
+Log();
 Log("Starting add run 2");
+Log();
 
 for (var i = 0; i < 11; i++)
 {
@@ -41,7 +48,9 @@ Log("Waiting till all current tasks complete");
 Log();
 await simpleProcessingQueueSample.WaitForQueueToEmpty();
 
+Log();
 Log("Starting add run 3");
+Log();
 
 for (var i = 0; i < 11; i++)
 {
@@ -56,9 +65,9 @@ for (var i = 0; i < 11; i++)
 simpleProcessingQueueSample.CompleteAdding();
 
 Log();
-Log("Waiting till all current tasks complete");
+Log("Waiting till all tasks complete");
 Log();
-await simpleProcessingQueueSample.WaitForQueueToEmpty();
+await simpleProcessingQueueSample.WaitForCompletion();
 
 async Task ProcessItem((int id, int delay) item, CancellationToken cancellationToken)
 {
@@ -69,8 +78,14 @@ async Task ProcessItem((int id, int delay) item, CancellationToken cancellationT
 
 void Log(string message = "")
 {
+    if (string.IsNullOrWhiteSpace(message))
+    {
+        Console.WriteLine();
+        return;
+    }
+
     var duration = Stopwatch.GetElapsedTime(startTime).TotalMilliseconds;
-    Console.WriteLine($"{duration:000000.000}ms: {message}. Current queue count: {simpleProcessingQueueSample.Count}");
+    Console.WriteLine($"{duration:00000}ms: {message}. Current queue count: {simpleProcessingQueueSample.Count}");
 }
 
 return;
