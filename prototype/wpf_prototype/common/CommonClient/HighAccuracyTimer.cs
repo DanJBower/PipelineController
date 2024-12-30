@@ -6,24 +6,31 @@ public class HighAccuracyTimer
 {
     private CancellationTokenSource _cancellationTokenSource;
     private readonly bool _useLongRunningHint;
+    private readonly bool _slew;
     private readonly double _interval;
     private readonly Func<Task> _action;
 
     public HighAccuracyTimer(double intervalMs,
         Func<Task> action,
-        bool useLongRunningHint = false)
+        bool useLongRunningHint = false,
+        bool slew = false)
     {
         _interval = intervalMs;
         _action = action;
+        _slew = slew;
         _useLongRunningHint = useLongRunningHint;
     }
 
     public HighAccuracyTimer FromHz(double hz,
         Func<Task> action,
+        bool slew,
         bool useLongRunningHint = false)
     {
         var interval = 1000 / hz;
-        return new(interval, action, useLongRunningHint);
+        return new(intervalMs: interval,
+            action: action,
+            useLongRunningHint: useLongRunningHint,
+            slew: slew);
     }
 
     public void Start()
@@ -61,6 +68,11 @@ public class HighAccuracyTimer
 
             lastStart = Stopwatch.GetTimestamp();
             await _action();
+
+            if (_slew)
+            {
+                lastStart = Stopwatch.GetTimestamp();
+            }
         }
     }
 
