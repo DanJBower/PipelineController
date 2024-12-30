@@ -6,6 +6,7 @@ using Controller;
 using MQTTnet.Exceptions;
 using System.Windows;
 using System.Windows.Threading;
+using Timer = System.Timers.Timer;
 
 namespace ServerMessageMonitor;
 
@@ -13,6 +14,22 @@ public partial class MainViewModel : ViewModel
 {
     private readonly Dispatcher _uiDispatcher = Application.Current.Dispatcher;
     private CancellationTokenSource? _serverConnectionCancellationTokenSource;
+
+    private readonly Timer _updateScreenValues;
+
+    public MainViewModel()
+    {
+        _updateScreenValues = new();
+        _updateScreenValues.Elapsed += (_, _) => UpdateValues();
+        _updateScreenValues.Interval = 1000.0 / 60.0;
+        _updateScreenValues.Enabled = true;
+    }
+
+    [RelayCommand]
+    private void OnWindowClosing()
+    {
+        _updateScreenValues.Enabled = false;
+    }
 
     private void DispatchPropertyChange(Action changeProperties)
     {
@@ -113,28 +130,6 @@ public partial class MainViewModel : ViewModel
     private async Task EnableMessageMonitoring(PrototypeClient client)
     {
         client.DebugLightUpdated += OnDebugLightUpdated;
-        client.StartUpdated += OnStartUpdated;
-        client.SelectUpdated += OnSelectUpdated;
-        client.HomeUpdated += OnHomeUpdated;
-        client.BigHomeUpdated += OnBigHomeUpdated;
-        client.XUpdated += OnXUpdated;
-        client.YUpdated += OnYUpdated;
-        client.AUpdated += OnAUpdated;
-        client.BUpdated += OnBUpdated;
-        client.UpUpdated += OnUpUpdated;
-        client.RightUpdated += OnRightUpdated;
-        client.DownUpdated += OnDownUpdated;
-        client.LeftUpdated += OnLeftUpdated;
-        client.LeftStickXUpdated += OnLeftStickXUpdated;
-        client.LeftStickYUpdated += OnLeftStickYUpdated;
-        client.LeftStickInUpdated += OnLeftStickInUpdated;
-        client.RightStickXUpdated += OnRightStickXUpdated;
-        client.RightStickYUpdated += OnRightStickYUpdated;
-        client.RightStickInUpdated += OnRightStickInUpdated;
-        client.LeftBumperUpdated += OnLeftBumperUpdated;
-        client.LeftTriggerUpdated += OnLeftTriggerUpdated;
-        client.RightBumperUpdated += OnRightBumperUpdated;
-        client.RightTriggerUpdated += OnRightTriggerUpdated;
         await client.EnableControllerChangeMonitoring();
     }
 
@@ -142,28 +137,6 @@ public partial class MainViewModel : ViewModel
     {
         await client.DisableControllerChangeMonitoring();
         client.DebugLightUpdated -= OnDebugLightUpdated;
-        client.StartUpdated -= OnStartUpdated;
-        client.SelectUpdated -= OnSelectUpdated;
-        client.HomeUpdated -= OnHomeUpdated;
-        client.BigHomeUpdated -= OnBigHomeUpdated;
-        client.XUpdated -= OnXUpdated;
-        client.YUpdated -= OnYUpdated;
-        client.AUpdated -= OnAUpdated;
-        client.BUpdated -= OnBUpdated;
-        client.UpUpdated -= OnUpUpdated;
-        client.RightUpdated -= OnRightUpdated;
-        client.DownUpdated -= OnDownUpdated;
-        client.LeftUpdated -= OnLeftUpdated;
-        client.LeftStickXUpdated -= OnLeftStickXUpdated;
-        client.LeftStickYUpdated -= OnLeftStickYUpdated;
-        client.LeftStickInUpdated -= OnLeftStickInUpdated;
-        client.RightStickXUpdated -= OnRightStickXUpdated;
-        client.RightStickYUpdated -= OnRightStickYUpdated;
-        client.RightStickInUpdated -= OnRightStickInUpdated;
-        client.LeftBumperUpdated -= OnLeftBumperUpdated;
-        client.LeftTriggerUpdated -= OnLeftTriggerUpdated;
-        client.RightBumperUpdated -= OnRightBumperUpdated;
-        client.RightTriggerUpdated -= OnRightTriggerUpdated;
     }
 
     private void OnDebugLightUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
@@ -171,114 +144,38 @@ public partial class MainViewModel : ViewModel
         DispatchPropertyChange(() => DebugLight = e.NewValue);
     }
 
-    private void OnStartUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
+    private void UpdateValues()
     {
-        DispatchPropertyChange(() => ControllerViewModel.Start = e.NewValue);
-    }
+        if (_client is null)
+        {
+            return;
+        }
 
-    private void OnSelectUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.Select = e.NewValue);
-    }
-
-    private void OnHomeUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.Home = e.NewValue);
-    }
-
-    private void OnBigHomeUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.BigHome = e.NewValue);
-    }
-
-    private void OnXUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.X = e.NewValue);
-    }
-
-    private void OnYUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.Y = e.NewValue);
-    }
-
-    private void OnAUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.A = e.NewValue);
-    }
-
-    private void OnBUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.B = e.NewValue);
-    }
-
-    private void OnUpUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.Up = e.NewValue);
-    }
-
-    private void OnRightUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.Right = e.NewValue);
-    }
-
-    private void OnDownUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.Down = e.NewValue);
-    }
-
-    private void OnLeftUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.Left = e.NewValue);
-    }
-
-    private void OnLeftStickXUpdated(object? sender, ValueUpdatedEventArgs<float> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.LeftStickX = e.NewValue);
-    }
-
-    private void OnLeftStickYUpdated(object? sender, ValueUpdatedEventArgs<float> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.LeftStickY = e.NewValue);
-    }
-
-    private void OnLeftStickInUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.LeftStickIn = e.NewValue);
-    }
-
-    private void OnRightStickXUpdated(object? sender, ValueUpdatedEventArgs<float> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.RightStickX = e.NewValue);
-    }
-
-    private void OnRightStickYUpdated(object? sender, ValueUpdatedEventArgs<float> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.RightStickY = e.NewValue);
-    }
-
-    private void OnRightStickInUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.RightStickIn = e.NewValue);
-    }
-
-    private void OnLeftBumperUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.LeftBumper = e.NewValue);
-    }
-
-    private void OnLeftTriggerUpdated(object? sender, ValueUpdatedEventArgs<float> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.LeftTrigger = e.NewValue);
-    }
-
-    private void OnRightBumperUpdated(object? sender, ValueUpdatedEventArgs<bool> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.RightBumper = e.NewValue);
-    }
-
-    private void OnRightTriggerUpdated(object? sender, ValueUpdatedEventArgs<float> e)
-    {
-        DispatchPropertyChange(() => ControllerViewModel.RightTrigger = e.NewValue);
+        DispatchPropertyChange(() =>
+        {
+            ControllerViewModel.Start = _client.ControllerState.Start;
+            ControllerViewModel.Select = _client.ControllerState.Select;
+            ControllerViewModel.Home = _client.ControllerState.Home;
+            ControllerViewModel.BigHome = _client.ControllerState.BigHome;
+            ControllerViewModel.X = _client.ControllerState.X;
+            ControllerViewModel.Y = _client.ControllerState.Y;
+            ControllerViewModel.A = _client.ControllerState.A;
+            ControllerViewModel.B = _client.ControllerState.B;
+            ControllerViewModel.Up = _client.ControllerState.Up;
+            ControllerViewModel.Right = _client.ControllerState.Right;
+            ControllerViewModel.Down = _client.ControllerState.Down;
+            ControllerViewModel.Left = _client.ControllerState.Left;
+            ControllerViewModel.LeftStickX = _client.ControllerState.LeftStickX;
+            ControllerViewModel.LeftStickY = _client.ControllerState.LeftStickY;
+            ControllerViewModel.LeftStickIn = _client.ControllerState.LeftStickIn;
+            ControllerViewModel.RightStickX = _client.ControllerState.RightStickX;
+            ControllerViewModel.RightStickY = _client.ControllerState.RightStickY;
+            ControllerViewModel.RightStickIn = _client.ControllerState.RightStickIn;
+            ControllerViewModel.LeftBumper = _client.ControllerState.LeftBumper;
+            ControllerViewModel.LeftTrigger = _client.ControllerState.LeftTrigger;
+            ControllerViewModel.RightBumper = _client.ControllerState.RightBumper;
+            ControllerViewModel.RightTrigger = _client.ControllerState.RightTrigger;
+        });
     }
 
     private bool CanToggleServerConnection()

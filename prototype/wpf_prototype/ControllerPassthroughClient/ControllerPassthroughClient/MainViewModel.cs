@@ -56,7 +56,7 @@ public partial class MainViewModel : ViewModel
     private readonly ConcurrentDictionary<Key, bool> _keyPressedLookup = [];
 
     [RelayCommand]
-    private void OnWindowClosing(KeyEventArgs? keyEventArgs)
+    private void OnWindowClosing()
     {
         Debug.WriteLine("Shutting down");
         _readXboxControllerTimer.Enabled = false;

@@ -1,9 +1,8 @@
 ﻿using CommonClient;
 using Controller;
-using System.Diagnostics;
 using TemporaryConsoleClient;
 
-var startTime = Stopwatch.GetTimestamp();
+/*var startTime = Stopwatch.GetTimestamp();
 SimpleProcessingQueue<(int, int)>? simpleProcessingQueueSample = null;
 simpleProcessingQueueSample = new(ProcessItem);
 
@@ -84,7 +83,7 @@ void Log(string message = "")
     Console.WriteLine($"{duration:00000}ms: {message}. Current queue count: {simpleProcessingQueueSample.Count}");
 }
 
-return;
+return;*/
 
 await ConsoleControllerPassthrough.RunApproach4().ConfigureAwait(false);
 return;

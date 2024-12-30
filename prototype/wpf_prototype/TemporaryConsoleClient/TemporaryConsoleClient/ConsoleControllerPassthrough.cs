@@ -165,6 +165,8 @@ public static class ConsoleControllerPassthrough
         Console.WriteLine("Finding and connecting to server");
         await using var client = await ClientUtilities.FindAndConnectToClient();
         Client = client;
+        await client.RegisterAliases();
+        await client.SetDebugLight(true);
         Console.WriteLine("Server connected");
         StartSdl();
         Console.WriteLine("Listening for PS5 controller input");

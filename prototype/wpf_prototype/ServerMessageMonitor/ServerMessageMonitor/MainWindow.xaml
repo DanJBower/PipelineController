@@ -11,11 +11,18 @@
         Width="1024"
         xmlns:ui="http://schemas.modernwpf.com/2019"
         ui:WindowHelper.UseModernWindowStyle="True"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         d:Foreground="{DynamicResource SystemControlPageTextBaseHighBrush}"
         d:Background="{DynamicResource SystemControlPageBackgroundAltHighBrush}"
         FontFamily="{DynamicResource ContentControlThemeFontFamily}"
         FontSize="{DynamicResource ControlContentThemeFontSize}"
         d:DataContext="{d:DesignInstance Type=local:MainViewModel, IsDesignTimeCreatable=True}">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Closing" >
+            <i:InvokeCommandAction Command="{Binding WindowClosingCommand}" PassEventArgsToCommand="False" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
