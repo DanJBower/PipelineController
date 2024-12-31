@@ -2,87 +2,106 @@
 
 namespace CommonClient;
 
-public class HighAccuracyTimer
+public class HighAccuracyTimer : IDisposable
 {
-    private CancellationTokenSource _cancellationTokenSource;
-    private readonly bool _useLongRunningHint;
-    private readonly bool _slew;
-    private readonly double _interval;
-    private readonly Func<Task> _action;
+    private readonly CancellationTokenSource _timerCancellationTokenSource = new();
+    private readonly Dictionary<TimerEvent, TimerEventInfo> _timerEvents = [];
+    private readonly Lock _lock = new();
 
-    public HighAccuracyTimer(double intervalMs,
-        Func<Task> action,
-        bool useLongRunningHint = false,
-        bool slew = false)
+    public HighAccuracyTimer()
     {
-        _interval = intervalMs;
-        _action = action;
-        _slew = slew;
-        _useLongRunningHint = useLongRunningHint;
+        Task.Factory.StartNew(TimerLoop,
+                _timerCancellationTokenSource.Token,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default)
+            .Unwrap();
     }
 
-    public static HighAccuracyTimer FromHz(double hz,
-        Func<Task> action,
-        bool slew = false,
-        bool useLongRunningHint = false)
+    private async Task TimerLoop()
     {
-        var interval = 1000 / hz;
-        return new(intervalMs: interval,
-            action: action,
-            useLongRunningHint: useLongRunningHint,
-            slew: slew);
-    }
-
-    public void Start()
-    {
-        _cancellationTokenSource = new();
-
-        if (_useLongRunningHint)
+        while (!_timerCancellationTokenSource.Token.IsCancellationRequested)
         {
-            Task.Factory.StartNew(RunTimer,
-                    _cancellationTokenSource.Token,
-                    TaskCreationOptions.LongRunning,
-                    TaskScheduler.Default)
-                .Unwrap();
-        }
-        else
-        {
-            Task.Run(RunTimer);
-        }
-    }
-
-    private async Task RunTimer()
-    {
-        var targetDelay = TimeSpan.FromMilliseconds(_interval);
-        var lastStart = Stopwatch.GetTimestamp();
-        await _action();
-
-        while (!_cancellationTokenSource.Token.IsCancellationRequested)
-        {
-            var timeElapsed = Stopwatch.GetElapsedTime(lastStart);
-            if (timeElapsed < targetDelay)
+            Dictionary<TimerEvent, TimerEventInfo> timerEvents;
+            using (_lock.EnterScope())
             {
-                await Task.Yield();
-                continue;
+                timerEvents = _timerEvents.ToDictionary();
             }
 
-            lastStart = Stopwatch.GetTimestamp();
-            await _action();
-
-            if (_slew)
+            foreach (var (timerEvent, timerEventInfo) in timerEvents)
             {
-                lastStart = Stopwatch.GetTimestamp();
+                if (_timerCancellationTokenSource.Token.IsCancellationRequested)
+                {
+                    return;
+                }
+
+                if (Stopwatch.GetElapsedTime(timerEventInfo.LastExecuted) < timerEvent.Interval)
+                {
+                    continue;
+                }
+
+                Task.Run(timerEvent.Elapsed, _timerCancellationTokenSource.Token);
+                timerEventInfo.LastExecuted += timerEvent.Interval.Ticks;
+
+                if (timerEventInfo.RemainingExecutions == -1)
+                {
+                    continue;
+                }
+
+                timerEventInfo.RemainingExecutions--;
+
+                if (timerEventInfo.RemainingExecutions == 0)
+                {
+                    Stop(timerEvent);
+                }
             }
+
+            await Task.Yield();
         }
     }
 
-    public void Stop()
+    public void Start(TimerEvent timerEvent)
     {
-        _cancellationTokenSource.Cancel();
+        if (timerEvent.NumberOfActivations == 0)
+        {
+            throw new Exception("Number of activations must be -1 or > 0");
+        }
+
+        using (_lock.EnterScope())
+        {
+            _timerEvents[timerEvent] = new TimerEventInfo
+            {
+                RemainingExecutions = timerEvent.NumberOfActivations,
+                LastExecuted = Stopwatch.GetTimestamp(),
+            };
+        }
     }
 
-    public void StopAfter(TimeSpan delay)
+    public void Stop(TimerEvent timerEvent)
     {
-        _cancellationTokenSource.CancelAfter(delay);
+        using (_lock.EnterScope())
+        {
+            _timerEvents.Remove(timerEvent);
+        }
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            _timerCancellationTokenSource.Cancel();
+        }
+        catch (OperationCanceledException) { }
+
+        _timerCancellationTokenSource.Dispose();
+    }
+
+    private class TimerEventInfo
+    {
+        public int RemainingExecutions { get; set; }
+        public long LastExecuted { get; set; }
     }
 }
+
+public record TimerEvent(Func<Task> Elapsed,
+    TimeSpan Interval,
+    int NumberOfActivations = -1);

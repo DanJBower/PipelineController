@@ -2,6 +2,47 @@
 using Controller;
 using TemporaryConsoleClient;
 
+await ConsoleControllerPassthrough.RunApproach4().ConfigureAwait(false);
+return;
+
+/*var startTime = Stopwatch.GetTimestamp();
+
+var timerAction1 = new TimerEvent(async () => Log("Task 1"), TimeSpan.FromMilliseconds(800));
+var timerAction2 = new TimerEvent(async () => Log("Task 2"), TimeSpan.FromMilliseconds(1500));
+var timerAction3 = new TimerEvent(async () =>
+{
+    Log("Task 3 start");
+    await Task.Delay(500);
+    Log("Task 3 finished");
+}, TimeSpan.FromSeconds(2), NumberOfActivations: 2);
+var timerAction4 = new TimerEvent(async () => Log("Task 4"), TimeSpan.FromMilliseconds(100));
+
+using var timer = new HighAccuracyTimer();
+// timer.Start(timerAction2);
+timer.Start(timerAction3);
+
+await Task.Delay(5000);
+
+timer.Start(timerAction3);
+await Task.Delay(5000);
+
+// timer.Start(timerAction1);
+timer.Start(timerAction4);
+
+await Task.Delay(TimeSpan.FromSeconds(5));
+
+return;
+
+void Log(string message = "")
+{
+    if (string.IsNullOrWhiteSpace(message))
+    {
+        return;
+    }
+
+    Console.WriteLine($"{Stopwatch.GetElapsedTime(startTime).TotalMilliseconds:00000.00}: {message}");
+}*/
+
 /*var startTime = Stopwatch.GetTimestamp();
 SimpleProcessingQueue<(int, int)>? simpleProcessingQueueSample = null;
 simpleProcessingQueueSample = new(ProcessItem);
@@ -84,9 +125,6 @@ void Log(string message = "")
 }
 
 return;*/
-
-await ConsoleControllerPassthrough.RunApproach4().ConfigureAwait(false);
-return;
 
 // Used for monitoring all events happening in the client
 Console.WriteLine("Attempting to connect to client");
