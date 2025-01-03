@@ -3,6 +3,7 @@
 #r "..\release\Controller.dll"
 #r "..\release\CommonClient.dll"
 
+using System.Threading;
 using System.Timers;
 using CommonClient;
 using MQTTnet;
@@ -40,19 +41,30 @@ using ServerInfo;
         messageCount++;
     };
 
-    using Timer latencyTimer = new();
-    latencyTimer.Elapsed += (_, _) =>
+    Lock logLock = new();
+    long lastMessageCount = 0;
+    long checkCount = 0;
+
+    var latencyLogAction = new TimerEvent(async () =>
     {
-        WriteLine($"Num of messages received: {messageCount}");
-        if (lastThousandMessageLatencies.Count > 0)
+        using (logLock.EnterScope())
         {
-            WriteLine($"Last 1000 messages latency (microseconds): {lastThousandMessageLatencies.Average():0.00}");
+            var messagesReceivedInLastSecond = messageCount - lastMessageCount;
+            lastMessageCount = messageCount;
+            checkCount++;
+            WriteLine($"Num of messages received: {messageCount}");
+            if (lastThousandMessageLatencies.Count > 0)
+            {
+                WriteLine($"Last 1000 messages latency (microseconds): {lastThousandMessageLatencies.Average():0.00}");
+            }
+            WriteLine($"All messages latency (microseconds): {(allMessageLatency / messageCount):0.00}");
+            WriteLine($"Messages received in last second: {messagesReceivedInLastSecond}");
+            WriteLine($"Total MPS: {messageCount / checkCount}");
+            WriteLine();
         }
-        WriteLine($"All messages latency (microseconds): {(allMessageLatency / messageCount):0.00}");
-        WriteLine();
-    };
-    latencyTimer.Interval = 1000;
-    latencyTimer.Enabled = true;
+    }, TimeSpan.FromSeconds(1));
+    using HighAccuracyTimer latencyTimer = new();
+    latencyTimer.Start(latencyLogAction);
 
     var subscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
         .WithTopicFilter("#")

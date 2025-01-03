@@ -1,9 +1,8 @@
 ﻿using CommonClient;
 using Controller;
-using TemporaryConsoleClient;
 
-await ConsoleControllerPassthrough.RunApproach4().ConfigureAwait(false);
-return;
+// await ConsoleControllerPassthrough.RunApproach4().ConfigureAwait(false);
+// return;
 
 /*var startTime = Stopwatch.GetTimestamp();
 

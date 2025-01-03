@@ -192,7 +192,6 @@ public static class ConsoleControllerPassthrough
 
         while (true)
         {
-            Console.WriteLine("Testing something");
             if (Console.KeyAvailable)
             {
                 var keyInfo = Console.ReadKey(intercept: true);
