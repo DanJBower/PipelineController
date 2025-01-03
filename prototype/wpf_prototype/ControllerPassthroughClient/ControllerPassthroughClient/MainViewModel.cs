@@ -11,7 +11,6 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Windows.Gaming.Input;
-using Timer = System.Timers.Timer;
 
 namespace ControllerPassthroughClient;
 
@@ -19,17 +18,20 @@ public partial class MainViewModel : ViewModel
 {
     private readonly Dispatcher _uiDispatcher = Application.Current.Dispatcher;
     private CancellationTokenSource? _serverConnectionCancellationTokenSource;
+    private readonly TimerEvent _updateFromXboxControllerEvent;
+    private readonly TimerEvent _updateFromPs5ControllerEvent;
+    private readonly HighAccuracyTimer _highAccuracyTimer = new();
+
+    private readonly Lock _controllerStateLock = new();
+    private ControllerState _controllerState = new();
 
     public MainViewModel()
     {
-        const double controllerUpdateRateHz = 60;
-        const double controllerUpdateRateMs = 1000 / controllerUpdateRateHz;
+        const double controllerUpdateRateHz = 1000;
         Gamepad.GamepadAdded += OnXboxControllerAdded;
-        _readXboxControllerTimer.Interval = controllerUpdateRateMs;
-        _readXboxControllerTimer.Elapsed += async (_, _) => await UpdateFromXboxController();
-
-        _readPs5ControllerTimer.Interval = controllerUpdateRateMs;
-        _readPs5ControllerTimer.Elapsed += async (_, _) => await UpdateFromPs5Controller();
+        _updateFromXboxControllerEvent = new TimerEvent(UpdateFromXboxController, controllerUpdateRateHz.Hz());
+        _updateFromPs5ControllerEvent = new TimerEvent(UpdateFromPs5Controller, controllerUpdateRateHz.Hz());
+        _highAccuracyTimer.Start(new TimerEvent(UpdateControllerUi, 60.0.Hz()));
     }
 
     private void DispatchPropertyChange(Action changeProperties)
@@ -56,13 +58,11 @@ public partial class MainViewModel : ViewModel
     private readonly ConcurrentDictionary<Key, bool> _keyPressedLookup = [];
 
     [RelayCommand]
-    private void OnWindowClosing(KeyEventArgs? keyEventArgs)
+    private void OnWindowClosing()
     {
         Debug.WriteLine("Shutting down");
-        _readXboxControllerTimer.Enabled = false;
-        _readXboxControllerTimer.Dispose();
+        _highAccuracyTimer.Dispose();
         StopPs5Controller();
-        _readPs5ControllerTimer.Dispose();
     }
 
     [RelayCommand]
@@ -268,6 +268,7 @@ public partial class MainViewModel : ViewModel
                 }
 
                 _client = await ClientUtilities.ConnectToClient(ip, port, _serverConnectionCancellationTokenSource.Token);
+                await _client.RegisterAliases();
             }
             catch (OperationCanceledException)
             {
@@ -324,7 +325,7 @@ public partial class MainViewModel : ViewModel
         };
 
         UpdateKeyboardPressLabels(value);
-        _readXboxControllerTimer.Enabled = false; // Disable the xbox controller polling
+        _highAccuracyTimer.Stop(_updateFromXboxControllerEvent); // Disable the xbox controller polling
         StopPs5Controller();
         Zero().ConfigureAwait(false); // Zero commands to prevent left over inputs
 
@@ -335,7 +336,7 @@ public partial class MainViewModel : ViewModel
                 break;
             case InputMode.XboxController:
                 _xboxController = Gamepad.Gamepads.FirstOrDefault();
-                _readXboxControllerTimer.Enabled = true;
+                _highAccuracyTimer.Start(_updateFromXboxControllerEvent);
                 break;
             case InputMode.PlaystationController:
                 InitialisePs5Controller();
@@ -346,7 +347,6 @@ public partial class MainViewModel : ViewModel
     }
 
     private Gamepad? _xboxController;
-    private readonly Timer _readXboxControllerTimer = new();
 
     private void OnXboxControllerAdded(object? sender, Gamepad e)
     {
@@ -354,7 +354,7 @@ public partial class MainViewModel : ViewModel
 
         if (InputMode is InputMode.XboxController)
         {
-            _readXboxControllerTimer.Enabled = true;
+            _highAccuracyTimer.Start(_updateFromXboxControllerEvent);
         }
     }
 
@@ -490,270 +490,245 @@ public partial class MainViewModel : ViewModel
         }
     }
 
+    private void WithControllerLock(Action a)
+    {
+        using (_controllerStateLock.EnterScope())
+        {
+            a();
+        }
+    }
+
     private async Task UpdateFullController(ControllerState state)
     {
-        DispatchPropertyChange(() =>
-        {
-            var (start, select, home, bigHome,
-                x, y, a, b,
-                up, right, down, left,
-                leftStickX, leftStickY, leftStickIn,
-                rightStickX, rightStickY, rightStickIn,
-                leftBumper, leftTrigger,
-                rightBumper, rightTrigger) = state;
-
-            ControllerViewModel.Start = start;
-            ControllerViewModel.Select = select;
-            ControllerViewModel.Home = home;
-            ControllerViewModel.BigHome = bigHome;
-            ControllerViewModel.X = x;
-            ControllerViewModel.Y = y;
-            ControllerViewModel.A = a;
-            ControllerViewModel.B = b;
-            ControllerViewModel.Up = up;
-            ControllerViewModel.Right = right;
-            ControllerViewModel.Down = down;
-            ControllerViewModel.Left = left;
-            ControllerViewModel.LeftStickX = leftStickX;
-            ControllerViewModel.LeftStickY = leftStickY;
-            ControllerViewModel.LeftStickIn = leftStickIn;
-            ControllerViewModel.RightStickX = rightStickX;
-            ControllerViewModel.RightStickY = rightStickY;
-            ControllerViewModel.RightStickIn = rightStickIn;
-            ControllerViewModel.LeftBumper = leftBumper;
-            ControllerViewModel.LeftTrigger = leftTrigger;
-            ControllerViewModel.RightBumper = rightBumper;
-            ControllerViewModel.RightTrigger = rightTrigger;
-        });
+        WithControllerLock(() => _controllerState = state);
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetController(state);
+            await _client.SetController(state, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateStart(bool start)
     {
-        DispatchPropertyChange(() => ControllerViewModel.Start = start);
+        WithControllerLock(() => _controllerState = _controllerState with { Start = start });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetStart(start);
+            await _client.SetStart(start, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateSelect(bool select)
     {
-        DispatchPropertyChange(() => ControllerViewModel.Select = select);
+        WithControllerLock(() => _controllerState = _controllerState with { Select = select });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetSelect(select);
+            await _client.SetSelect(select, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateHome(bool home)
     {
-        DispatchPropertyChange(() => ControllerViewModel.Home = home);
+        WithControllerLock(() => _controllerState = _controllerState with { Home = home });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetHome(home);
+            await _client.SetHome(home, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateBigHome(bool bigHome)
     {
-        DispatchPropertyChange(() => ControllerViewModel.BigHome = bigHome);
+        WithControllerLock(() => _controllerState = _controllerState with { BigHome = bigHome });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetBigHome(bigHome);
+            await _client.SetBigHome(bigHome, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateX(bool x)
     {
-        DispatchPropertyChange(() => ControllerViewModel.X = x);
+        WithControllerLock(() => _controllerState = _controllerState with { X = x });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetX(x);
+            await _client.SetX(x, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateY(bool y)
     {
-        DispatchPropertyChange(() => ControllerViewModel.Y = y);
+        WithControllerLock(() => _controllerState = _controllerState with { Y = y });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetY(y);
+            await _client.SetY(y, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateA(bool a)
     {
-        DispatchPropertyChange(() => ControllerViewModel.A = a);
+        WithControllerLock(() => _controllerState = _controllerState with { A = a });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetA(a);
+            await _client.SetA(a, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateB(bool b)
     {
-        DispatchPropertyChange(() => ControllerViewModel.B = b);
+        WithControllerLock(() => _controllerState = _controllerState with { B = b });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetB(b);
+            await _client.SetB(b, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateUp(bool up)
     {
-        DispatchPropertyChange(() => ControllerViewModel.Up = up);
+        WithControllerLock(() => _controllerState = _controllerState with { Up = up });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetUp(up);
+            await _client.SetUp(up, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateRight(bool right)
     {
-        DispatchPropertyChange(() => ControllerViewModel.Right = right);
+        WithControllerLock(() => _controllerState = _controllerState with { Right = right });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetRight(right);
+            await _client.SetRight(right, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateDown(bool down)
     {
-        DispatchPropertyChange(() => ControllerViewModel.Down = down);
+        WithControllerLock(() => _controllerState = _controllerState with { Down = down });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetDown(down);
+            await _client.SetDown(down, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateLeft(bool left)
     {
-        DispatchPropertyChange(() => ControllerViewModel.Left = left);
+        WithControllerLock(() => _controllerState = _controllerState with { Left = left });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetLeft(left);
+            await _client.SetLeft(left, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateLeftStickX(float leftStickX)
     {
-        DispatchPropertyChange(() => ControllerViewModel.LeftStickX = leftStickX);
+        WithControllerLock(() => _controllerState = _controllerState with { LeftStickX = leftStickX });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetLeftStickX(leftStickX);
+            await _client.SetLeftStickX(leftStickX, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateLeftStickY(float leftStickY)
     {
-        DispatchPropertyChange(() => ControllerViewModel.LeftStickY = leftStickY);
+        WithControllerLock(() => _controllerState = _controllerState with { LeftStickY = leftStickY });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetLeftStickY(leftStickY);
+            await _client.SetLeftStickY(leftStickY, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateLeftStickIn(bool leftStickIn)
     {
-        DispatchPropertyChange(() => ControllerViewModel.LeftStickIn = leftStickIn);
+        WithControllerLock(() => _controllerState = _controllerState with { LeftStickIn = leftStickIn });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetLeftStickIn(leftStickIn);
+            await _client.SetLeftStickIn(leftStickIn, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateRightStickX(float rightStickX)
     {
-        DispatchPropertyChange(() => ControllerViewModel.RightStickX = rightStickX);
+        WithControllerLock(() => _controllerState = _controllerState with { RightStickX = rightStickX });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetRightStickX(rightStickX);
+            await _client.SetRightStickX(rightStickX, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateRightStickY(float rightStickY)
     {
-        DispatchPropertyChange(() => ControllerViewModel.RightStickY = rightStickY);
+        WithControllerLock(() => _controllerState = _controllerState with { RightStickY = rightStickY });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetRightStickY(rightStickY);
+            await _client.SetRightStickY(rightStickY, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateRightStickIn(bool rightStickIn)
     {
-        DispatchPropertyChange(() => ControllerViewModel.RightStickIn = rightStickIn);
+        WithControllerLock(() => _controllerState = _controllerState with { RightStickIn = rightStickIn });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetRightStickIn(rightStickIn);
+            await _client.SetRightStickIn(rightStickIn, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateLeftBumper(bool leftBumper)
     {
-        DispatchPropertyChange(() => ControllerViewModel.LeftBumper = leftBumper);
+        WithControllerLock(() => _controllerState = _controllerState with { LeftBumper = leftBumper });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetLeftBumper(leftBumper);
+            await _client.SetLeftBumper(leftBumper, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateLeftTrigger(float leftTrigger)
     {
-        DispatchPropertyChange(() => ControllerViewModel.LeftTrigger = leftTrigger);
+        WithControllerLock(() => _controllerState = _controllerState with { LeftTrigger = leftTrigger });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetLeftTrigger(leftTrigger);
+            await _client.SetLeftTrigger(leftTrigger, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateRightBumper(bool rightBumper)
     {
-        DispatchPropertyChange(() => ControllerViewModel.RightBumper = rightBumper);
+        WithControllerLock(() => _controllerState = _controllerState with { RightBumper = rightBumper });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetRightBumper(rightBumper);
+            await _client.SetRightBumper(rightBumper, addToMessageQueue: true);
         }
     }
 
     private async Task UpdateRightTrigger(float rightTrigger)
     {
-        DispatchPropertyChange(() => ControllerViewModel.RightTrigger = rightTrigger);
+        WithControllerLock(() => _controllerState = _controllerState with { RightTrigger = rightTrigger });
 
         if (_client is not null && ServerConnectionStatus is ConnectionStatus.Connected)
         {
-            await _client.SetRightTrigger(rightTrigger);
+            await _client.SetRightTrigger(rightTrigger, addToMessageQueue: true);
         }
     }
 
     private unsafe SDL_Gamepad* _gamepad;
-    private readonly Timer _readPs5ControllerTimer = new();
 
     private void InitialisePs5Controller()
     {
@@ -770,12 +745,12 @@ public partial class MainViewModel : ViewModel
             _gamepad = SDL3.SDL_OpenGamepad(gamepadId);
         }
 
-        _readPs5ControllerTimer.Enabled = true;
+        _highAccuracyTimer.Start(_updateFromPs5ControllerEvent);
     }
 
     private void StopPs5Controller()
     {
-        _readPs5ControllerTimer.Enabled = false;
+        _highAccuracyTimer.Stop(_updateFromPs5ControllerEvent);
 
         unsafe
         {
@@ -879,5 +854,52 @@ public partial class MainViewModel : ViewModel
         var oldRange = oldMax - oldMin;
         var newRange = newMax - newMin;
         return (((input - oldMin) * newRange) / oldRange) + newMin;
+    }
+
+    private Task UpdateControllerUi()
+    {
+        ControllerState state;
+
+        using (_controllerStateLock.EnterScope())
+        {
+            state = _controllerState;
+        }
+
+        DispatchPropertyChange(() =>
+        {
+
+            var (start, select, home, bigHome,
+                x, y, a, b,
+                up, right, down, left,
+                leftStickX, leftStickY, leftStickIn,
+                rightStickX, rightStickY, rightStickIn,
+                leftBumper, leftTrigger,
+                rightBumper, rightTrigger) = state;
+
+            ControllerViewModel.Start = start;
+            ControllerViewModel.Select = select;
+            ControllerViewModel.Home = home;
+            ControllerViewModel.BigHome = bigHome;
+            ControllerViewModel.X = x;
+            ControllerViewModel.Y = y;
+            ControllerViewModel.A = a;
+            ControllerViewModel.B = b;
+            ControllerViewModel.Up = up;
+            ControllerViewModel.Right = right;
+            ControllerViewModel.Down = down;
+            ControllerViewModel.Left = left;
+            ControllerViewModel.LeftStickX = leftStickX;
+            ControllerViewModel.LeftStickY = leftStickY;
+            ControllerViewModel.LeftStickIn = leftStickIn;
+            ControllerViewModel.RightStickX = rightStickX;
+            ControllerViewModel.RightStickY = rightStickY;
+            ControllerViewModel.RightStickIn = rightStickIn;
+            ControllerViewModel.LeftBumper = leftBumper;
+            ControllerViewModel.LeftTrigger = leftTrigger;
+            ControllerViewModel.RightBumper = rightBumper;
+            ControllerViewModel.RightTrigger = rightTrigger;
+        });
+
+        return Task.CompletedTask;
     }
 }

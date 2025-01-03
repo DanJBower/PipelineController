@@ -9,11 +9,6 @@ using System.Text.RegularExpressions;
 
 namespace CommonClient;
 
-// TODO
-// * Make it so find client retries every 2 seconds
-// * Pass cancellation token to connect to client so searching for client
-//   can be cancelled if wanted
-
 public static partial class ClientUtilities
 {
     public static async Task<PrototypeClient> FindAndConnectToClient(CancellationToken cancellationToken = default)
@@ -109,5 +104,10 @@ public static partial class ClientUtilities
                 return (ip, port);
             }
         }
+    }
+
+    public static TimeSpan Hz(this double hz)
+    {
+        return TimeSpan.FromMilliseconds(1000 / hz);
     }
 }

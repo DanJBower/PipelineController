@@ -1,8 +1,131 @@
 ﻿using CommonClient;
 using Controller;
 
-// Used for monitoring all events happening in the client
+// await ConsoleControllerPassthrough.RunApproach4().ConfigureAwait(false);
+// return;
 
+/*var startTime = Stopwatch.GetTimestamp();
+
+var timerAction1 = new TimerEvent(async () => Log("Task 1"), TimeSpan.FromMilliseconds(800));
+var timerAction2 = new TimerEvent(async () => Log("Task 2"), TimeSpan.FromMilliseconds(1500));
+var timerAction3 = new TimerEvent(async () =>
+{
+    Log("Task 3 start");
+    await Task.Delay(500);
+    Log("Task 3 finished");
+}, TimeSpan.FromSeconds(2), NumberOfActivations: 2);
+var timerAction4 = new TimerEvent(async () => Log("Task 4"), TimeSpan.FromMilliseconds(100));
+
+using var timer = new HighAccuracyTimer();
+// timer.Start(timerAction2);
+timer.Start(timerAction3);
+
+await Task.Delay(5000);
+
+timer.Start(timerAction3);
+await Task.Delay(5000);
+
+// timer.Start(timerAction1);
+timer.Start(timerAction4);
+
+await Task.Delay(TimeSpan.FromSeconds(5));
+
+return;
+
+void Log(string message = "")
+{
+    if (string.IsNullOrWhiteSpace(message))
+    {
+        return;
+    }
+
+    Console.WriteLine($"{Stopwatch.GetElapsedTime(startTime).TotalMilliseconds:00000.00}: {message}");
+}*/
+
+/*var startTime = Stopwatch.GetTimestamp();
+SimpleProcessingQueue<(int, int)>? simpleProcessingQueueSample = null;
+simpleProcessingQueueSample = new(ProcessItem);
+
+Log("Starting add run 1");
+Log();
+
+var taskId = 0;
+
+for (var i = 0; i < 11; i++)
+{
+    var x = i - 5;
+    var delayMs = ((x * x) * 250) + 1000;
+    Log($"Adding: {taskId}: Delay {delayMs}");
+    simpleProcessingQueueSample.Enqueue((taskId, delayMs));
+    taskId++;
+}
+
+Log();
+Log("5 second delay");
+Log();
+await Task.Delay(5000);
+
+Log();
+Log("Starting add run 2");
+Log();
+
+for (var i = 0; i < 11; i++)
+{
+    var x = i / 2.0;
+    var delayMs = (int)((x * x) * 250) + 1000;
+    Log($"Adding: {taskId}: Delay {delayMs}");
+    simpleProcessingQueueSample.Enqueue((taskId, delayMs));
+    taskId++;
+}
+
+Log();
+Log("Waiting till all current tasks complete");
+Log();
+await simpleProcessingQueueSample.WaitForQueueToEmpty();
+
+Log();
+Log("Starting add run 3");
+Log();
+
+for (var i = 0; i < 11; i++)
+{
+    var x = i - 5;
+    var delayMs = ((x * x) * 250) + 1000;
+    Log($"Adding: {taskId}: Delay {delayMs}");
+    simpleProcessingQueueSample.Enqueue((taskId, delayMs));
+    taskId++;
+    await Task.Delay(1000);
+}
+
+simpleProcessingQueueSample.CompleteAdding();
+
+Log();
+Log("Waiting till all tasks complete");
+Log();
+await simpleProcessingQueueSample.WaitForCompletion();
+
+async Task ProcessItem((int id, int delay) item, CancellationToken cancellationToken)
+{
+    Log($"Starting to process task {item.id}: {item.delay:0000}ms");
+    await Task.Delay(item.delay, cancellationToken);
+    Log($"Finished processing {item.id}: {item.delay:0000}ms");
+}
+
+void Log(string message = "")
+{
+    if (string.IsNullOrWhiteSpace(message))
+    {
+        Console.WriteLine();
+        return;
+    }
+
+    var duration = Stopwatch.GetElapsedTime(startTime).TotalMilliseconds;
+    Console.WriteLine($"{duration:00000}ms: {message}. Current queue count: {simpleProcessingQueueSample.Count}");
+}
+
+return;*/
+
+// Used for monitoring all events happening in the client
 Console.WriteLine("Attempting to connect to client");
 using var cancellationTokenSource = new CancellationTokenSource();
 cancellationTokenSource.CancelAfter(20000);
@@ -96,7 +219,7 @@ try
         LeftTrigger: 0,
         RightBumper: false,
         RightTrigger: 0
-    ));
+    ), true);
 }
 catch (OperationCanceledException)
 {
@@ -106,16 +229,16 @@ catch (OperationCanceledException)
 Console.WriteLine("Press Enter to exit");
 Console.ReadLine();
 
-static async Task SendBool(PrototypeClient client, Func<bool, Task> sendAction, bool newValue)
+static async Task SendBool(PrototypeClient client, Func<bool, bool, Task> sendAction, bool newValue)
 {
     await Task.Delay(1000);
-    await sendAction(newValue);
+    await sendAction(newValue, true);
 }
 
-static async Task SendFloat(PrototypeClient client, Func<float, Task> sendAction, float newValue)
+static async Task SendFloat(PrototypeClient client, Func<float, bool, Task> sendAction, float newValue)
 {
     await Task.Delay(1000);
-    await sendAction(newValue);
+    await sendAction(newValue, true);
 }
 
 static void SubscribeToEvent<T>(PrototypeClient client, string eventName)
