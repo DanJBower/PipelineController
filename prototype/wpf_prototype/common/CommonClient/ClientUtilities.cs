@@ -105,4 +105,9 @@ public static partial class ClientUtilities
             }
         }
     }
+
+    public static TimeSpan Hz(this double hz)
+    {
+        return TimeSpan.FromMilliseconds(1000 / hz);
+    }
 }
