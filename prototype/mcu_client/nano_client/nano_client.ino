@@ -2,10 +2,12 @@
 
 void setup()
 {
-    pinMode(LED_BUILTIN, OUTPUT);
-    pinMode(LED_RED, OUTPUT);
-    pinMode(LED_GREEN, OUTPUT);
-    pinMode(LED_BLUE, OUTPUT);
+    pinMode(LED_BUILTIN, OUTPUT); // This is top left orange LED. Can only change it's brightness.
+    pinMode(LED_RED, OUTPUT);     // These 3 pins make up the RGB LED but the pins have to be
+    pinMode(LED_GREEN, OUTPUT);   // controlled separately.
+    pinMode(LED_BLUE, OUTPUT);    // The pinout says it shouldn't support analogWrite (as no ~ next to pins)
+                                  // but it does.
+                                  // https://docs.arduino.cc/resources/pinouts/ABX00083-full-pinout.pdf
 }
 
 void loop()
