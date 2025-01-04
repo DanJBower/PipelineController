@@ -1,5 +1,7 @@
 # DRAFT
 
+Rename client_secrets.h.template to client_secrets.h, fill in the values, and move to the nano_client folder.
+
 Arduino Nano ESP32 Related [nano docs](https://docs.arduino.cc/hardware/nano-esp32/) [espressif docs](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/index.html#):
 
 * [Arduino IDE](https://www.arduino.cc/en/software)
