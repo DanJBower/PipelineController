@@ -8,6 +8,7 @@ void setup()
     pinMode(LED_BLUE, OUTPUT);    // The pinout says it shouldn't support analogWrite (as no ~ next to pins)
                                   // but it does.
                                   // https://docs.arduino.cc/resources/pinouts/ABX00083-full-pinout.pdf
+    Serial.begin(9600);
 }
 
 void loop()
@@ -57,4 +58,10 @@ void SetColor(int r, int g, int b)
     analogWrite(LED_RED, r);
     analogWrite(LED_GREEN, g);
     analogWrite(LED_BLUE, b);
+    Serial.print("r: ");
+    Serial.print(r);
+    Serial.print(" g: ");
+    Serial.print(g);
+    Serial.print(" b: ");
+    Serial.println(b);
 }
