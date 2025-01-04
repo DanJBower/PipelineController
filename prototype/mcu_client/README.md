@@ -1,6 +1,12 @@
+# DRAFT
 
+Arduino Nano ESP32 Related [nano docs](https://docs.arduino.cc/hardware/nano-esp32/) [espressif docs](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-reference/index.html#):
 
+* [Arduino IDE](https://www.arduino.cc/en/software)
+* Open Arduino IDE, let it install various drivers
+* In the Arduino IDE, select the Nano ESP32 board and let it install the `Arduino ESP32 Boards" package
 
+* [How to debug](https://docs.arduino.cc/tutorials/nano-esp32/debugging/)
 
 Pi related:
 
