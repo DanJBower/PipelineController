@@ -1,3 +1,0 @@
-For some reason having these files in the same folder as the ino and including with `#include "nano_leds.h"` is leading to compilation errors. For now just copied the source in so it compiles, but need to work out as doesn't make it easy to split the code up...
-
-Something tells me Arduino is quite restrictive and this will be a long road

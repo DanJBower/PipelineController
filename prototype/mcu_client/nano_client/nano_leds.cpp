@@ -1,5 +1,5 @@
 #include "nano_leds.h"
-
+#include "Arduino.h"
 
 #define DELAY_BETWEEN_COLORS 10
 

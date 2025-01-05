@@ -1,8 +1,6 @@
-#ifndef __CLIENT_TYPES_H
-#define __CLIENT_TYPES_H
+#ifndef __NANO_LEDS_H
+#define __NANO_LEDS_H
 #pragma once
-
-#include "Arduino.h"
 
 enum class SimpleColor
 {
