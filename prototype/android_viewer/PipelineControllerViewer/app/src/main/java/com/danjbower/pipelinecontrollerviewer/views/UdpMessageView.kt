@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.danjbower.pipelinecontrollerviewer.data.ApplicationState
 import com.danjbower.pipelinecontrollerviewer.ui.theme.PipelineControllerViewerTheme
 import com.danjbower.pipelinecontrollerviewer.viewmodels.interfaces.IUdpMessageViewModel
@@ -61,12 +63,31 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
             Column(modifier = Modifier
                 .padding(start = 5.dp, top = 30.dp, end = 5.dp, bottom = 5.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(text = "State: ${appState.value}")
+                ConstraintLayout(modifier = Modifier.fillMaxWidth())
+                {
+                    val (
+                        stateText,
+                        connectButton,
+                        disconnectButton,
+                    ) = createRefs()
+
+                    Text(
+                        text = "State: ${appState.value}",
+                        modifier = Modifier.constrainAs(stateText)
+                        {
+                            start.linkTo(parent.start)
+
+                            linkTo(top = connectButton.bottom,
+                                bottom = disconnectButton.top,
+                                bias = 0.5f)
+                        },
+                    )
 
                     Button(
+                        modifier = Modifier.constrainAs(connectButton)
+                        {
+                            end.linkTo(parent.end)
+                        },
                         onClick = { viewModel.connect() },
                         enabled = canClickConnect
                     ) {
@@ -74,6 +95,11 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                     }
 
                     Button(
+                        modifier = Modifier.constrainAs(disconnectButton)
+                        {
+                            end.linkTo(parent.end)
+                            top.linkTo(connectButton.bottom, margin = 2.dp)
+                        },
                         onClick = { viewModel.disconnect() },
                         enabled = canClickDisconnect
                     ) {
