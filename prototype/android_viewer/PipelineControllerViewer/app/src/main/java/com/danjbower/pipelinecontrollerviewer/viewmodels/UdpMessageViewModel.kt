@@ -28,6 +28,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
 {
     companion object {
         private const val LISTEN_PORT = 8913
+        private const val MAX_MESSAGE_LOG_SIZE = 1000
 
         private val CONNECT_STATES = listOf(
             ApplicationState.Disconnected,
@@ -47,8 +48,22 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
         val TAG: String = UdpMessageViewModel::class.java.simpleName
     }
 
+    private val _messagesBuffer = ArrayDeque<String>(MAX_MESSAGE_LOG_SIZE)
     private val _messages = MutableStateFlow<List<String>>(emptyList())
     override val messages: StateFlow<List<String>> = _messages
+
+    private fun queueMessage(message: String)
+    {
+        synchronized(_messagesBuffer)
+        {
+            if (_messagesBuffer.size >= MAX_MESSAGE_LOG_SIZE) {
+                _messagesBuffer.removeFirst()
+            }
+            _messagesBuffer.addLast(message)
+
+            _messages.update { _ ->  _messagesBuffer.toList() }
+        }
+    }
 
     private val _applicationState = MutableStateFlow(ApplicationState.Disconnected)
     override val applicationState: StateFlow<ApplicationState> = _applicationState
@@ -70,6 +85,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
         )
 
     private var _connectionJob: Job? = null
+    private var _messageListen: Job? = null
 
     private var _mqttClient: ControllerClient? = null
 
@@ -97,7 +113,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
             }
             catch (e: Exception)
             {
-                _messages.update { currentList -> currentList + "Error: ${e.message}" }
+                queueMessage("Error: ${e.message}")
                 Log.e(TAG, "Caught exception:", e)
                 _applicationState.update { _ -> ApplicationState.Error }
             }
@@ -107,7 +123,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
     private suspend fun searchForServer() : IpPortPair = coroutineScope()
     {
         _applicationState.update { _ -> ApplicationState.Searching }
-        _messages.update { currentList -> currentList + "Searching for server" }
+        queueMessage("Searching for server")
 
         var socket = aSocket(ActorSelectorManager(Dispatchers.IO))
             .udp()
@@ -119,7 +135,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
                 val datagram = socket.receive()
                 val messageText = datagram.packet.readText()
 
-                _messages.update { currentList -> currentList + "UDP message received: $messageText" }
+                queueMessage("UDP message received: $messageText")
 
                 val match = SERVER_REGEX.matchEntire(messageText)
 
@@ -127,7 +143,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
                 {
                     val ip = match.groupValues[1];
                     val port = match.groupValues[5].toInt();
-                    _messages.update { currentList -> currentList + "Matched $ip:$port" }
+                    queueMessage("Matched $ip:$port")
 
                     return@coroutineScope IpPortPair(ip, port)
                 }
@@ -135,7 +151,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
         }
         catch (_: CancellationException)
         {
-            _messages.update { currentList -> currentList + "Stopping search" }
+            queueMessage("Stopping search")
         }
         finally
         {
@@ -148,13 +164,18 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
     private suspend fun connectToServer(ipPortPair: IpPortPair): ControllerClient = coroutineScope()
     {
         _applicationState.update { _ -> ApplicationState.Connecting }
-        _messages.update { currentList -> currentList + "Connecting" }
+        queueMessage("Connecting")
 
-        val mqttClient = ControllerClient(ipPortPair)
+        val mqttClient = ControllerClient(ipPortPair, viewModelScope)
+
+        _messageListen = viewModelScope.launch(Dispatchers.IO) {
+            mqttClient.messages.collect { message -> queueMessage(message) }
+        }
+
         mqttClient.connect()
 
         _applicationState.update { _ -> ApplicationState.Connected }
-        _messages.update { currentList -> currentList + "Connected" }
+        queueMessage("Connected")
         return@coroutineScope mqttClient
     }
 
@@ -170,7 +191,10 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
             _mqttClient?.disconnect()
             _mqttClient = null
 
-            _messages.update { currentList -> currentList + "Disconnected" }
+            _messageListen?.cancelAndJoin()
+            _messageListen = null
+
+            queueMessage("Disconnected")
             _applicationState.update { _ -> ApplicationState.Disconnected }
         }
     }
