@@ -3,7 +3,6 @@ package com.danjbower.pipelinecontrollerviewer.views
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,12 +18,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
 import com.danjbower.pipelinecontrollerviewer.data.ApplicationState
 import com.danjbower.pipelinecontrollerviewer.ui.theme.PipelineControllerViewerTheme
 import com.danjbower.pipelinecontrollerviewer.viewmodels.interfaces.IUdpMessageViewModel
@@ -42,7 +41,8 @@ fun ServerConnectionViewPreview()
         applicationState = ApplicationState.Disconnected,
         canClickConnect = true,
         canClickDisconnect = false,
-        messages = listOf("Hello")
+        messages = (1..50).map { "Hello %02d".format(it) },
+        debugLight = true,
     )
     UdpMessageView(model)
 }
@@ -54,16 +54,29 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
     val messages by viewModel.messages.collectAsState()
     val canClickConnect by viewModel.canClickConnect.collectAsState()
     val canClickDisconnect by viewModel.canClickDisconnect.collectAsState()
+    val debugLight by viewModel.debugLight.collectAsState()
 
     PipelineControllerViewerTheme {
         Surface(modifier = Modifier
             .fillMaxSize(),
         )
         {
-            Column(modifier = Modifier
-                .padding(start = 5.dp, top = 30.dp, end = 5.dp, bottom = 5.dp)
-            ) {
-                ConstraintLayout(modifier = Modifier.fillMaxWidth())
+            ConstraintLayout(modifier = Modifier.fillMaxSize()
+                .padding(start = 5.dp, top = 30.dp, end = 5.dp, bottom = 5.dp))
+            {
+                val (
+                    statusArea,
+                    debugLightArea,
+                    logArea,
+                ) = createRefs()
+
+                ConstraintLayout(
+                    modifier = Modifier.fillMaxWidth()
+                        .constrainAs(statusArea)
+                        {
+                            top.linkTo(parent.top)
+                        }
+                )
                 {
                     val (
                         stateText,
@@ -107,14 +120,31 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                     }
                 }
 
+                Row(modifier = Modifier
+                    // .background(Color.Blue)
+                    .constrainAs(debugLightArea)
+                    {
+                        top.linkTo(statusArea.bottom)
+                    }
+                    .fillMaxWidth(),
+                )
+                {
+                    Text(text = "Debug Light: $debugLight")
+                }
+
                 // Keep track of the LazyColumn’s scroll state
                 val listState = rememberLazyListState()
                 val coroutineScope = rememberCoroutineScope()
 
                 Box(modifier = Modifier
                     // .background(Color.Red)
-                    .fillMaxSize(),
-                    contentAlignment = Alignment.Center,
+                    .constrainAs(logArea)
+                    {
+                        top.linkTo(debugLightArea.bottom)
+                        bottom.linkTo(parent.bottom)
+                        height = fillToConstraints
+                    }
+                    .fillMaxWidth(),
                 )
                 {
                     // Whenever `messages.size` changes, scroll to the bottom

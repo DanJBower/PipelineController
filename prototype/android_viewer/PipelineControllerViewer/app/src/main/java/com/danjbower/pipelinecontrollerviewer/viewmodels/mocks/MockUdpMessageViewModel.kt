@@ -11,12 +11,14 @@ class MockUdpMessageViewModel(
     applicationState : ApplicationState,
     canClickConnect : Boolean,
     canClickDisconnect : Boolean,
+    debugLight : Boolean,
 ) : ViewModel(), IUdpMessageViewModel
 {
     override val messages: StateFlow<List<String>> = MutableStateFlow<List<String>>(messages)
     override val applicationState: StateFlow<ApplicationState> = MutableStateFlow(applicationState)
     override val canClickConnect: StateFlow<Boolean> = MutableStateFlow(canClickConnect)
     override val canClickDisconnect: StateFlow<Boolean> = MutableStateFlow(canClickDisconnect)
+    override val debugLight: StateFlow<Boolean> = MutableStateFlow(debugLight)
 
     override fun connect() { }
     override fun disconnect() { }

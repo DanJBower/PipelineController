@@ -9,6 +9,7 @@ interface IUdpMessageViewModel
     val applicationState: StateFlow<ApplicationState>
     val canClickConnect: StateFlow<Boolean>
     val canClickDisconnect: StateFlow<Boolean>
+    val debugLight : StateFlow<Boolean>
 
     fun connect()
     fun disconnect()

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.danjbower.pipelinecontrollerviewer.data.ApplicationState
+import com.danjbower.pipelinecontrollerviewer.data.ControllerState
 import com.danjbower.pipelinecontrollerviewer.data.IpPortPair
 import com.danjbower.pipelinecontrollerviewer.services.ControllerClient
 import com.danjbower.pipelinecontrollerviewer.viewmodels.interfaces.IUdpMessageViewModel
@@ -11,12 +12,15 @@ import io.ktor.network.selector.ActorSelectorManager
 import io.ktor.network.sockets.InetSocketAddress
 import io.ktor.network.sockets.aSocket
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -24,6 +28,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.coroutines.cancellation.CancellationException
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
 {
     companion object {
@@ -87,7 +92,19 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
     private var _connectionJob: Job? = null
     private var _messageListen: Job? = null
 
-    private var _mqttClient: ControllerClient? = null
+    private var _mqttClient = MutableStateFlow<ControllerClient?>(null)
+
+    private val _controllerState = MutableStateFlow<ControllerState>(ControllerState())
+    val controllerState : StateFlow<ControllerState> = _controllerState
+
+    override val debugLight : StateFlow<Boolean> = _mqttClient
+        .filterNotNull()
+        .flatMapLatest { it.debugLight }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.Lazily,
+            false
+        )
 
     init
     {
@@ -106,7 +123,8 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
             try
             {
                 val ipPortPair = searchForServer()
-                _mqttClient = connectToServer(ipPortPair)
+                val server = connectToServer(ipPortPair)
+                _mqttClient.update { _ -> server }
             }
             catch (_: CancellationException)
             {
@@ -188,8 +206,8 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
             _connectionJob?.cancelAndJoin()
             _connectionJob = null
 
-            _mqttClient?.disconnect()
-            _mqttClient = null
+            _mqttClient.value?.disconnect()
+            _mqttClient.update { _ -> null }
 
             _messageListen?.cancelAndJoin()
             _messageListen = null
