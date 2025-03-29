@@ -9,6 +9,8 @@ import io.ktor.network.sockets.InetSocketAddress
 import io.ktor.network.sockets.aSocket
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -17,15 +19,27 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.net.DatagramPacket
-import java.net.DatagramSocket
-import java.net.InetAddress
+import kotlin.coroutines.cancellation.CancellationException
 
 class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
 {
     companion object {
         private const val LISTEN_PORT = 8913
+
+        private val CONNECT_STATES = listOf(
+            ApplicationState.Disconnected,
+            ApplicationState.ServerNotFound,
+            ApplicationState.ServerUnreachable,
+            ApplicationState.Error,
+        )
+
+        private val DISCONNECT_STATES = listOf(
+            ApplicationState.Searching,
+            ApplicationState.Connecting,
+            ApplicationState.Connected,
+        )
+
+        private val SERVER_REGEX = """^PrototypeMqttServer_mqtt\._tcp@(((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}):(\d+)$""".toRegex()
     }
 
     private val _messages = MutableStateFlow<List<String>>(emptyList())
@@ -35,14 +49,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
     override val applicationState: StateFlow<ApplicationState> = _applicationState
 
     override val canClickConnect: StateFlow<Boolean> = applicationState
-        .map { state ->
-            state in listOf(
-                ApplicationState.Disconnected,
-                ApplicationState.ServerNotFound,
-                ApplicationState.ServerUnreachable,
-                ApplicationState.Error,
-            )
-        }
+        .map { state -> state in CONNECT_STATES }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
@@ -50,13 +57,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
         )
 
     override val canClickDisconnect: StateFlow<Boolean> = applicationState
-        .map { state ->
-            state in listOf(
-                ApplicationState.Searching,
-                ApplicationState.Connecting,
-                ApplicationState.Connected,
-            )
-        }
+        .map { state -> state in DISCONNECT_STATES }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
@@ -79,14 +80,24 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
 
         connectionJob = viewModelScope.launch(Dispatchers.IO)
         {
-            searchForServer()
-
+            try
+            {
+                searchForServer()
+            }
+            catch (_: CancellationException)
+            {
+            }
+            catch (_: Exception)
+            {
+                _applicationState.update { _ -> ApplicationState.Error }
+            }
         }
     }
 
-    private suspend fun searchForServer() = withContext(Dispatchers.IO)
+    private suspend fun searchForServer() : String = coroutineScope()
     {
-        _applicationState.value = ApplicationState.Searching
+        _applicationState.update { _ -> ApplicationState.Searching }
+        _messages.update { currentList -> currentList + "Searching for server" }
 
         var socket = aSocket(ActorSelectorManager(Dispatchers.IO))
             .udp()
@@ -98,26 +109,42 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
                 val datagram = socket.receive()
                 val messageText = datagram.packet.readText()
 
-                _messages.update { currentList ->
-                    currentList + messageText
+                _messages.update { currentList -> currentList + "UDP message received: $messageText" }
+
+                val match = SERVER_REGEX.matchEntire(messageText)
+
+                if (match != null)
+                {
+                    val ip = match.groupValues[1];
+                    val port = match.groupValues[5];
+                    _messages.update { currentList -> currentList + "Matched $ip:$port" }
                 }
             }
+        }
+        catch (_: CancellationException)
+        {
+            _messages.update { currentList -> currentList + "Stopping search" }
         }
         finally
         {
             socket.close()
         }
+
+        return@coroutineScope ""
     }
 
     override fun disconnect()
     {
-        _applicationState.value = ApplicationState.Disconnecting
+        _applicationState.update { _ -> ApplicationState.Disconnecting }
 
-        // Cancel the job (this triggers the `finally` block which closes the socket)
-        connectionJob?.cancel()
-        connectionJob = null
+        viewModelScope.launch()
+        {
+            connectionJob?.cancelAndJoin()
+            connectionJob = null
 
-        _applicationState.value = ApplicationState.Disconnected
+            _messages.update { currentList -> currentList + "Disconnected" }
+            _applicationState.update { _ -> ApplicationState.Disconnected }
+        }
     }
 
     override fun onCleared() {
