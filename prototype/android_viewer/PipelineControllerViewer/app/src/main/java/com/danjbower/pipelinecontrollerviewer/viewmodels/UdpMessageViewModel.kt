@@ -100,6 +100,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
             }
             catch (e: Exception)
             {
+                _messages.update { currentList -> currentList + "Error: ${e.message}" }
                 Log.e(TAG, "Caught exception:", e)
                 _applicationState.update { _ -> ApplicationState.Error }
             }
