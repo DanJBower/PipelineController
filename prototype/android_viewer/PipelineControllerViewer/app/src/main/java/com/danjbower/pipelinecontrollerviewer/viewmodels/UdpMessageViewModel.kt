@@ -1,9 +1,13 @@
 package com.danjbower.pipelinecontrollerviewer.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.danjbower.pipelinecontrollerviewer.data.ApplicationState
+import com.danjbower.pipelinecontrollerviewer.data.IpPortPair
 import com.danjbower.pipelinecontrollerviewer.viewmodels.interfaces.IUdpMessageViewModel
+import com.hivemq.client.mqtt.MqttClient
+import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient
 import io.ktor.network.selector.ActorSelectorManager
 import io.ktor.network.sockets.InetSocketAddress
 import io.ktor.network.sockets.aSocket
@@ -17,8 +21,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.util.UUID
 import kotlin.coroutines.cancellation.CancellationException
 
 class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
@@ -40,6 +46,8 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
         )
 
         private val SERVER_REGEX = """^PrototypeMqttServer_mqtt\._tcp@(((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}):(\d+)$""".toRegex()
+
+        val TAG: String = UdpMessageViewModel::class.java.simpleName
     }
 
     private val _messages = MutableStateFlow<List<String>>(emptyList())
@@ -64,7 +72,9 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
             initialValue = false
         )
 
-    private var connectionJob: Job? = null
+    private var _connectionJob: Job? = null
+
+    private var _mqttClient: Mqtt5AsyncClient? = null
 
     init
     {
@@ -78,23 +88,25 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
             return
         }
 
-        connectionJob = viewModelScope.launch(Dispatchers.IO)
+        _connectionJob = viewModelScope.launch(Dispatchers.IO)
         {
             try
             {
-                searchForServer()
+                val ipPortPair = searchForServer()
+                _mqttClient = connectToServer(ipPortPair)
             }
             catch (_: CancellationException)
             {
             }
-            catch (_: Exception)
+            catch (e: Exception)
             {
+                Log.e(TAG, "Caught exception:", e)
                 _applicationState.update { _ -> ApplicationState.Error }
             }
         }
     }
 
-    private suspend fun searchForServer() : String = coroutineScope()
+    private suspend fun searchForServer() : IpPortPair = coroutineScope()
     {
         _applicationState.update { _ -> ApplicationState.Searching }
         _messages.update { currentList -> currentList + "Searching for server" }
@@ -116,8 +128,10 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
                 if (match != null)
                 {
                     val ip = match.groupValues[1];
-                    val port = match.groupValues[5];
+                    val port = match.groupValues[5].toInt();
                     _messages.update { currentList -> currentList + "Matched $ip:$port" }
+
+                    return@coroutineScope IpPortPair(ip, port)
                 }
             }
         }
@@ -130,7 +144,25 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
             socket.close()
         }
 
-        return@coroutineScope ""
+        throw IllegalStateException("Did not expect to get here")
+    }
+
+    private suspend fun connectToServer(ipPortPair: IpPortPair): Mqtt5AsyncClient = coroutineScope()
+    {
+        _applicationState.update { _ -> ApplicationState.Connecting }
+        _messages.update { currentList -> currentList + "Connecting" }
+        val mqttClient = MqttClient.builder()
+            .useMqttVersion5()
+            .serverHost(ipPortPair.ip)
+            .serverPort(ipPortPair.port)
+            .identifier(UUID.randomUUID().toString())
+            .buildAsync()
+
+        mqttClient.connect().await()
+
+        _applicationState.update { _ -> ApplicationState.Connected }
+        _messages.update { currentList -> currentList + "Connected" }
+        return@coroutineScope mqttClient
     }
 
     override fun disconnect()
@@ -139,8 +171,11 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
 
         viewModelScope.launch()
         {
-            connectionJob?.cancelAndJoin()
-            connectionJob = null
+            _connectionJob?.cancelAndJoin()
+            _connectionJob = null
+
+            _mqttClient?.disconnect()?.await()
+            _mqttClient = null
 
             _messages.update { currentList -> currentList + "Disconnected" }
             _applicationState.update { _ -> ApplicationState.Disconnected }
