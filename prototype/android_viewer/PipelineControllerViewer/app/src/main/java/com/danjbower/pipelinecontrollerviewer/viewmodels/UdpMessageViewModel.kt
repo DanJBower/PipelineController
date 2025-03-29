@@ -5,9 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.danjbower.pipelinecontrollerviewer.data.ApplicationState
 import com.danjbower.pipelinecontrollerviewer.data.IpPortPair
+import com.danjbower.pipelinecontrollerviewer.services.ControllerClient
 import com.danjbower.pipelinecontrollerviewer.viewmodels.interfaces.IUdpMessageViewModel
-import com.hivemq.client.mqtt.MqttClient
-import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient
 import io.ktor.network.selector.ActorSelectorManager
 import io.ktor.network.sockets.InetSocketAddress
 import io.ktor.network.sockets.aSocket
@@ -21,10 +20,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.future.await
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.util.UUID
 import kotlin.coroutines.cancellation.CancellationException
 
 class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
@@ -74,7 +71,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
 
     private var _connectionJob: Job? = null
 
-    private var _mqttClient: Mqtt5AsyncClient? = null
+    private var _mqttClient: ControllerClient? = null
 
     init
     {
@@ -148,18 +145,13 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
         throw IllegalStateException("Did not expect to get here")
     }
 
-    private suspend fun connectToServer(ipPortPair: IpPortPair): Mqtt5AsyncClient = coroutineScope()
+    private suspend fun connectToServer(ipPortPair: IpPortPair): ControllerClient = coroutineScope()
     {
         _applicationState.update { _ -> ApplicationState.Connecting }
         _messages.update { currentList -> currentList + "Connecting" }
-        val mqttClient = MqttClient.builder()
-            .useMqttVersion5()
-            .serverHost(ipPortPair.ip)
-            .serverPort(ipPortPair.port)
-            .identifier(UUID.randomUUID().toString())
-            .buildAsync()
 
-        mqttClient.connect().await()
+        val mqttClient = ControllerClient(ipPortPair)
+        mqttClient.connect()
 
         _applicationState.update { _ -> ApplicationState.Connected }
         _messages.update { currentList -> currentList + "Connected" }
@@ -175,7 +167,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
             _connectionJob?.cancelAndJoin()
             _connectionJob = null
 
-            _mqttClient?.disconnect()?.await()
+            _mqttClient?.disconnect()
             _mqttClient = null
 
             _messages.update { currentList -> currentList + "Disconnected" }

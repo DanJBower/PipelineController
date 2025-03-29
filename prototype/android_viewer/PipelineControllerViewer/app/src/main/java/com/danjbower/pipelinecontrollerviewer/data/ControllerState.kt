@@ -1,0 +1,26 @@
+package com.danjbower.pipelinecontrollerviewer.data
+
+data class ControllerState(
+    val start: Boolean = false,
+    val select: Boolean = false,
+    val home: Boolean = false,
+    val bigHome: Boolean = false,
+    val x: Boolean = false,
+    val y: Boolean = false,
+    val a: Boolean = false,
+    val b: Boolean = false,
+    val up: Boolean = false,
+    val right: Boolean = false,
+    val down: Boolean = false,
+    val left: Boolean = false,
+    val leftStickX: Float = 0f,
+    val leftStickY: Float = 0f,
+    val leftStickIn: Boolean = false,
+    val rightStickX: Float = 0f,
+    val rightStickY: Float = 0f,
+    val rightStickIn: Boolean = false,
+    val leftBumper: Boolean = false,
+    val leftTrigger: Float = 0f,
+    val rightBumper: Boolean = false,
+    val rightTrigger: Float = 0f,
+)
