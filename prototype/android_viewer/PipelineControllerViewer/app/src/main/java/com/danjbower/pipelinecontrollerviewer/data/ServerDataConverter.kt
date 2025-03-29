@@ -12,6 +12,8 @@ class Half(val value: Short) {
 
 object ServerDataConverter
 {
+    val TAG: String = ServerDataConverter::class.java.simpleName
+
     // Byte "aliases" (equivalent to C# public const byte):
     const val NONE_ALIAS: Byte = 0
 
@@ -69,8 +71,10 @@ object ServerDataConverter
         // Next 8 bytes are .NET Ticks (little-endian):
         val ticks = toLong(data.sliceArray(1..8))
 
-        // TODO Debug why this isn't returning the correct instant. It's returning like 1990
-        val instant = Instant.ofEpochSecond(0, ticks)
+        val epochTicks = ticks - 621355968000000000
+        val seconds = epochTicks / 10_000_000
+        val nanos = (epochTicks % 10_000_000) * 100L
+        val instant = Instant.ofEpochSecond(seconds, nanos)
 
         // If dataType > 0, there's a payload after the first 9 bytes:
         return if (dataType > 0) {
@@ -183,6 +187,7 @@ object ServerDataConverter
      * synchronization with .NET, you can just store `System.currentTimeMillis()` raw.
      */
     private fun currentDotNetTicks(): Long {
+        // TODO This won't be correct, but for now I'm not going the other way
         val instant = Instant.now()
         return (instant.epochSecond * 1_000_000_000L) + instant.nano
     }
