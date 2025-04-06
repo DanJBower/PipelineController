@@ -19,7 +19,7 @@ static readonly Random random = new Random();
     await client.SetRandomDebugLight();
     await client.SetRandomLeftStick();
     await client.SetRandomRightStick();
-    // await client.SetRandomFullController();
+    await client.SetRandomFullController();
 }
 
 static async Task SetRandomDebugLight(this PrototypeClient client)

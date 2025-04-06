@@ -73,6 +73,7 @@ class ControllerClient(ipPort: IpPortPair,
         TopicConstants.RightTriggerTopicAlias to ::onRightTriggerMessage,
         TopicConstants.LeftStickTopicAlias to ::onLeftStickMessage,
         TopicConstants.RightStickTopicAlias to ::onRightStickMessage,
+        TopicConstants.FullTopicAlias to ::onFullMessage,
     )
 
     suspend fun connect() {
@@ -688,6 +689,153 @@ class ControllerClient(ipPort: IpPortPair,
         }
 
         throw IllegalArgumentException("${this::onRightStickMessage.javaClass.simpleName}: $value was not the expected type")
+    }
+
+    suspend fun onFullMessage(timestamp: Instant, value: Any?)
+    {
+        if (value is ControllerState)
+        {
+            _messages.emit("$timestamp: ${TopicConstants.FullTopic} $value")
+
+            synchronized(_stateLock)
+            {
+                if (timestamp > _lastStartUpdate)
+                {
+                    _controllerState.update { state -> state.copy(start = value.start) }
+                    _lastStartUpdate = timestamp
+                }
+
+                if (timestamp > _lastSelectUpdate)
+                {
+                    _controllerState.update { state -> state.copy(select = value.select) }
+                    _lastSelectUpdate = timestamp
+                }
+
+                if (timestamp > _lastHomeUpdate)
+                {
+                    _controllerState.update { state -> state.copy(home = value.home) }
+                    _lastHomeUpdate = timestamp
+                }
+
+                if (timestamp > _lastBigHomeUpdate)
+                {
+                    _controllerState.update { state -> state.copy(bigHome = value.bigHome) }
+                    _lastBigHomeUpdate = timestamp
+                }
+
+                if (timestamp > _lastXUpdate)
+                {
+                    _controllerState.update { state -> state.copy(x = value.x) }
+                    _lastXUpdate = timestamp
+                }
+
+                if (timestamp > _lastYUpdate)
+                {
+                    _controllerState.update { state -> state.copy(y = value.y) }
+                    _lastYUpdate = timestamp
+                }
+
+                if (timestamp > _lastAUpdate)
+                {
+                    _controllerState.update { state -> state.copy(a = value.a) }
+                    _lastAUpdate = timestamp
+                }
+
+                if (timestamp > _lastBUpdate)
+                {
+                    _controllerState.update { state -> state.copy(b = value.b) }
+                    _lastBUpdate = timestamp
+                }
+
+                if (timestamp > _lastUpUpdate)
+                {
+                    _controllerState.update { state -> state.copy(up = value.up) }
+                    _lastUpUpdate = timestamp
+                }
+
+                if (timestamp > _lastRightUpdate)
+                {
+                    _controllerState.update { state -> state.copy(right = value.right) }
+                    _lastRightUpdate = timestamp
+                }
+
+                if (timestamp > _lastDownUpdate)
+                {
+                    _controllerState.update { state -> state.copy(down = value.down) }
+                    _lastDownUpdate = timestamp
+                }
+
+                if (timestamp > _lastLeftUpdate)
+                {
+                    _controllerState.update { state -> state.copy(left = value.left) }
+                    _lastLeftUpdate = timestamp
+                }
+
+                if (timestamp > _lastLeftStickXUpdate)
+                {
+                    _controllerState.update { state -> state.copy(leftStickX = value.leftStickX) }
+                    _lastLeftStickXUpdate = timestamp
+                }
+
+                if (timestamp > _lastLeftStickYUpdate)
+                {
+                    _controllerState.update { state -> state.copy(leftStickY = value.leftStickY) }
+                    _lastLeftStickYUpdate = timestamp
+                }
+
+                if (timestamp > _lastLeftStickInUpdate)
+                {
+                    _controllerState.update { state -> state.copy(leftStickIn = value.leftStickIn) }
+                    _lastLeftStickInUpdate = timestamp
+                }
+
+                if (timestamp > _lastRightStickXUpdate)
+                {
+                    _controllerState.update { state -> state.copy(rightStickX = value.rightStickX) }
+                    _lastRightStickXUpdate = timestamp
+                }
+
+                if (timestamp > _lastRightStickYUpdate)
+                {
+                    _controllerState.update { state -> state.copy(rightStickY = value.rightStickY) }
+                    _lastRightStickYUpdate = timestamp
+                }
+
+                if (timestamp > _lastRightStickInUpdate)
+                {
+                    _controllerState.update { state -> state.copy(rightStickIn = value.rightStickIn) }
+                    _lastRightStickInUpdate = timestamp
+                }
+
+                if (timestamp > _lastLeftBumperUpdate)
+                {
+                    _controllerState.update { state -> state.copy(leftBumper = value.leftBumper) }
+                    _lastLeftBumperUpdate = timestamp
+                }
+
+                if (timestamp > _lastLeftTriggerUpdate)
+                {
+                    _controllerState.update { state -> state.copy(leftTrigger = value.leftTrigger) }
+                    _lastLeftTriggerUpdate = timestamp
+                }
+
+                if (timestamp > _lastRightBumperUpdate)
+                {
+                    _controllerState.update { state -> state.copy(rightBumper = value.rightBumper) }
+                    _lastRightBumperUpdate = timestamp
+                }
+
+                if (timestamp > _lastRightTriggerUpdate)
+                {
+                    _controllerState.update { state -> state.copy(rightTrigger = value.rightTrigger) }
+                    _lastRightTriggerUpdate = timestamp
+                }
+            }
+        }
+        else
+        {
+            throw IllegalArgumentException("${this::onFullMessage.javaClass.simpleName}: $value was not the expected type")
+        }
     }
 
     suspend fun disconnect() {

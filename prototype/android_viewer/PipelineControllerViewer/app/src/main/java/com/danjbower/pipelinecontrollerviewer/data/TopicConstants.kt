@@ -104,7 +104,7 @@ class TopicConstants
             LeftTriggerTopicAlias to LeftTriggerTopic,
             RightBumperTopicAlias to RightBumperTopic,
             RightTriggerTopicAlias to RightTriggerTopic,
-            // FullTopicAlias to FullTopic,
+            FullTopicAlias to FullTopic,
             LeftStickTopicAlias to LeftStickTopic,
             RightStickTopicAlias to RightStickTopic,
             DebugLightTopicAlias to DebugLightTopic,
