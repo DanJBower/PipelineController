@@ -71,6 +71,8 @@ class ControllerClient(ipPort: IpPortPair,
         TopicConstants.LeftTriggerTopicAlias to ::onLeftTriggerMessage,
         TopicConstants.RightBumperTopicAlias to ::onRightBumperMessage,
         TopicConstants.RightTriggerTopicAlias to ::onRightTriggerMessage,
+        TopicConstants.LeftStickTopicAlias to ::onLeftStickMessage,
+        TopicConstants.RightStickTopicAlias to ::onRightStickMessage,
     )
 
     suspend fun connect() {
@@ -624,6 +626,68 @@ class ControllerClient(ipPort: IpPortPair,
         {
             throw IllegalArgumentException("${this::onRightTriggerMessage.javaClass.simpleName}: $value was not the expected type")
         }
+    }
+
+    suspend fun onLeftStickMessage(timestamp: Instant, value: Any?)
+    {
+        if (value is Pair<*, *>)
+        {
+            val x = value.first
+            val y = value.second
+            if (x is Float && y is Float) {
+                _messages.emit("$timestamp: ${TopicConstants.LeftStickTopic} (${"% 5.2f".format(x)}, ${"% 5.2f".format(y)})")
+
+                synchronized(_stateLock)
+                {
+                    if (timestamp > _lastLeftStickXUpdate)
+                    {
+                        _controllerState.update { state -> state.copy(leftStickX = x) }
+                        _lastLeftStickXUpdate = timestamp
+                    }
+
+                    if (timestamp > _lastLeftStickYUpdate)
+                    {
+                        _controllerState.update { state -> state.copy(leftStickY = y) }
+                        _lastLeftStickYUpdate = timestamp
+                    }
+                }
+
+                return
+            }
+        }
+
+        throw IllegalArgumentException("${this::onLeftStickMessage.javaClass.simpleName}: $value was not the expected type")
+    }
+
+    suspend fun onRightStickMessage(timestamp: Instant, value: Any?)
+    {
+        if (value is Pair<*, *>)
+        {
+            val x = value.first
+            val y = value.second
+            if (x is Float && y is Float) {
+                _messages.emit("$timestamp: ${TopicConstants.RightStickTopic} (${"% 5.2f".format(x)}, ${"% 5.2f".format(y)})")
+
+                synchronized(_stateLock)
+                {
+                    if (timestamp > _lastRightStickXUpdate)
+                    {
+                        _controllerState.update { state -> state.copy(rightStickX = x) }
+                        _lastRightStickXUpdate = timestamp
+                    }
+
+                    if (timestamp > _lastRightStickYUpdate)
+                    {
+                        _controllerState.update { state -> state.copy(rightStickY = y) }
+                        _lastRightStickYUpdate = timestamp
+                    }
+                }
+
+                return
+            }
+        }
+
+        throw IllegalArgumentException("${this::onRightStickMessage.javaClass.simpleName}: $value was not the expected type")
     }
 
     suspend fun disconnect() {
