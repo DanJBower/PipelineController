@@ -28,6 +28,7 @@ import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
 import com.danjbower.pipelinecontrollerviewer.data.ApplicationState
 import com.danjbower.pipelinecontrollerviewer.data.ControllerState
 import com.danjbower.pipelinecontrollerviewer.ui.theme.PipelineControllerViewerTheme
+import com.danjbower.pipelinecontrollerviewer.utilities.toTFString
 import com.danjbower.pipelinecontrollerviewer.viewmodels.interfaces.IUdpMessageViewModel
 import com.danjbower.pipelinecontrollerviewer.viewmodels.mocks.MockUdpMessageViewModel
 import kotlinx.coroutines.launch
@@ -177,7 +178,7 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                             horizontalArrangement = Arrangement.SpaceEvenly
                         )
                         {
-                            Text(text = "Debug Light: $debugLight")
+                            Text(text = "Debug Light: ${debugLight.toTFString()}")
                         }
 
                         Row(
@@ -187,8 +188,8 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                             horizontalArrangement = Arrangement.SpaceEvenly
                         )
                         {
-                            Text(text = "Start: ${controllerState.start}")
-                            Text(text = "Select: ${controllerState.select}")
+                            Text(text = "Start: ${controllerState.start.toTFString()}")
+                            Text(text = "Select: ${controllerState.select.toTFString()}")
                         }
 
                         Row(
@@ -198,8 +199,8 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                             horizontalArrangement = Arrangement.SpaceEvenly
                         )
                         {
-                            Text(text = "Touch Pad: ${controllerState.bigHome}")
-                            Text(text = "Home: ${controllerState.home}")
+                            Text(text = "Touch Pad: ${controllerState.bigHome.toTFString()}")
+                            Text(text = "Home: ${controllerState.home.toTFString()}")
                         }
 
                         Row(
@@ -209,10 +210,10 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                             horizontalArrangement = Arrangement.SpaceEvenly
                         )
                         {
-                            Text(text = "A: ${controllerState.a}")
-                            Text(text = "B: ${controllerState.b}")
-                            Text(text = "X: ${controllerState.x}")
-                            Text(text = "Y: ${controllerState.y}")
+                            Text(text = "A: ${controllerState.a.toTFString()}")
+                            Text(text = "B: ${controllerState.b.toTFString()}")
+                            Text(text = "X: ${controllerState.x.toTFString()}")
+                            Text(text = "Y: ${controllerState.y.toTFString()}")
                         }
 
                         Row(
@@ -222,10 +223,10 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                             horizontalArrangement = Arrangement.SpaceEvenly
                         )
                         {
-                            Text(text = "↑: ${controllerState.up}")
-                            Text(text = "→: ${controllerState.right}")
-                            Text(text = "↓: ${controllerState.down}")
-                            Text(text = "←: ${controllerState.left}")
+                            Text(text = "↑: ${controllerState.up.toTFString()}")
+                            Text(text = "→: ${controllerState.right.toTFString()}")
+                            Text(text = "↓: ${controllerState.down.toTFString()}")
+                            Text(text = "←: ${controllerState.left.toTFString()}")
                         }
 
                         Row(
@@ -236,9 +237,9 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                         )
                         {
                             Text(text = "LT: ${"% 5.2f".format(controllerState.leftTrigger)}")
-                            Text(text = "LB: ${controllerState.leftBumper}")
+                            Text(text = "LB: ${controllerState.leftBumper.toTFString()}")
                             Text(text = "RT: ${"% 5.2f".format(controllerState.rightTrigger)}")
-                            Text(text = "RB: ${controllerState.rightBumper}")
+                            Text(text = "RB: ${controllerState.rightBumper.toTFString()}")
                         }
 
                         Row(
@@ -250,7 +251,7 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                         {
                             Text(text = "LX: ${"% 5.2f".format(controllerState.leftStickX)}")
                             Text(text = "LY: ${"% 5.2f".format(controllerState.leftStickY)}")
-                            Text(text = "L3: ${controllerState.leftStickIn}")
+                            Text(text = "L3: ${controllerState.leftStickIn.toTFString()}")
                         }
 
                         Row(
@@ -262,7 +263,7 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                         {
                             Text(text = "RX: ${"% 5.2f".format(controllerState.rightStickX)}")
                             Text(text = "RY: ${"% 5.2f".format(controllerState.rightStickY)}")
-                            Text(text = "R3: ${controllerState.rightStickIn}")
+                            Text(text = "R3: ${controllerState.rightStickIn.toTFString()}")
                         }
                     }
 
