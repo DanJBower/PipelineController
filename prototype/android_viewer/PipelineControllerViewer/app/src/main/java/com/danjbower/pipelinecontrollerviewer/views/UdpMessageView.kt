@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -83,195 +84,220 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
     val controllerState by viewModel.controllerState.collectAsState()
 
     PipelineControllerViewerTheme {
-        Surface(modifier = Modifier
-            .fillMaxSize(),
+        Surface(
+            modifier = Modifier
+                .fillMaxSize(),
         )
         {
-            ConstraintLayout(modifier = Modifier.fillMaxSize()
-                .padding(start = 5.dp, top = 30.dp, end = 5.dp, bottom = 5.dp))
+            Surface(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = 5.dp, end = 5.dp, bottom = 5.dp)
+            )
             {
-                val (
-                    statusArea,
-                    infoArea,
-                    logArea,
-                ) = createRefs()
-
                 ConstraintLayout(
-                    modifier = Modifier.fillMaxWidth()
-                        .constrainAs(statusArea)
-                        {
-                            top.linkTo(parent.top)
-                        }
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
                 )
                 {
                     val (
-                        stateText,
-                        connectButton,
-                        disconnectButton,
+                        statusArea,
+                        infoArea,
+                        logArea,
                     ) = createRefs()
 
-                    Text(
-                        text = "State: ${appState.value}",
-                        modifier = Modifier.constrainAs(stateText)
-                        {
-                            start.linkTo(parent.start)
-
-                            linkTo(top = connectButton.bottom,
-                                bottom = disconnectButton.top,
-                                bias = 0.5f)
-                        },
-                    )
-
-                    Button(
-                        modifier = Modifier.constrainAs(connectButton)
-                        {
-                            end.linkTo(parent.end)
-                        },
-                        onClick = { viewModel.connect() },
-                        enabled = canClickConnect
-                    ) {
-                        Text("Connect")
-                    }
-
-                    Button(
-                        modifier = Modifier.constrainAs(disconnectButton)
-                        {
-                            end.linkTo(parent.end)
-                            top.linkTo(connectButton.bottom, margin = 2.dp)
-                        },
-                        onClick = { viewModel.disconnect() },
-                        enabled = canClickDisconnect
-                    ) {
-                        Text("Disconnect")
-                    }
-                }
-
-                Column (modifier = Modifier
-                    // .background(Color.Blue)
-                    .constrainAs(infoArea)
-                    {
-                        top.linkTo(statusArea.bottom)
-                    }
-                    .fillMaxWidth(),
-                )
-                {
-                    Row(modifier = Modifier
-                        // .background(Color.Blue)
-                        .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    )
-                    {
-                        Text(text = "Debug Light: $debugLight")
-                    }
-
-                    Row(modifier = Modifier
-                        // .background(Color.Blue)
-                        .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    )
-                    {
-                        Text(text = "Start: ${controllerState.start}")
-                        Text(text = "Select: ${controllerState.select}")
-                    }
-
-                    Row(modifier = Modifier
-                        // .background(Color.Blue)
-                        .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    )
-                    {
-                        Text(text = "Touch Pad: ${controllerState.bigHome}")
-                        Text(text = "Home: ${controllerState.home}")
-                    }
-
-                    Row(modifier = Modifier
-                        // .background(Color.Blue)
-                        .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    )
-                    {
-                        Text(text = "A: ${controllerState.a}")
-                        Text(text = "B: ${controllerState.b}")
-                        Text(text = "X: ${controllerState.x}")
-                        Text(text = "Y: ${controllerState.y}")
-                    }
-
-                    Row(modifier = Modifier
-                        // .background(Color.Blue)
-                        .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    )
-                    {
-                        Text(text = "↑: ${controllerState.up}")
-                        Text(text = "→: ${controllerState.right}")
-                        Text(text = "↓: ${controllerState.down}")
-                        Text(text = "←: ${controllerState.left}")
-                    }
-
-                    Row(modifier = Modifier
-                        // .background(Color.Blue)
-                        .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    )
-                    {
-                        Text(text = "LT: ${"% 5.2f".format(controllerState.leftTrigger)}")
-                        Text(text = "LB: ${controllerState.leftBumper}")
-                        Text(text = "RT: ${"% 5.2f".format(controllerState.rightTrigger)}")
-                        Text(text = "RB: ${controllerState.rightBumper}")
-                    }
-
-                    Row(modifier = Modifier
-                        // .background(Color.Blue)
-                        .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    )
-                    {
-                        Text(text = "LX: ${"% 5.2f".format(controllerState.leftStickX)}")
-                        Text(text = "LY: ${"% 5.2f".format(controllerState.leftStickY)}")
-                        Text(text = "L3: ${controllerState.leftStickIn}")
-                    }
-
-                    Row(modifier = Modifier
-                        // .background(Color.Blue)
-                        .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    )
-                    {
-                        Text(text = "RX: ${"% 5.2f".format(controllerState.rightStickX)}")
-                        Text(text = "RY: ${"% 5.2f".format(controllerState.rightStickY)}")
-                        Text(text = "R3: ${controllerState.rightStickIn}")
-                    }
-                }
-
-                // Keep track of the LazyColumn’s scroll state
-                val listState = rememberLazyListState()
-                val coroutineScope = rememberCoroutineScope()
-
-                Box(modifier = Modifier
-                    // .background(Color.Red)
-                    .constrainAs(logArea)
-                    {
-                        top.linkTo(infoArea.bottom)
-                        bottom.linkTo(parent.bottom)
-                        height = fillToConstraints
-                    }
-                    .fillMaxWidth(),
-                )
-                {
-                    // Whenever `messages.size` changes, scroll to the bottom
-                    LaunchedEffect(messages.size) {
-                        // Scroll to the last index (if at least one item)
-                        if (messages.isNotEmpty()) {
-                            coroutineScope.launch {
-                                listState.animateScrollToItem(messages.size - 1)
+                    ConstraintLayout(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .constrainAs(statusArea)
+                            {
+                                top.linkTo(parent.top)
                             }
+                    )
+                    {
+                        val (
+                            stateText,
+                            connectButton,
+                            disconnectButton,
+                        ) = createRefs()
+
+                        Text(
+                            text = "State: ${appState.value}",
+                            modifier = Modifier.constrainAs(stateText)
+                            {
+                                start.linkTo(parent.start)
+
+                                linkTo(
+                                    top = connectButton.bottom,
+                                    bottom = disconnectButton.top,
+                                    bias = 0.5f
+                                )
+                            },
+                        )
+
+                        Button(
+                            modifier = Modifier.constrainAs(connectButton)
+                            {
+                                end.linkTo(parent.end)
+                            },
+                            onClick = { viewModel.connect() },
+                            enabled = canClickConnect
+                        ) {
+                            Text("Connect")
+                        }
+
+                        Button(
+                            modifier = Modifier.constrainAs(disconnectButton)
+                            {
+                                end.linkTo(parent.end)
+                                top.linkTo(connectButton.bottom, margin = 2.dp)
+                            },
+                            onClick = { viewModel.disconnect() },
+                            enabled = canClickDisconnect
+                        ) {
+                            Text("Disconnect")
                         }
                     }
 
-                    // Show messages in a lazy list
-                    LazyColumn(state = listState) {
-                        items(messages) { msg ->
-                            Text(text = msg)
+                    Column(
+                        modifier = Modifier
+                            // .background(Color.Blue)
+                            .constrainAs(infoArea)
+                            {
+                                top.linkTo(statusArea.bottom)
+                            }
+                            .fillMaxWidth(),
+                    )
+                    {
+                        Row(
+                            modifier = Modifier
+                                // .background(Color.Blue)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        )
+                        {
+                            Text(text = "Debug Light: $debugLight")
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                // .background(Color.Blue)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        )
+                        {
+                            Text(text = "Start: ${controllerState.start}")
+                            Text(text = "Select: ${controllerState.select}")
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                // .background(Color.Blue)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        )
+                        {
+                            Text(text = "Touch Pad: ${controllerState.bigHome}")
+                            Text(text = "Home: ${controllerState.home}")
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                // .background(Color.Blue)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        )
+                        {
+                            Text(text = "A: ${controllerState.a}")
+                            Text(text = "B: ${controllerState.b}")
+                            Text(text = "X: ${controllerState.x}")
+                            Text(text = "Y: ${controllerState.y}")
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                // .background(Color.Blue)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        )
+                        {
+                            Text(text = "↑: ${controllerState.up}")
+                            Text(text = "→: ${controllerState.right}")
+                            Text(text = "↓: ${controllerState.down}")
+                            Text(text = "←: ${controllerState.left}")
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                // .background(Color.Blue)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        )
+                        {
+                            Text(text = "LT: ${"% 5.2f".format(controllerState.leftTrigger)}")
+                            Text(text = "LB: ${controllerState.leftBumper}")
+                            Text(text = "RT: ${"% 5.2f".format(controllerState.rightTrigger)}")
+                            Text(text = "RB: ${controllerState.rightBumper}")
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                // .background(Color.Blue)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        )
+                        {
+                            Text(text = "LX: ${"% 5.2f".format(controllerState.leftStickX)}")
+                            Text(text = "LY: ${"% 5.2f".format(controllerState.leftStickY)}")
+                            Text(text = "L3: ${controllerState.leftStickIn}")
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                // .background(Color.Blue)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        )
+                        {
+                            Text(text = "RX: ${"% 5.2f".format(controllerState.rightStickX)}")
+                            Text(text = "RY: ${"% 5.2f".format(controllerState.rightStickY)}")
+                            Text(text = "R3: ${controllerState.rightStickIn}")
+                        }
+                    }
+
+                    // Keep track of the LazyColumn’s scroll state
+                    val listState = rememberLazyListState()
+                    val coroutineScope = rememberCoroutineScope()
+
+                    Box(
+                        modifier = Modifier
+                            // .background(Color.Red)
+                            .constrainAs(logArea)
+                            {
+                                top.linkTo(infoArea.bottom)
+                                bottom.linkTo(parent.bottom)
+                                height = fillToConstraints
+                            }
+                            .fillMaxWidth(),
+                    )
+                    {
+                        // Whenever `messages.size` changes, scroll to the bottom
+                        LaunchedEffect(messages.size) {
+                            // Scroll to the last index (if at least one item)
+                            if (messages.isNotEmpty())
+                            {
+                                coroutineScope.launch {
+                                    listState.animateScrollToItem(messages.size - 1)
+                                }
+                            }
+                        }
+
+                        // Show messages in a lazy list
+                        LazyColumn(state = listState) {
+                            items(messages) { msg ->
+                                Text(text = msg)
+                            }
                         }
                     }
                 }
