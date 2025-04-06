@@ -236,9 +236,9 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                             horizontalArrangement = Arrangement.SpaceEvenly
                         )
                         {
-                            Text(text = "LT: ${"% 5.2f".format(controllerState.leftTrigger)}")
+                            Text(text = "LT: ${"%.2f".format(controllerState.leftTrigger)}")
                             Text(text = "LB: ${controllerState.leftBumper.toTFString()}")
-                            Text(text = "RT: ${"% 5.2f".format(controllerState.rightTrigger)}")
+                            Text(text = "RT: ${"%.2f".format(controllerState.rightTrigger)}")
                             Text(text = "RB: ${controllerState.rightBumper.toTFString()}")
                         }
 
