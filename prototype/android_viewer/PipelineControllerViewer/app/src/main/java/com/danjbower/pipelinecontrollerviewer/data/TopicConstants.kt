@@ -82,8 +82,8 @@ class TopicConstants
         const val DebugLightTopicAlias = 26
 
         val AliasedTopics = mapOf(
-            /*StartTopicAlias to StartTopic,
-            SelectTopicAlias to SelectTopic,
+            StartTopicAlias to StartTopic,
+            /*SelectTopicAlias to SelectTopic,
             HomeTopicAlias to HomeTopic,
             BigHomeTopicAlias to BigHomeTopic,
             XTopicAlias to XTopic,

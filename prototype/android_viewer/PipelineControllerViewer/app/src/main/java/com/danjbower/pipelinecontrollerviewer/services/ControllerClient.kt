@@ -48,7 +48,8 @@ class ControllerClient(ipPort: IpPortPair,
         .buildAsync()
 
     private val _callbackLookup : Map<Int, suspend (Instant, Any?)-> Unit> = mapOf(
-        TopicConstants.DebugLightTopicAlias to ::onDebugLightMessage
+        TopicConstants.DebugLightTopicAlias to ::onDebugLightMessage,
+        TopicConstants.StartTopicAlias to ::onStartMessage,
     )
 
     suspend fun connect() {
@@ -95,6 +96,29 @@ class ControllerClient(ipPort: IpPortPair,
         else
         {
             throw IllegalArgumentException("${this::onDebugLightMessage.javaClass.simpleName}: $value was not the expected type")
+        }
+    }
+
+    private var _lastStartUpdate = Instant.ofEpochSecond(0)
+
+    suspend fun onStartMessage(timestamp: Instant, value: Any?)
+    {
+        if (value is Boolean)
+        {
+            _messages.emit("$timestamp: ${TopicConstants.StartTopic} $value")
+
+            synchronized(_stateLock)
+            {
+                if (timestamp > _lastStartUpdate)
+                {
+                    _controllerState.update { state -> state.copy(start = value) }
+                }
+                _lastStartUpdate = timestamp
+            }
+        }
+        else
+        {
+            throw IllegalArgumentException("${this::onStartMessage.javaClass.simpleName}: $value was not the expected type")
         }
     }
 
