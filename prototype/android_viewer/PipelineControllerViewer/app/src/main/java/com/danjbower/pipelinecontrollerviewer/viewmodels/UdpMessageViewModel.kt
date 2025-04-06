@@ -95,7 +95,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
     private var _mqttClient = MutableStateFlow<ControllerClient?>(null)
 
     private val _controllerState = MutableStateFlow<ControllerState>(ControllerState())
-    val controllerState : StateFlow<ControllerState> = _controllerState
+    override val controllerState : StateFlow<ControllerState> = _controllerState
 
     override val debugLight : StateFlow<Boolean> = _mqttClient
         .filterNotNull()

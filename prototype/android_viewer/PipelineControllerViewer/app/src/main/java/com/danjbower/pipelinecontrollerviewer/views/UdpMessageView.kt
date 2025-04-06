@@ -1,8 +1,9 @@
 package com.danjbower.pipelinecontrollerviewer.views
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,12 +20,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
 import com.danjbower.pipelinecontrollerviewer.data.ApplicationState
+import com.danjbower.pipelinecontrollerviewer.data.ControllerState
 import com.danjbower.pipelinecontrollerviewer.ui.theme.PipelineControllerViewerTheme
 import com.danjbower.pipelinecontrollerviewer.viewmodels.interfaces.IUdpMessageViewModel
 import com.danjbower.pipelinecontrollerviewer.viewmodels.mocks.MockUdpMessageViewModel
@@ -43,6 +44,30 @@ fun ServerConnectionViewPreview()
         canClickDisconnect = false,
         messages = (1..50).map { "Hello %02d".format(it) },
         debugLight = true,
+        controllerState = ControllerState(
+            start = true,
+            select = false,
+            home = false,
+            bigHome = false,
+            x = false,
+            y = false,
+            a = false,
+            b = false,
+            up = false,
+            right = false,
+            down = false,
+            left = false,
+            leftStickX = -0.311f,
+            leftStickY = 0f,
+            leftStickIn = false,
+            rightStickX = 0f,
+            rightStickY = 0f,
+            rightStickIn = false,
+            leftBumper = false,
+            leftTrigger = 0f,
+            rightBumper = false,
+            rightTrigger = 0f,
+        )
     )
     UdpMessageView(model)
 }
@@ -55,6 +80,7 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
     val canClickConnect by viewModel.canClickConnect.collectAsState()
     val canClickDisconnect by viewModel.canClickDisconnect.collectAsState()
     val debugLight by viewModel.debugLight.collectAsState()
+    val controllerState by viewModel.controllerState.collectAsState()
 
     PipelineControllerViewerTheme {
         Surface(modifier = Modifier
@@ -66,7 +92,7 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
             {
                 val (
                     statusArea,
-                    debugLightArea,
+                    infoArea,
                     logArea,
                 ) = createRefs()
 
@@ -120,16 +146,101 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                     }
                 }
 
-                Row(modifier = Modifier
+                Column (modifier = Modifier
                     // .background(Color.Blue)
-                    .constrainAs(debugLightArea)
+                    .constrainAs(infoArea)
                     {
                         top.linkTo(statusArea.bottom)
                     }
                     .fillMaxWidth(),
                 )
                 {
-                    Text(text = "Debug Light: $debugLight")
+                    Row(modifier = Modifier
+                        // .background(Color.Blue)
+                        .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    )
+                    {
+                        Text(text = "Debug Light: $debugLight")
+                    }
+
+                    Row(modifier = Modifier
+                        // .background(Color.Blue)
+                        .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    )
+                    {
+                        Text(text = "Start: ${controllerState.start}")
+                        Text(text = "Select: ${controllerState.select}")
+                    }
+
+                    Row(modifier = Modifier
+                        // .background(Color.Blue)
+                        .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    )
+                    {
+                        Text(text = "Touch Pad: ${controllerState.bigHome}")
+                        Text(text = "Home: ${controllerState.home}")
+                    }
+
+                    Row(modifier = Modifier
+                        // .background(Color.Blue)
+                        .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    )
+                    {
+                        Text(text = "A: ${controllerState.a}")
+                        Text(text = "B: ${controllerState.b}")
+                        Text(text = "X: ${controllerState.x}")
+                        Text(text = "Y: ${controllerState.y}")
+                    }
+
+                    Row(modifier = Modifier
+                        // .background(Color.Blue)
+                        .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    )
+                    {
+                        Text(text = "↑: ${controllerState.up}")
+                        Text(text = "→: ${controllerState.right}")
+                        Text(text = "↓: ${controllerState.down}")
+                        Text(text = "←: ${controllerState.left}")
+                    }
+
+                    Row(modifier = Modifier
+                        // .background(Color.Blue)
+                        .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    )
+                    {
+                        Text(text = "LT: ${"% 5.2f".format(controllerState.leftTrigger)}")
+                        Text(text = "LB: ${controllerState.leftBumper}")
+                        Text(text = "RT: ${"% 5.2f".format(controllerState.rightTrigger)}")
+                        Text(text = "RB: ${controllerState.rightBumper}")
+                    }
+
+                    Row(modifier = Modifier
+                        // .background(Color.Blue)
+                        .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    )
+                    {
+                        Text(text = "LX: ${"% 5.2f".format(controllerState.leftStickX)}")
+                        Text(text = "LY: ${"% 5.2f".format(controllerState.leftStickY)}")
+                        Text(text = "L3: ${controllerState.leftStickIn}")
+                    }
+
+                    Row(modifier = Modifier
+                        // .background(Color.Blue)
+                        .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    )
+                    {
+                        Text(text = "RX: ${"% 5.2f".format(controllerState.rightStickX)}")
+                        Text(text = "RY: ${"% 5.2f".format(controllerState.rightStickY)}")
+                        Text(text = "R3: ${controllerState.rightStickIn}")
+                    }
                 }
 
                 // Keep track of the LazyColumn’s scroll state
@@ -140,7 +251,7 @@ fun UdpMessageView(viewModel: IUdpMessageViewModel)
                     // .background(Color.Red)
                     .constrainAs(logArea)
                     {
-                        top.linkTo(debugLightArea.bottom)
+                        top.linkTo(infoArea.bottom)
                         bottom.linkTo(parent.bottom)
                         height = fillToConstraints
                     }
