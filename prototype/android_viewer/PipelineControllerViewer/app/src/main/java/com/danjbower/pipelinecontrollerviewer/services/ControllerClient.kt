@@ -76,7 +76,7 @@ class ControllerClient(ipPort: IpPortPair,
         }
     }
 
-    private var _lastDebugLightUpdate: Instant = Instant.ofEpochSecond(0)
+    private var _lastDebugLightUpdate = Instant.ofEpochSecond(0)
 
     suspend fun onDebugLightMessage(timestamp: Instant, value: Any?)
     {
