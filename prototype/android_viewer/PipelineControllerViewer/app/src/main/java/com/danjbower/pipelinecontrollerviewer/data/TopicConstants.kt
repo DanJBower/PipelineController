@@ -83,7 +83,7 @@ class TopicConstants
 
         val AliasedTopics = mapOf(
             StartTopicAlias to StartTopic,
-            /*SelectTopicAlias to SelectTopic,
+            SelectTopicAlias to SelectTopic,
             HomeTopicAlias to HomeTopic,
             BigHomeTopicAlias to BigHomeTopic,
             XTopicAlias to XTopic,
@@ -104,7 +104,7 @@ class TopicConstants
             LeftTriggerTopicAlias to LeftTriggerTopic,
             RightBumperTopicAlias to RightBumperTopic,
             RightTriggerTopicAlias to RightTriggerTopic,
-            FullTopicAlias to FullTopic,
+            /*FullTopicAlias to FullTopic,
             LeftStickTopicAlias to LeftStickTopic,
             RightStickTopicAlias to RightStickTopic,*/
             DebugLightTopicAlias to DebugLightTopic,
