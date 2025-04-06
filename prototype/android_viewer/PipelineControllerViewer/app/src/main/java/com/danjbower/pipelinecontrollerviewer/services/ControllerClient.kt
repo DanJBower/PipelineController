@@ -112,8 +112,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastDebugLightUpdate)
                 {
                     _debugLight.update { _ -> value }
+                    _lastDebugLightUpdate = timestamp
                 }
-                _lastDebugLightUpdate = timestamp
             }
         }
         else
@@ -135,8 +135,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastStartUpdate)
                 {
                     _controllerState.update { state -> state.copy(start = value) }
+                    _lastStartUpdate = timestamp
                 }
-                _lastStartUpdate = timestamp
             }
         }
         else
@@ -158,8 +158,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastSelectUpdate)
                 {
                     _controllerState.update { state -> state.copy(select = value) }
+                    _lastSelectUpdate = timestamp
                 }
-                _lastSelectUpdate = timestamp
             }
         }
         else
@@ -181,8 +181,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastHomeUpdate)
                 {
                     _controllerState.update { state -> state.copy(home = value) }
+                    _lastHomeUpdate = timestamp
                 }
-                _lastHomeUpdate = timestamp
             }
         }
         else
@@ -204,8 +204,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastBigHomeUpdate)
                 {
                     _controllerState.update { state -> state.copy(bigHome = value) }
+                    _lastBigHomeUpdate = timestamp
                 }
-                _lastBigHomeUpdate = timestamp
             }
         }
         else
@@ -227,8 +227,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastXUpdate)
                 {
                     _controllerState.update { state -> state.copy(x = value) }
+                    _lastXUpdate = timestamp
                 }
-                _lastXUpdate = timestamp
             }
         }
         else
@@ -250,8 +250,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastYUpdate)
                 {
                     _controllerState.update { state -> state.copy(y = value) }
+                    _lastYUpdate = timestamp
                 }
-                _lastYUpdate = timestamp
             }
         }
         else
@@ -273,8 +273,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastAUpdate)
                 {
                     _controllerState.update { state -> state.copy(a = value) }
+                    _lastAUpdate = timestamp
                 }
-                _lastAUpdate = timestamp
             }
         }
         else
@@ -296,8 +296,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastBUpdate)
                 {
                     _controllerState.update { state -> state.copy(b = value) }
+                    _lastBUpdate = timestamp
                 }
-                _lastBUpdate = timestamp
             }
         }
         else
@@ -319,8 +319,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastUpUpdate)
                 {
                     _controllerState.update { state -> state.copy(up = value) }
+                    _lastUpUpdate = timestamp
                 }
-                _lastUpUpdate = timestamp
             }
         }
         else
@@ -342,8 +342,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastRightUpdate)
                 {
                     _controllerState.update { state -> state.copy(right = value) }
+                    _lastRightUpdate = timestamp
                 }
-                _lastRightUpdate = timestamp
             }
         }
         else
@@ -365,8 +365,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastDownUpdate)
                 {
                     _controllerState.update { state -> state.copy(down = value) }
+                    _lastDownUpdate = timestamp
                 }
-                _lastDownUpdate = timestamp
             }
         }
         else
@@ -388,8 +388,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastLeftUpdate)
                 {
                     _controllerState.update { state -> state.copy(left = value) }
+                    _lastLeftUpdate = timestamp
                 }
-                _lastLeftUpdate = timestamp
             }
         }
         else
@@ -411,8 +411,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastLeftStickXUpdate)
                 {
                     _controllerState.update { state -> state.copy(leftStickX = value) }
+                    _lastLeftStickXUpdate = timestamp
                 }
-                _lastLeftStickXUpdate = timestamp
             }
         }
         else
@@ -434,8 +434,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastLeftStickYUpdate)
                 {
                     _controllerState.update { state -> state.copy(leftStickY = value) }
+                    _lastLeftStickYUpdate = timestamp
                 }
-                _lastLeftStickYUpdate = timestamp
             }
         }
         else
@@ -457,8 +457,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastLeftStickInUpdate)
                 {
                     _controllerState.update { state -> state.copy(leftStickIn = value) }
+                    _lastLeftStickInUpdate = timestamp
                 }
-                _lastLeftStickInUpdate = timestamp
             }
         }
         else
@@ -480,8 +480,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastRightStickXUpdate)
                 {
                     _controllerState.update { state -> state.copy(rightStickX = value) }
+                    _lastRightStickXUpdate = timestamp
                 }
-                _lastRightStickXUpdate = timestamp
             }
         }
         else
@@ -503,8 +503,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastRightStickYUpdate)
                 {
                     _controllerState.update { state -> state.copy(rightStickY = value) }
+                    _lastRightStickYUpdate = timestamp
                 }
-                _lastRightStickYUpdate = timestamp
             }
         }
         else
@@ -526,8 +526,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastRightStickInUpdate)
                 {
                     _controllerState.update { state -> state.copy(rightStickIn = value) }
+                    _lastRightStickInUpdate = timestamp
                 }
-                _lastRightStickInUpdate = timestamp
             }
         }
         else
@@ -549,8 +549,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastLeftBumperUpdate)
                 {
                     _controllerState.update { state -> state.copy(leftBumper = value) }
+                    _lastLeftBumperUpdate = timestamp
                 }
-                _lastLeftBumperUpdate = timestamp
             }
         }
         else
@@ -572,8 +572,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastLeftTriggerUpdate)
                 {
                     _controllerState.update { state -> state.copy(leftTrigger = value) }
+                    _lastLeftTriggerUpdate = timestamp
                 }
-                _lastLeftTriggerUpdate = timestamp
             }
         }
         else
@@ -595,8 +595,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastRightBumperUpdate)
                 {
                     _controllerState.update { state -> state.copy(rightBumper = value) }
+                    _lastRightBumperUpdate = timestamp
                 }
-                _lastRightBumperUpdate = timestamp
             }
         }
         else
@@ -618,8 +618,8 @@ class ControllerClient(ipPort: IpPortPair,
                 if (timestamp > _lastRightTriggerUpdate)
                 {
                     _controllerState.update { state -> state.copy(rightTrigger = value) }
+                    _lastRightTriggerUpdate = timestamp
                 }
-                _lastRightTriggerUpdate = timestamp
             }
         }
         else
