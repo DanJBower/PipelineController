@@ -215,6 +215,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
     override fun disconnect(): Deferred<Unit>
     {
         _applicationState.update { _ -> ApplicationState.Disconnecting }
+        _mqttClient.value?.onConnectionLost = null
 
         return viewModelScope.async()
         {
