@@ -134,6 +134,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
             }
             catch (_: CancellationException)
             {
+                queueMessage("Stopping search")
             }
             catch (e: Exception)
             {
@@ -172,10 +173,6 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
                     return@coroutineScope IpPortPair(ip, port)
                 }
             }
-        }
-        catch (_: CancellationException)
-        {
-            queueMessage("Stopping search")
         }
         finally
         {
