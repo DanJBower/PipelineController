@@ -1,3 +1,5 @@
+import java.nio.file.Paths
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -18,6 +20,15 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(Paths.get(System.getenv("keystores"), "PipelineControllerViewerSigningKey.jks"))
+            storePassword = System.getenv("keystores_password")
+            keyAlias = "pipelinecontrollerviewersigningkey"
+            keyPassword = System.getenv("keystores_password")
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -25,6 +36,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
