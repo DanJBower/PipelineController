@@ -28,15 +28,6 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-
     buildFeatures {
         compose = true
     }
@@ -46,6 +37,10 @@ android {
             excludes += listOf("META-INF/INDEX.LIST", "META-INF/io.netty.versions.properties")
         }
     }
+}
+
+kotlin {
+    jvmToolchain(8)
 }
 
 dependencies {
