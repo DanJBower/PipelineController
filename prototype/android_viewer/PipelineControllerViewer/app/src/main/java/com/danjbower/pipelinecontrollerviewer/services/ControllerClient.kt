@@ -838,6 +838,10 @@ class ControllerClient(ipPort: IpPortPair,
         }
     }
 
+    fun isConnected(): Boolean {
+        return _client.state.isConnected
+    }
+
     suspend fun disconnect() {
         _client.disconnect().await()
     }

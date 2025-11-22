@@ -210,7 +210,18 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
             _connectionJob?.cancelAndJoin()
             _connectionJob = null
 
-            _mqttClient.value?.disconnect()
+            if (_mqttClient.value != null)
+            {
+                if (_mqttClient.value!!.isConnected())
+                {
+                    _mqttClient.value!!.disconnect()
+                }
+                else
+                {
+                    Log.i(TAG, "Already disconnected");
+                }
+            }
+
             _mqttClient.update { _ -> null }
 
             _messageListen?.cancelAndJoin()
