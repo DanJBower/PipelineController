@@ -2,6 +2,7 @@ package com.danjbower.pipelinecontrollerviewer.viewmodels.interfaces
 
 import com.danjbower.pipelinecontrollerviewer.data.ApplicationState
 import com.danjbower.pipelinecontrollerviewer.data.ControllerState
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.StateFlow
 
 interface IUdpMessageViewModel
@@ -14,5 +15,5 @@ interface IUdpMessageViewModel
     val controllerState : StateFlow<ControllerState>
 
     fun connect()
-    fun disconnect()
+    fun disconnect(): Deferred<Unit>
 }

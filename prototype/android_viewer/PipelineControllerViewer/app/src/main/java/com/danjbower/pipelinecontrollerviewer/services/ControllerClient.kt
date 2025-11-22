@@ -7,6 +7,7 @@ import com.danjbower.pipelinecontrollerviewer.data.ServerDataConverter
 import com.danjbower.pipelinecontrollerviewer.data.TopicConstants
 import com.hivemq.client.mqtt.MqttClient
 import com.hivemq.client.mqtt.datatypes.MqttQos
+import com.hivemq.client.mqtt.lifecycle.MqttClientDisconnectedContext
 import com.hivemq.client.mqtt.mqtt5.Mqtt5AsyncClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,9 +23,17 @@ import java.io.Closeable
 import java.time.Instant
 import java.util.UUID
 
-class ControllerClient(ipPort: IpPortPair,
+class ControllerClient(
+    private val ipPort: IpPortPair,
     private val coroutineScope: CoroutineScope) : Closeable
 {
+    var onConnectionLost: (() -> Unit)? = null
+
+    private fun onDisconnected(context: MqttClientDisconnectedContext) {
+        Log.i(TAG, "Connection lost!")
+        onConnectionLost?.invoke()
+    }
+
     companion object {
         val TAG: String = ControllerClient::class.java.simpleName
     }
@@ -45,6 +54,7 @@ class ControllerClient(ipPort: IpPortPair,
         .serverHost(ipPort.ip)
         .serverPort(ipPort.port)
         .identifier(UUID.randomUUID().toString())
+        .addDisconnectedListener(this::onDisconnected)
         .buildAsync()
 
     private val _callbackLookup : Map<Int, suspend (Instant, Any?)-> Unit> = mapOf(
@@ -836,6 +846,10 @@ class ControllerClient(ipPort: IpPortPair,
         {
             throw IllegalArgumentException("${this::onFullMessage.javaClass.simpleName}: $value was not the expected type")
         }
+    }
+
+    fun isConnected(): Boolean {
+        return _client.state.isConnected
     }
 
     suspend fun disconnect() {

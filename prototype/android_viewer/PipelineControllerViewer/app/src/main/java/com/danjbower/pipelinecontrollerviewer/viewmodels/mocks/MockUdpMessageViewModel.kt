@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import com.danjbower.pipelinecontrollerviewer.data.ApplicationState
 import com.danjbower.pipelinecontrollerviewer.data.ControllerState
 import com.danjbower.pipelinecontrollerviewer.viewmodels.interfaces.IUdpMessageViewModel
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -24,5 +26,5 @@ class MockUdpMessageViewModel(
     override val controllerState: StateFlow<ControllerState> = MutableStateFlow(controllerState)
 
     override fun connect() { }
-    override fun disconnect() { }
+    override fun disconnect(): Deferred<Unit> { return CompletableDeferred(Unit) }
 }

@@ -11,9 +11,12 @@ import com.danjbower.pipelinecontrollerviewer.viewmodels.interfaces.IUdpMessageV
 import io.ktor.network.selector.ActorSelectorManager
 import io.ktor.network.sockets.InetSocketAddress
 import io.ktor.network.sockets.aSocket
+import io.ktor.utils.io.readText
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -121,6 +124,8 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
     {
         if (!canClickConnect.value)
         {
+            Log.i(TAG, "Cannot currently connect")
+            Log.i(TAG, "State: ${applicationState.value}")
             return
         }
 
@@ -134,6 +139,7 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
             }
             catch (_: CancellationException)
             {
+                queueMessage("Stopping search")
             }
             catch (e: Exception)
             {
@@ -173,10 +179,6 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
                 }
             }
         }
-        catch (_: CancellationException)
-        {
-            queueMessage("Stopping search")
-        }
         finally
         {
             socket.close()
@@ -191,6 +193,13 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
         queueMessage("Connecting")
 
         val mqttClient = ControllerClient(ipPortPair, viewModelScope)
+        mqttClient.onConnectionLost = {
+            viewModelScope.launch {
+                queueMessage("Connection lost, attempting to reconnect")
+                disconnect().await()
+                connect()
+            }
+        }
 
         _messageListen = viewModelScope.launch(Dispatchers.IO) {
             mqttClient.messages.collect { message -> queueMessage(message) }
@@ -203,16 +212,28 @@ class UdpMessageViewModel : ViewModel(), IUdpMessageViewModel
         return@coroutineScope mqttClient
     }
 
-    override fun disconnect()
+    override fun disconnect(): Deferred<Unit>
     {
         _applicationState.update { _ -> ApplicationState.Disconnecting }
+        _mqttClient.value?.onConnectionLost = null
 
-        viewModelScope.launch()
+        return viewModelScope.async()
         {
             _connectionJob?.cancelAndJoin()
             _connectionJob = null
 
-            _mqttClient.value?.disconnect()
+            if (_mqttClient.value != null)
+            {
+                if (_mqttClient.value!!.isConnected())
+                {
+                    _mqttClient.value!!.disconnect()
+                }
+                else
+                {
+                    Log.i(TAG, "Already disconnected");
+                }
+            }
+
             _mqttClient.update { _ -> null }
 
             _messageListen?.cancelAndJoin()
