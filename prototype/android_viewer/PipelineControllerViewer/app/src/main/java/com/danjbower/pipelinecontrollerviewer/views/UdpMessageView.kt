@@ -25,6 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension.Companion.fillToConstraints
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.danjbower.pipelinecontrollerviewer.data.ApplicationState
 import com.danjbower.pipelinecontrollerviewer.data.ControllerState
 import com.danjbower.pipelinecontrollerviewer.ui.theme.PipelineControllerViewerTheme
@@ -40,38 +41,41 @@ import kotlinx.coroutines.launch
 @Composable
 fun ServerConnectionViewPreview()
 {
-    val model = MockUdpMessageViewModel(
-        applicationState = ApplicationState.Disconnected,
-        canClickConnect = true,
-        canClickDisconnect = false,
-        messages = (1..50).map { "Hello %02d".format(it) },
-        debugLight = true,
-        controllerState = ControllerState(
-            start = true,
-            select = false,
-            home = false,
-            bigHome = false,
-            x = false,
-            y = false,
-            a = false,
-            b = false,
-            up = false,
-            right = false,
-            down = false,
-            left = false,
-            leftStickX = -0.311f,
-            leftStickY = 0f,
-            leftStickIn = false,
-            rightStickX = 0f,
-            rightStickY = 0f,
-            rightStickIn = false,
-            leftBumper = false,
-            leftTrigger = 0f,
-            rightBumper = false,
-            rightTrigger = 0f,
+    val viewModel: MockUdpMessageViewModel = viewModel()
+    {
+        MockUdpMessageViewModel(
+            applicationState = ApplicationState.Disconnected,
+            canClickConnect = true,
+            canClickDisconnect = false,
+            messages = (1..50).map { "Hello %02d".format(it) },
+            debugLight = true,
+            controllerState = ControllerState(
+                start = true,
+                select = false,
+                home = false,
+                bigHome = false,
+                x = false,
+                y = false,
+                a = false,
+                b = false,
+                up = false,
+                right = false,
+                down = false,
+                left = false,
+                leftStickX = -0.311f,
+                leftStickY = 0f,
+                leftStickIn = false,
+                rightStickX = 0f,
+                rightStickY = 0f,
+                rightStickIn = false,
+                leftBumper = false,
+                leftTrigger = 0f,
+                rightBumper = false,
+                rightTrigger = 0f,
+            )
         )
-    )
-    UdpMessageView(model)
+    }
+    UdpMessageView(viewModel)
 }
 
 @Composable
