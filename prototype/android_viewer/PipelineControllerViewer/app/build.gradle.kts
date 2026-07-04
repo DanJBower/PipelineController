@@ -1,19 +1,19 @@
 import java.nio.file.Paths
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace = "com.danjbower.pipelinecontrollerviewer"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.danjbower.pipelinecontrollerviewer"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 2
         versionName = "0.0.2.0"
 
@@ -44,6 +44,11 @@ android {
         compose = true
     }
 
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+
     packaging {
         resources {
             excludes += listOf("META-INF/INDEX.LIST", "META-INF/io.netty.versions.properties")
@@ -52,7 +57,10 @@ android {
 }
 
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(21)
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
+    }
 }
 
 dependencies {
